@@ -1,0 +1,10 @@
+{
+  "version": "34",
+  "checks": {
+    "inline_js_syntax": "passed (node --check)",
+    "model_matchday_flow": "passed (daily pause, half-time, full-time, take)",
+    "save_keys": "unchanged; older career save gets day and concessions defaults",
+    "pwa": "manifest and service worker present; cache updated to grounds-pwa-v34",
+    "device_visual_qa": "not run on physical phone"
+  }
+}
