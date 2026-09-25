@@ -1,12 +1,11 @@
-# GROUNDS — Prototype 34.2
+# GROUNDS — Prototype 34.3
 
-Extract this ZIP and replace the six app files in the root of your GitHub repository: `index.html`, `manifest.webmanifest`, `sw.js`, `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`. Keep the existing district artwork PNGs. The large `START-HERE.html` is not needed.
+Extract this ZIP and upload the **seven app files** to the root of your GitHub repository, replacing the old versions: `index.html`, `manifest.webmanifest`, `sw.js`, `version.json`, `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`. Keep the existing district artwork PNGs at the root. The oversized `START-HERE.html` is not needed.
 
-## Changes
+## What changed
 
-- New careers start with no future event offers displayed. Offers are revealed one at a time on later days, generally a few weeks before their event date. The daily briefing offers Approve, Decline or Decide later; a reminder appears when an unanswered event is close.
-- A confirmed community event can trigger a competing Corporate showcase booking for the same date. Taking it cancels the community booking and lowers supporter and community favour; keeping the booking raises favour and declines the larger income.
-- The Club tab shows Supporters, Community and Team mood ratings, plus the latest reason for a change. Match results shift team and supporter mood; decisions change local favour. Supporter mood has a modest effect on attendance and team mood a modest effect on match performance.
-- The landscape layout and seven-day forecast from v34.1 are included.
+- Career placement now uses the full ground view. Instructions, directional controls, Rotate, Pan/Move, zoom, Fit, Reset, Confirm and a way back to the main menu float over the scene. Drag to move the ground; tap Pan to drag the view instead. Confirm locks the Career location permanently.
+- In short landscape Career views, the full-width top club bar is replaced by small corner actions. Calendar and Grounds have more vertical space.
+- The start menu has a small Check for updates button. It checks `version.json` from the network, asks the service worker to check for an update, and offers Reload to update when a newer published version is available. It reports an offline check failure without changing your save.
 
-Existing local save keys are unchanged: `grounds-career-v1` and `stadium-workshop-layered-v27`. Old career saves acquire default ratings. Unanswered far-future offers from an old save are hidden until their reveal day; approved bookings remain confirmed. The service worker cache is updated to refresh the installed app after Pages publishes this version.
+Career and Sandbox keep their existing local save keys, `grounds-career-v1` and `stadium-workshop-layered-v27`. `version.json` must be uploaded with the other app files and updated on future releases. GitHub Pages may take a few minutes to publish. Reload after that if your installed app still shows an older screen.

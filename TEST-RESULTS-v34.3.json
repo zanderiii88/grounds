@@ -1,0 +1,11 @@
+{
+  "version": "34.3",
+  "checks": {
+    "inline_js_syntax": "passed",
+    "service_worker_syntax": "passed",
+    "version_check_network_route": "passed",
+    "html_ids": "unique; placement and update controls present",
+    "save_keys": "unchanged",
+    "mobile_device_visual_qa": "not run on a physical phone; responsive rules reviewed against supplied screenshots"
+  }
+}
