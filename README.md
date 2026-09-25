@@ -1,11 +1,18 @@
-# GROUNDS — Prototype 34.3
+# GROUNDS — Prototype 34.4
 
-Extract this ZIP and upload the **seven app files** to the root of your GitHub repository, replacing the old versions: `index.html`, `manifest.webmanifest`, `sw.js`, `version.json`, `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`. Keep the existing district artwork PNGs at the root. The oversized `START-HERE.html` is not needed.
+This release adds the ten new Career site plates in day and night variants: three compact grassy starter plots, four paved middle sites (including the open waterfront), and three large paved top sites. The older Nordic and European Seaside locations remain available in Sandbox and existing Career saves remain readable.
 
-## What changed
+## Upload to GitHub
 
-- Career placement now uses the full ground view. Instructions, directional controls, Rotate, Pan/Move, zoom, Fit, Reset, Confirm and a way back to the main menu float over the scene. Drag to move the ground; tap Pan to drag the view instead. Confirm locks the Career location permanently.
-- In short landscape Career views, the full-width top club bar is replaced by small corner actions. Calendar and Grounds have more vertical space.
-- The start menu has a small Check for updates button. It checks `version.json` from the network, asks the service worker to check for an update, and offers Reload to update when a newer published version is available. It reports an offline check failure without changing your save.
+Upload the seven app files from this folder to the repository root, replacing their previous versions: `index.html`, `manifest.webmanifest`, `sw.js`, `version.json`, `icon-192.png`, `icon-512.png`, and `icon-maskable-512.png`. Upload the 20 `.webp` images in `assets/career-sites/` with that folder path intact. Keep your existing `assets/*.png` artwork in place. GitHub's web upload can accept a dragged folder; confirm the commit lists paths such as `assets/career-sites/mid-open-waterfront-day.webp` before committing. The oversized `START-HERE.html` is not needed.
 
-Career and Sandbox keep their existing local save keys, `grounds-career-v1` and `stadium-workshop-layered-v27`. `version.json` must be uploaded with the other app files and updated on future releases. GitHub Pages may take a few minutes to publish. Reload after that if your installed app still shows an older screen.
+If uploading files one by one in the GitHub web interface, open or create `assets/career-sites/` in the repository before choosing the `.webp` files. Do not put them at the repository root.
+
+## Changes
+
+- The new site art is registered in the game, with compact grass plots for Div 3, paved middle sites for Div 2 and Div 1, and large paved sites for the Championship. Existing careers retain their selected ground. The new locations are also available in Sandbox.
+- The painted Market Town bus, Open Waterfront tram and Outskirts Campus bus were removed from their day and night images. These now move as canvas vehicles and briefly stop at a route stop.
+- Each new site has road routes, pavement walking routes, and a junction pause. A vehicle that reaches an occupied junction waits until the first has cleared it. Cars and pedestrians move faster than before; older sites also have shorter junction pauses and faster movement.
+- Existing Career and Sandbox save keys remain `grounds-career-v1` and `stadium-workshop-layered-v27`. Upload `version.json` and `sw.js` so the installed app recognizes 34.4. GitHub Pages can take several minutes to refresh.
+
+This update adds the site selection and scene motion. A later release can add offers to relocate between tiers, purchase costs, council support and expanded stand unlocks.

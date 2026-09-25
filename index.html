@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>GROUNDS · Prototype 34.3</title><meta name="theme-color" content="#123e35"><meta name="application-name" content="GROUNDS"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>GROUNDS · Prototype 34.4</title><meta name="theme-color" content="#123e35"><meta name="application-name" content="GROUNDS"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><style>
 :root{font-family:Inter,system-ui,sans-serif;color:#173d35;background:#d9e3d8;font-synthesis:none}*{box-sizing:border-box}body{margin:0}button,input{font:inherit}button{cursor:pointer;touch-action:manipulation;min-height:44px;border:1px solid #cfdbd3;border-radius:9px;background:#fff;color:#214c41;font-weight:650;font-size:14px}button:hover{background:#e5efe7}button:disabled{opacity:.38;cursor:default}button:focus-visible,summary:focus-visible{outline:3px solid #efac37;outline-offset:3px}.app{height:100dvh;display:flex;flex-direction:column;overflow:hidden}header{background:#123e35;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:10px 20px;gap:10px;min-height:65px}.brand small{display:block;font-size:10px;letter-spacing:.18em;color:#aed3c0}.brand strong{display:block;font-size:23px;letter-spacing:-.04em}.header-actions{display:flex;gap:8px}header button{background:#245749;color:#fff;border-color:#4a7565;padding:0 16px}.primary{background:#23744f;color:white;border-color:transparent}.primary:hover{background:#2a825d}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:7px 16px;background:#f7faf7;border-bottom:1px solid #c9d7cd;min-height:59px}.view-actions,.zoom{display:flex;gap:5px;align-items:center}.view-actions button{padding:0 14px}.view-actions button[aria-pressed=true]{background:#245b4c;color:#fff}.zoom button{min-width:44px;padding:0 9px}#zoomValue{font-size:12px;min-width:40px;text-align:center}.stage{position:relative;flex:1;min-height:120px;overflow:hidden;background:#c5cbb4}canvas{display:block;touch-action:none;outline:none}#sceneHint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:#123c35dc;color:#fff;padding:8px 14px;border-radius:20px;font-size:12px;pointer-events:none;white-space:nowrap}.designer{background:#f8fbf8;border-top:1px solid #c8d8cc;padding:10px 20px 14px;flex:none;max-height:49dvh;overflow:auto}.designer-inner{max-width:800px;margin:auto}.selection-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}.selection-bar strong{font-size:14px}.multi{font-size:13px;display:flex;gap:7px;align-items:center;min-height:36px}.multi input{width:19px;height:19px;accent-color:#267354}.control-grid{display:grid;grid-template-columns:54px minmax(0,1fr) 54px 104px;grid-template-rows:44px 64px 44px;gap:5px 10px;align-items:stretch}.category-up{grid-column:2;grid-row:1;justify-self:center;width:58px;min-height:44px}.category-down{grid-column:2;grid-row:3;justify-self:center;width:58px;min-height:44px}#previous{grid-column:1;grid-row:2;font-size:25px}#next{grid-column:3;grid-row:2;font-size:25px}.option-readout{grid-column:2;grid-row:2;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-width:0}#categoryLabel{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:#69816f}#optionLabel{font-size:20px;line-height:1.15;margin:4px 0;letter-spacing:-.03em}#optionCount{font-size:11px;color:#718176}.commit{grid-column:4;grid-row:1/4;display:flex;flex-direction:column;gap:8px;justify-content:center;border-left:1px solid #dbe5dc;padding-left:12px}.commit button{min-height:55px;font-size:23px}.commit button small{font-size:11px;display:block;margin-top:0;font-weight:500}.cancel{background:#e9eeea}#previewState{font-size:12px;color:#587266;min-height:18px;text-align:center;margin:5px 0}.status-row{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;color:#6c7d71;margin-top:6px}details{font-size:12px}summary{cursor:pointer;padding:8px 0;min-height:34px;font-weight:650}.selection-tools{display:flex;flex-wrap:wrap;gap:5px;margin:7px 0}.selection-tools button{padding:0 12px}.section-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}.section-grid button{min-width:0;font-size:11px}.section-grid button[aria-pressed=true]{background:#ffe07b;border-color:#c7a33e}.settings{position:absolute;z-index:5;right:15px;top:128px;background:#fff;padding:16px;border:1px solid #c5d2c7;border-radius:12px;box-shadow:0 10px 40px #0d302e33;max-width:calc(100vw - 30px);width:280px}.settings h2{font-size:16px;margin:0 0 10px}.settings label{display:flex;align-items:center;gap:9px;min-height:40px;font-size:14px}.settings input{width:18px;height:18px;accent-color:#23744f}.settings .row{display:flex;gap:5px;margin-top:12px}.settings .row button{flex:1;font-size:12px}.settings p{font-size:12px;line-height:1.5;color:#64776c}#saveStatus{font-size:11px;min-height:16px}.toast{position:absolute;left:50%;top:128px;transform:translateX(-50%);background:#183f35;color:white;padding:9px 16px;border-radius:7px;font-size:13px;z-index:10;pointer-events:none}body.night{background:#0f1b30}body.night .stage{background:#0e192d}[hidden]{display:none!important}
 @media(max-width:600px){header{padding:8px 10px;min-height:59px}.brand strong{font-size:18px}.brand small{font-size:9px}.header-actions{gap:5px}header button{padding:0 10px;font-size:12px}.toolbar{padding:6px 9px;gap:6px;min-height:57px}.view-actions button{font-size:12px;padding:0 10px}.zoom{gap:3px}.zoom button{min-width:38px;font-size:13px}.zoom #zoomValue{display:none}.designer{padding:7px 10px calc(9px + env(safe-area-inset-bottom));max-height:47dvh}.control-grid{grid-template-columns:44px minmax(0,1fr) 44px 57px;grid-template-rows:44px 62px 44px;gap:4px 6px}.commit{padding-left:6px}.commit button{min-height:53px}.commit button small{font-size:10px}#optionLabel{font-size:17px}.selection-bar{margin-bottom:0}.selection-bar strong{font-size:13px}.multi{font-size:12px}.category-up,.category-down{width:52px}.section-grid{grid-template-columns:repeat(6,1fr)}.status-row{font-size:10px}.settings,.toast{top:121px}.view-actions{gap:4px}#sceneHint{font-size:11px;padding:7px 10px;max-width:95%;text-align:center;white-space:normal}.selection-tools button{font-size:12px}.selection-tools{gap:4px}}
 @media(max-height:560px) and (min-width:700px){.designer{position:absolute;right:12px;bottom:12px;width:420px;max-height:65dvh;border-radius:12px;box-shadow:0 4px 20px #183a3a33}.control-grid{grid-template-columns:40px 1fr 40px 60px;gap:4px}.status-row{display:none}}
@@ -151,12 +151,12 @@ body.placement-open #positionPanToggle[aria-pressed=true]{background:#d7e9d6;col
 @media(orientation:landscape) and (max-height:700px){.career-screen:not([data-tab=setup]) .career-top{position:absolute;z-index:5;top:5px;right:7px;left:auto;width:auto;min-height:0;padding:0;background:transparent;box-shadow:none;backdrop-filter:none}.career-screen:not([data-tab=setup]) .career-top>div:first-child{display:none}.career-screen:not([data-tab=setup]) .career-top-actions button{min-width:36px;min-height:36px;border-radius:9px;background:#123d3bd8;backdrop-filter:blur(7px)}.career-screen[data-tab=calendar] .career-body{inset:0 0 52px}.career-screen[data-tab=calendar] .calendar-selected{padding-top:43px}.career-screen:not([data-tab=calendar]):not([data-tab=setup]) .career-body{max-height:min(77dvh,620px)}}
 .menu-update{position:relative;display:inline-block;min-height:34px;margin:10px 0 0 3px;padding:3px 9px;border:1px solid #bad6ce91;border-radius:6px;background:#133939b9;color:#edf4e8;font-size:11px;pointer-events:auto}.menu-update-status{display:inline-block;margin-left:8px;color:#e8eee2;font-size:11px;max-width:210px}
 @media(orientation:landscape) and (max-height:700px){.menu-update{grid-column:1;grid-row:4;justify-self:start;align-self:end;margin:0}.menu-update-status{grid-column:1;grid-row:4;justify-self:start;align-self:end;margin:0 0 38px;max-width:250px}.menu-footer{display:none}}
-</style></head><body class="menu-open"><main class="app" inert><header><div class="brand"><small>PROTOTYPE 34.3</small><strong>GROUNDS</strong></div><label class="district-picker" for="districtSelect"><span>Setting</span><select id="districtSelect"><option value="woodland-ground">Woodland Ground</option><option value="backwoods-ground">Backwoods Ground</option><option value="railway-works">Railway Works</option><option value="terrace-park">Terrace &amp; Park</option><option value="modern-riverside">Modern Riverside</option><option value="nordic-town">Nordic Town</option><option value="european-seaside">European Seaside</option></select></label><div class="header-actions"><button id="careerBackButton" hidden>▦ Career</button><button id="homeButton" aria-label="Return to start menu">⌂ Menu</button><button id="nightButton" aria-pressed="false">☾ Night</button><button id="designButton" class="primary" aria-pressed="false">✎ Designer</button></div></header><nav class="toolbar" aria-label="Scene controls"><div class="view-actions"><button id="isoButton" aria-pressed="true">Stadium</button><button id="topButton" aria-pressed="false">Plan</button><button id="settingsButton" aria-label="Display settings" aria-expanded="false">⚙</button></div><div class="zoom"><button id="zoomOut" aria-label="Zoom out">−</button><span id="zoomValue">100%</span><button id="zoomIn" aria-label="Zoom in">+</button><button id="fitButton">Fit</button></div></nav><div class="event-bar" id="eventBar"><label>Scene <select id="eventScene"><option value="regular">Regular</option><option value="pre">Pre-event</option><option value="football">Football</option><option value="concert">Concert · Carly XOX</option></select></label><label id="crowdControl">Crowd <select id="crowdLevel"><option value="small">Small · 25%</option><option value="medium">Medium · 66%</option><option value="sellout">Sellout · 100%</option></select></label><span id="eventStatus">Quiet neighbourhood</span></div><div class="capacity-bar" aria-live="polite"><strong id="capacityTotal"></strong><span id="capacityDetail"></span></div><div class="stage" id="canvasFrame"><div id="careerWeatherBadge" class="career-weather-badge" hidden></div><canvas id="gameCanvas" tabindex="0" aria-label="Stadium view. Enter Designer to edit sections."></canvas><div id="sceneHint">Drag to look around · Open Designer to shape your ground</div></div>
+</style></head><body class="menu-open"><main class="app" inert><header><div class="brand"><small>PROTOTYPE 34.4</small><strong>GROUNDS</strong></div><label class="district-picker" for="districtSelect"><span>Setting</span><select id="districtSelect"><option value="woodland-ground">Woodland Ground</option><option value="backwoods-ground">Backwoods Ground</option><option value="railway-works">Railway Works</option><option value="terrace-park">Terrace &amp; Park</option><option value="modern-riverside">Modern Riverside</option><option value="nordic-town">Nordic Town</option><option value="european-seaside">European Seaside</option><option value="starter-park-edge">Park Edge</option><option value="starter-industrial-rail">Industrial & Rail</option><option value="starter-housing-estate">Housing Estate</option><option value="mid-market-town">Market Town</option><option value="mid-canal-works">Canal Works</option><option value="mid-sports-park">Suburban Sports Park</option><option value="mid-open-waterfront">Open Waterfront</option><option value="top-city-redevelopment">City Redevelopment</option><option value="top-riverside">Riverside District</option><option value="top-outskirts-campus">Outskirts Campus</option></select></label><div class="header-actions"><button id="careerBackButton" hidden>▦ Career</button><button id="homeButton" aria-label="Return to start menu">⌂ Menu</button><button id="nightButton" aria-pressed="false">☾ Night</button><button id="designButton" class="primary" aria-pressed="false">✎ Designer</button></div></header><nav class="toolbar" aria-label="Scene controls"><div class="view-actions"><button id="isoButton" aria-pressed="true">Stadium</button><button id="topButton" aria-pressed="false">Plan</button><button id="settingsButton" aria-label="Display settings" aria-expanded="false">⚙</button></div><div class="zoom"><button id="zoomOut" aria-label="Zoom out">−</button><span id="zoomValue">100%</span><button id="zoomIn" aria-label="Zoom in">+</button><button id="fitButton">Fit</button></div></nav><div class="event-bar" id="eventBar"><label>Scene <select id="eventScene"><option value="regular">Regular</option><option value="pre">Pre-event</option><option value="football">Football</option><option value="concert">Concert · Carly XOX</option></select></label><label id="crowdControl">Crowd <select id="crowdLevel"><option value="small">Small · 25%</option><option value="medium">Medium · 66%</option><option value="sellout">Sellout · 100%</option></select></label><span id="eventStatus">Quiet neighbourhood</span></div><div class="capacity-bar" aria-live="polite"><strong id="capacityTotal"></strong><span id="capacityDetail"></span></div><div class="stage" id="canvasFrame"><div id="careerWeatherBadge" class="career-weather-badge" hidden></div><canvas id="gameCanvas" tabindex="0" aria-label="Stadium view. Enter Designer to edit sections."></canvas><div id="sceneHint">Drag to look around · Open Designer to shape your ground</div></div>
 <section class="designer" id="designerPanel" aria-label="Stadium designer" hidden><div class="designer-inner"><div class="mode-tabs" role="group" aria-label="Designer mode"><button data-mode="stands" aria-pressed="true">Stands</button><button data-mode="grounds" aria-pressed="false">Outside</button><button data-mode="boards" aria-pressed="false">Sponsors</button><button data-mode="position" aria-pressed="false">Position</button></div><div id="conflictPanel" class="conflicts" hidden><div id="conflictText"></div><button id="moveConflicts">Move items</button><button id="removeConflicts">Remove conflicting items</button><button id="returnStands">Back to stands</button></div><div class="history-controls"><button id="undoButton">↶ Undo</button><button id="redoButton">↷ Redo</button><button id="rotateStadium">↻ Rotate 90°</button></div><div id="positionControls" hidden><div id="positionStatus" role="status"></div><div class="position-pad"><button id="moveNorth" aria-label="Move north one square">↗</button><button id="moveWest" aria-label="Move west one square">↖</button><button id="moveSouth" aria-label="Move south one square">↙</button><button id="moveEast" aria-label="Move east one square">↘</button></div><div class="position-tools"><button id="positionPanToggle" aria-pressed="false" title="Pan view">✥ Pan</button><button id="positionZoomOut" aria-label="Zoom out">−</button><button id="positionZoomIn" aria-label="Zoom in">+</button><button id="positionFit" title="Centre view">Fit</button><button id="positionRotate" title="Rotate stadium 90 degrees">↻ Rotate</button><button id="placementMenu" hidden title="Return to main menu">⌂</button></div><div class="position-actions"><button id="positionConfirm" class="primary">✓ Confirm</button><button id="positionCancel">✕ Cancel</button></div><div id="positionNotice">Move or rotate the preview, then Confirm. Each step is one grid square.</div></div><div id="standControls"><div class="selection-bar"><strong id="selectionTitle">Tap a stand or corner</strong><span class="selection-hint">Tap again to deselect</span></div><div class="control-grid"><button class="category-up" id="categoryUp" aria-label="Previous category">▲</button><button id="previous" aria-label="Previous option">◀</button><div class="option-readout" aria-live="polite"><span id="categoryLabel">Seating & tiers</span><strong id="optionLabel">Choose a section</strong><span id="optionCount">Preview before confirming</span></div><button id="next" aria-label="Next option">▶</button><button class="category-down" id="categoryDown" aria-label="Next category">▼</button><div class="commit"><button class="primary" id="confirmButton" aria-label="Confirm changes">✓<small>Confirm</small></button><button class="cancel" id="cancelButton" aria-label="Cancel changes">✕<small>Cancel</small></button></div></div><div id="previewState">Left / right: options · Up / down: category</div><details id="sectionDetails"><summary>Select sections by name</summary><div class="selection-tools"><button data-select="N">North</button><button data-select="S">South</button><button data-select="W">West</button><button data-select="E">East</button><button data-select="CORNERS">Corners</button><button data-select="ALL">All</button><button data-select="CLEAR">Clear</button></div><div id="sectionPicker" class="section-grid"></div></details><div class="status-row"><span>Seating → rear building → roof → colours</span><span id="saveStatus">Saved on this device</span></div></div><div id="groundsControls" class="extra-controls" hidden><div class="extra-row"><button id="decorPrevious" aria-label="Previous decoration">◀</button><strong id="decorLabel"></strong><button id="decorNext" aria-label="Next decoration">▶</button></div><div id="decorStatus" class="extra-status" aria-live="polite"></div><div class="extra-row"><button id="decorRotate">Rotate</button><button id="decorMove">Move</button><button id="decorRemove">Remove</button></div><div class="extra-row"><button id="decorConfirm" class="primary">✓ Confirm</button><button id="decorCancel">✕ Cancel</button></div></div><div id="boardControls" class="extra-controls" hidden><div class="extra-row"><button id="boardPrevious" aria-label="Previous sponsor set">◀</button><strong id="boardLabel"></strong><button id="boardNext" aria-label="Next sponsor set">▶</button></div><p class="extra-status">Fictional sponsors · boards leave both goals clear</p><div class="extra-row"><button id="boardConfirm" class="primary">✓ Confirm</button><button id="boardCancel">✕ Cancel</button></div></div></div></section></main>
 <aside class="settings" id="settingsPanel" hidden><h2>Display & design</h2><label><input type="checkbox" id="waterMotion">Gentle water motion</label><label><input type="checkbox" id="ambient">Town activity</label><label><input type="checkbox" id="flyovers">Occasional flyovers</label><label><input type="checkbox" id="eventMotion">Event animation</label><label><input type="checkbox" id="lowAngle">Flatter 3:1 camera</label><label><input type="checkbox" id="showLabels">Section labels</label><label><input type="checkbox" id="showGrid">Site grid</label><label><input type="checkbox" id="showEnvironment" checked>Town backdrop</label><p>Changes save after ✓ Confirm. Display options do not change your stadium.</p><div class="row"><button id="saveButton">Save now</button><button id="resetButton">Reset ground</button><button id="closeSettings">Close</button></div></aside><div id="toast" class="toast" role="status" hidden></div><div id="startMenu" class="start-menu" role="dialog" aria-modal="true" aria-labelledby="menuTitle">
   <div class="menu-shade"></div><div class="menu-vignette"></div>
   <div class="menu-panel">
-    <p class="menu-kicker">A STADIUM BUILDING GAME <span>·</span> PROTOTYPE 34.3</p>
+    <p class="menu-kicker">A STADIUM BUILDING GAME <span>·</span> PROTOTYPE 34.4</p>
     <div class="girder-frame"><h1 id="menuTitle" class="girder-title">GROUNDS</h1></div>
     <p class="menu-subtitle">Every club starts somewhere.</p>
     <nav class="menu-actions" aria-label="Main menu">
@@ -316,9 +316,9 @@ body.placement-open #positionPanToggle[aria-pressed=true]{background:#d7e9d6;col
   const coachBays=row([106,539],[425,701],6);
   const carBays=row([1387,399],[1529,470],6);
   const COMMON={registration:REGISTRATION,site:SHARED_SITE,placement:SHARED_PLACEMENT,
-    road:{a:[-60,541],b:[1140,-59],junctions:[.14,.36,.71],laneOffset:1.05,speed:1.36,stopSeconds:2},
+    road:{a:[-60,541],b:[1140,-59],junctions:[.14,.36,.71],laneOffset:1.05,speed:2.35,stopSeconds:.8},
     walkingRoutes:[{a:[248,530],b:[635,724],layer:'front'},{a:[865,209],b:[1265,409],layer:'back'},{a:[350,403],b:[670,243],layer:'back'}],
-    walkers:Array.from({length:24},(_,i)=>({route:i%3,phase:((i*.61803398875+.13)%1)*950,speedFactor:.85+(i%7)*.05,pause:1.3+(i%4)*.6})),pedestrianSpeed:.28,
+    walkers:Array.from({length:24},(_,i)=>({route:i%3,phase:((i*.61803398875+.13)%1)*950,speedFactor:.85+(i%7)*.05,pause:1.3+(i%4)*.6})),pedestrianSpeed:.44,
     pubGroup:[],hospitality:{a:[280,341],b:[360,301],count:36},parking:{kind:'authored-bays',cars:carBays,coaches:coachBays,carDirection:[0,-1],coachDirection:[0,-1]}};
   const TERRACE_DISTRICT={...COMMON,id:'terrace-park',name:'Terrace & Park',art:{day:'assets/district.png',night:'assets/district-night.png'},pubGroup:[[296,328],[302,331],[308,323],[315,326]]};
   const RIVERSIDE_DISTRICT={...COMMON,id:'modern-riverside',name:'Modern Riverside',art:{day:'assets/riverside-day.png',night:'assets/riverside-night.png'},hospitality:{a:[405,256],b:[494,212],count:28},
@@ -339,7 +339,7 @@ body.placement-open #positionPanToggle[aria-pressed=true]{background:#d7e9d6;col
     registration:{...REGISTRATION,origin:[805,490],tile:[14.6,7.3]},
     site:{minX:16,maxX:56,minY:10,maxY:50},placement:{minX:16,maxX:56,minY:10,maxY:50,accessRows:[10,48]},
     art:{day:'assets/woodland-day.png',night:'assets/woodland-night.png'},
-    road:{a:[-50,502],b:[1000,-23],junctions:[.14],laneOffset:.65,speed:1.05,stopSeconds:2},
+    road:{a:[-50,502],b:[1000,-23],junctions:[.14],laneOffset:.65,speed:1.9,stopSeconds:.8},
     walkingRoutes:[{a:[182,508],b:[730,782],layer:'front'},{a:[880,169],b:[1430,444],layer:'back'},{a:[204,426],b:[760,148],layer:'back'}],
     walkers:Array.from({length:16},(_,i)=>({route:i%3,phase:((i*.61803398875+.17)%1)*950,speedFactor:.85+(i%7)*.05,pause:1.3+(i%4)*.6})),
     hospitality:{a:[335,720],b:[375,740],count:12},
@@ -349,23 +349,63 @@ body.placement-open #positionPanToggle[aria-pressed=true]{background:#d7e9d6;col
   const BACKWOODS_DISTRICT={...WOODLAND_DISTRICT,id:'backwoods-ground',name:'Backwoods Ground',
     registration:{...REGISTRATION,origin:[800,495],tile:[16.8,8.4]},
     site:TIGHT_SITE,placement:TIGHT_PLACEMENT,art:{day:'assets/backwoods-day.png',night:'assets/backwoods-night.png'},
-    road:{a:[-50,502],b:[1000,-23],junctions:[.15],laneOffset:.65,speed:1.05,stopSeconds:2},
+    road:{a:[-50,502],b:[1000,-23],junctions:[.15],laneOffset:.65,speed:1.9,stopSeconds:.8},
     walkingRoutes:[{a:[170,500],b:[800,845],layer:'front'},{a:[860,135],b:[1445,430],layer:'back'},{a:[220,425],b:[700,180],layer:'back'}],
     parking:{...COMMON.parking,cars:[[138,561],[214,601],[288,640]],coaches:[],carDirection:[0,-1]},
     hospitality:{a:[465,732],b:[535,766],count:6},prePeople:42,preStalls:2};
   const RAILWAY_DISTRICT={...WOODLAND_DISTRICT,id:'railway-works',name:'Railway Works',
     registration:{...REGISTRATION,origin:[800,495],tile:[16.8,8.4]},
     site:TIGHT_SITE,placement:TIGHT_PLACEMENT,art:{day:'assets/railway-day.png',night:'assets/railway-night.png'},
-    road:{a:[-55,477],b:[940,-21],junctions:[.11],laneOffset:.65,speed:1.05,stopSeconds:2},
+    road:{a:[-55,477],b:[940,-21],junctions:[.11],laneOffset:.65,speed:1.9,stopSeconds:.8},
     walkingRoutes:[{a:[140,485],b:[800,845],layer:'front'},{a:[875,135],b:[1435,410],layer:'back'},{a:[180,285],b:[710,20],layer:'back'}],
     parking:{...COMMON.parking,cars:[[112,574],[174,605],[238,636],[302,667]],coaches:[],carDirection:[0,-1]},
     hospitality:{a:[380,705],b:[450,740],count:7},prePeople:48,preStalls:3};
-  const DISTRICTS={'woodland-ground':WOODLAND_DISTRICT,'backwoods-ground':BACKWOODS_DISTRICT,'railway-works':RAILWAY_DISTRICT,'terrace-park':TERRACE_DISTRICT,'modern-riverside':RIVERSIDE_DISTRICT,'nordic-town':NORDIC_DISTRICT,'european-seaside':SEASIDE_DISTRICT};
+  // New Career plates are registered against their own 1774×887 pixel grid.
+  // Roads and pavements are authored in those pixels; no road is invented by the renderer.
+  const NEW_SITE_BOUNDS={
+    starter:{site:{minX:18,maxX:54,minY:12,maxY:48},tile:[10.7,5.5],people:18},
+    mid:{site:{minX:11,maxX:61,minY:5,maxY:55},tile:[10,5],people:26},
+    top:{site:{minX:4,maxX:68,minY:-2,maxY:62},tile:[9.5,4.6],people:34}
+  };
+  function newSite(id,name,tier,origin,routeA,routeB,walks,transit=null){
+    const spec=NEW_SITE_BOUNDS[tier],site=spec.site;
+    const vehicles=[
+      {id:'car-west',kind:'car',points:routeA,speed:86,colour:'#4e98cf',start:0},
+      {id:'car-east',kind:'car',points:routeB,speed:79,colour:'#e9bd53',start:0.018}
+    ];
+    if(transit)vehicles.push({...transit,speed:transit.kind==='tram'?68:72,colour:transit.kind==='tram'?'#4b91c6':'#397eb0'});
+    return {...COMMON,id,name,registration:{width:1774,height:887,origin,tile:spec.tile,worldAnchor:[36,30]},
+      site,placement:{...site,accessRows:[site.minY,site.maxY-2]},
+      art:{day:`assets/career-sites/${id}-day.webp`,night:`assets/career-sites/${id}-night.webp`},
+      traffic:{vehicles,junctionWait:.75,clearance:36},
+      walkingRoutes:walks.map(([a,b,layer])=>({a,b,layer:layer||'front'})),
+      walkers:Array.from({length:spec.people},(_,i)=>({route:i%walks.length,phase:((i*.61803398875+.13)%1)*950,speedFactor:.88+(i%7)*.05,pause:1+(i%4)*.5})),
+      pedestrianSpeed:.51,
+      parking:{...COMMON.parking,cars:[],coaches:[]},pubGroup:[],prePeople:tier==='starter'?54:tier==='mid'?100:160};
+  }
+  const newDistricts=[
+    newSite('starter-park-edge','Park Edge','starter',[895,440],[[-80,345],[900,805],[1810,350]],[[1810,350],[900,805],[-80,345]],[[[110,400],[680,660],'front'],[[1050,690],[1590,420],'front'],[[950,120],[1510,390],'back']]),
+    newSite('starter-industrial-rail','Industrial & Rail','starter',[840,450],[[-80,285],[920,770],[1810,315]],[[1810,315],[920,770],[-80,285]],[[[115,360],[670,630],'front'],[[1010,700],[1550,435],'front'],[[760,205],[1330,480],'back']]),
+    newSite('starter-housing-estate','Housing Estate','starter',[885,445],[[-80,355],[880,820],[1810,350]],[[1810,350],[880,820],[-80,355]],[[[110,415],[680,695],'front'],[[1010,735],[1600,435],'front'],[[800,180],[1300,420],'back']]),
+    newSite('mid-market-town','Market Town','mid',[900,435],[[-70,350],[955,810],[1805,395]],[[1805,395],[955,810],[-70,350]],[[[65,420],[590,655],'front'],[[1130,705],[1630,455],'front'],[[620,215],[1030,15],'back']],
+      {id:'market-bus',kind:'bus',points:[[480,290],[730,165],[1120,-30]],start:.06,stopPoint:[865,100],stopSeconds:2.2}),
+    newSite('mid-canal-works','Canal Works','mid',[875,450],[[-70,360],[940,810],[1810,365]],[[1810,365],[940,810],[-70,360]],[[[95,420],[670,675],'front'],[[1080,745],[1640,465],'front'],[[870,150],[1430,430],'back']]),
+    newSite('mid-sports-park','Suburban Sports Park','mid',[900,450],[[-70,350],[985,820],[1810,410]],[[1810,410],[985,820],[-70,350]],[[[110,420],[700,690],'front'],[[1090,740],[1610,470],'front'],[[780,185],[1360,475],'back']]),
+    newSite('mid-open-waterfront','Open Waterfront','mid',[905,440],[[-70,425],[440,170],[990,-105]],[[990,-105],[440,170],[-70,425]],[[[120,480],[620,735],'front'],[[950,715],[1490,445],'front'],[[610,270],[1250,590],'back']],
+      {id:'waterfront-tram',kind:'tram',points:[[-85,425],[430,170],[980,-105]],start:.02,stopPoint:[510,130],stopSeconds:2.6}),
+    newSite('top-city-redevelopment','City Redevelopment','top',[890,440],[[-90,345],[1110,805],[1810,460]],[[1810,460],[1110,805],[-90,345]],[[[140,390],[740,640],'front'],[[1180,745],[1620,520],'front'],[[680,145],[1350,415],'back']]),
+    newSite('top-riverside','Riverside District','top',[880,445],[[-70,355],[990,805],[1805,400]],[[1805,400],[990,805],[-70,355]],[[[120,425],[740,675],'front'],[[1120,760],[1640,500],'front'],[[930,155],[1500,435],'back']]),
+    newSite('top-outskirts-campus','Outskirts Campus','top',[870,445],[[-70,345],[1000,810],[1810,410]],[[1810,410],[1000,810],[-70,345]],[[[130,430],[750,690],'front'],[[1150,755],[1660,500],'front'],[[910,185],[1480,450],'back']],
+      {id:'campus-bus',kind:'bus',points:[[750,925],[1180,705],[1840,375]],start:.02,stopPoint:[1045,775],stopSeconds:2.3})
+  ];
+  const DISTRICTS={'woodland-ground':WOODLAND_DISTRICT,'backwoods-ground':BACKWOODS_DISTRICT,'railway-works':RAILWAY_DISTRICT,'terrace-park':TERRACE_DISTRICT,'modern-riverside':RIVERSIDE_DISTRICT,'nordic-town':NORDIC_DISTRICT,'european-seaside':SEASIDE_DISTRICT,
+    ...Object.fromEntries(newDistricts.map(d=>[d.id,d]))};
   let DISTRICT=TERRACE_DISTRICT;
+  let trafficActors=[],junctionOwners=new Map();
   function districtImage(path){const img=new Image();img.onerror=()=>{if(path.startsWith('assets/')&&!img._triedRoot){img._triedRoot=true;img.src=path.slice(7);}else notify('District artwork unavailable: '+path);};img.src=path;return img;}
   const districtImages=Object.fromEntries(Object.entries(DISTRICTS).map(([id,d])=>[id,{day:districtImage(d.art.day),night:districtImage(d.art.night)}]));
   let backdrop=districtImages[DISTRICT.id].day,nightBackdrop=districtImages[DISTRICT.id].night;
-  function activateDistrict(id){DISTRICT=DISTRICTS[id]||TERRACE_DISTRICT;backdrop=districtImages[DISTRICT.id].day;nightBackdrop=districtImages[DISTRICT.id].night;}
+  function activateDistrict(id){DISTRICT=DISTRICTS[id]||TERRACE_DISTRICT;backdrop=districtImages[DISTRICT.id].day;nightBackdrop=districtImages[DISTRICT.id].night;resetTraffic();}
   let scene = {x:0,y:0,scale:1};
   const pan = {x:0,y:0};
   const sectionList = makeSections();
@@ -440,13 +480,14 @@ body.placement-open #positionPanToggle[aria-pressed=true]{background:#d7e9d6;col
   }
   function starterForDistrict(s,id){
     if(id==='woodland-ground')return woodlandStarterState(s);
-    if(id==='backwoods-ground'||id==='railway-works'){
-      const base={...defaultSectionState(),stand:'grass',roof:'none',rear:'compact',coverage:'full',exterior:id==='railway-works'?'brick':'metal'};
+    if(id==='backwoods-ground'||id==='railway-works'||id.startsWith('starter-')){
+      const base={...defaultSectionState(),stand:'grass',roof:'none',rear:'compact',coverage:'full',exterior:id.includes('industrial')||id==='railway-works'?'brick':'metal'};
       if(s.kind==='corner')return {...base,stand:'empty'};
       if(s.side==='N'&&s.index>=2&&s.index<=5)return {...base,stand:'bleacher3',roof:'none'};
       if(s.side==='S'&&s.index>=2&&s.index<=5)return {...base,stand:'terrace3'};
       return base;
     }
+    if(id.startsWith('mid-'))return woodlandStarterState(s);
     return starterState(s);
   }
   function isSmallStand(opts){return ['grass','terrace3','terrace5','bleacher3','bleacher5'].includes(opts?.stand);}
@@ -1664,6 +1705,65 @@ function drawSteppedAisle(section,u,spec){
   let ambientTime=0,flyoverTime=0,lastAnimationTime=null,animationRequest=0;
   function imageWorld(p){const r=DISTRICT.registration,a=(p[0]-r.origin[0])/r.tile[0],b=(p[1]-r.origin[1])/r.tile[1];return{x:r.worldAnchor[0]+(a+b)/2,y:r.worldAnchor[1]+(b-a)/2,z:0};}
   function worldDistance(a,b){return Math.hypot(b.x-a.x,b.y-a.y);}
+  function pathDistance(points){return points.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p[0]-points[i][0],p[1]-points[i][1]),0);}
+  function pathPosition(points,distance){
+    let left=Math.max(0,distance);
+    for(let i=1;i<points.length;i++){
+      const a=points[i-1],b=points[i],length=Math.hypot(b[0]-a[0],b[1]-a[1]);
+      if(left<=length||i===points.length-1){const u=Math.min(1,left/Math.max(length,1));return {point:[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u],direction:[(b[0]-a[0])/length,(b[1]-a[1])/length]};}
+      left-=length;
+    }
+  }
+  function distanceToWaypoint(points,index){return pathDistance(points.slice(0,index+1));}
+  function nearestPathDistance(points,target){
+    let best=Infinity,along=0,result=0;
+    for(let i=1;i<points.length;i++){
+      const a=points[i-1],b=points[i],vx=b[0]-a[0],vy=b[1]-a[1],len2=vx*vx+vy*vy;
+      const u=Math.max(0,Math.min(1,((target[0]-a[0])*vx+(target[1]-a[1])*vy)/len2));
+      const error=(a[0]+u*vx-target[0])**2+(a[1]+u*vy-target[1])**2;
+      if(error<best){best=error;result=along+u*Math.sqrt(len2);}
+      along+=Math.sqrt(len2);
+    }
+    return result;
+  }
+  function resetTraffic(){
+    junctionOwners=new Map();
+    trafficActors=(DISTRICT.traffic?.vehicles||[]).map(v=>({
+      ...v,length:pathDistance(v.points),distance:0,wait:0,junctionDone:false,stopDone:false,
+      junctionAt:Math.max(1,distanceToWaypoint(v.points,1)-18),junctionRelease:distanceToWaypoint(v.points,1)+DISTRICT.traffic.clearance,
+      stopAt:v.stopPoint?nearestPathDistance(v.points,v.stopPoint):Infinity,state:'driving',junction:v.junction||'main'
+    }));
+    // Starting outside the plate avoids a cluster appearing on the junction at load.
+    trafficActors.forEach(v=>v.distance=Math.min(v.length-1,(v.start||0)*v.length));
+  }
+  function advanceTraffic(dt){
+    if(!trafficActors.length)return;
+    const pause=DISTRICT.traffic.junctionWait;
+    for(const v of trafficActors){
+      if(v.state==='waiting'||v.state==='stopping'){
+        v.wait=Math.max(0,v.wait-dt);
+        if(v.wait>0)continue;
+        if(v.state==='stopping'){v.state='driving';v.stopDone=true;}
+        else if(junctionOwners.has(v.junction)&&junctionOwners.get(v.junction)!==v){continue;}
+        else{junctionOwners.set(v.junction,v);v.state='crossing';v.junctionDone=true;}
+      }
+      let travel=v.speed*dt;
+      if(!v.junctionDone&&v.distance<v.junctionAt&&v.distance+travel>=v.junctionAt){travel=v.junctionAt-v.distance;v.state='waiting';v.wait=pause;}
+      else if(!v.stopDone&&v.distance<v.stopAt&&v.distance+travel>=v.stopAt){travel=v.stopAt-v.distance;v.state='stopping';v.wait=v.stopSeconds||2.2;}
+      v.distance+=travel;
+      if(v.state==='crossing'&&v.distance>=v.junctionRelease){junctionOwners.delete(v.junction);v.state='driving';}
+      if(v.distance>=v.length){
+        if(junctionOwners.get(v.junction)===v)junctionOwners.delete(v.junction);
+        v.distance=0;v.junctionDone=false;v.stopDone=false;v.state='driving';v.wait=0;
+      }
+    }
+  }
+  function trafficPose(v){
+    const p=pathPosition(v.points,v.distance),lane=[p.point[0]+p.direction[1]*7,p.point[1]-p.direction[0]*7],ahead=imageWorld([lane[0]+p.direction[0]*3,lane[1]+p.direction[1]*3]),world=imageWorld(lane);
+    const magnitude=worldDistance(world,ahead)||1;
+    return {...world,dx:(ahead.x-world.x)/magnitude,dy:(ahead.y-world.y)/magnitude,layer:'back',kind:v.kind,colour:v.colour,stopped:v.state==='waiting'||v.state==='stopping',id:v.id};
+  }
+  window.stadiumTrafficDebug=()=>trafficActors.map(v=>({id:v.id,kind:v.kind,state:v.state,distance:v.distance,junctionAt:v.junctionAt,stopAt:v.stopAt,point:pathPosition(v.points,v.distance).point}));
   function carPose(t,reverse,phase){
     const quietRoad=DISTRICT.road;
     const a=imageWorld(reverse?quietRoad.b:quietRoad.a),b=imageWorld(reverse?quietRoad.a:quietRoad.b),length=worldDistance(a,b);
@@ -1689,7 +1789,7 @@ function drawSteppedAisle(section,u,spec){
     const offset=dir*.17+((index*7)%5-2)*.05;
     return {x:a.x+dx*u+dy*offset,y:a.y+dy*u-dx*offset,z:0,dx:dx*dir,dy:dy*dir,layer:route.layer,kind:'person',colour:['#de7155','#507fae','#996ca9','#d2a351','#65a091','#be7390'][index%6],phase:t*5+index*2,moving};
   }
-  function ambientPoses(t){return [carPose(t,false,.30),carPose(t,true,.22),...Array.from({length:DISTRICT.walkers.length},(_,i)=>pedestrianPose(t,i)),...DISTRICT.pubGroup.map((p,i)=>({...imageWorld(p),dx:i%2?1:-1,dy:0,layer:"back",kind:"person",colour:["#90739d","#b9664e","#547f94","#7a9563"][i],phase:0,moving:false,social:true}))];}
+  function ambientPoses(t){return [...(DISTRICT.traffic?trafficActors.map(trafficPose):[carPose(t,false,.30),carPose(t,true,.22)]),...Array.from({length:DISTRICT.walkers.length},(_,i)=>pedestrianPose(t,i)),...DISTRICT.pubGroup.map((p,i)=>({...imageWorld(p),dx:i%2?1:-1,dy:0,layer:"back",kind:"person",colour:["#90739d","#b9664e","#547f94","#7a9563"][i],phase:0,moving:false,social:true}))];}
   function carPoint(o,a,b,z){return{x:o.x+o.dx*a-o.dy*b,y:o.y+o.dy*a+o.dx*b,z};}
   function carBox(o,L,W,z0,z1,top,side){
     const corners=[[-L/2,-W/2],[L/2,-W/2],[L/2,W/2],[-L/2,W/2]];
@@ -1730,6 +1830,14 @@ function drawSteppedAisle(section,u,spec){
     for(let a=-2.9;a<3;a+=.85)for(const b of [-.876,.876])line([carPoint(o,a,b,1.8),carPoint(o,a,b,2.9)],shade(o.colour,dark),Math.max(.6,scene.scale));
     for(const b of [-.55,.55]){const p=isoProject(carPoint(o,3.63,b,.9));ctx.fillStyle='#eee8bf';ctx.fillRect(p.x-scene.scale,p.y-scene.scale,2*scene.scale,1.4*scene.scale);}
   }
+  function drawTram(o){
+    const dark=state.night?-25:0;
+    carBox(o,9.8,1.85,.4,3.15,shade(o.colour,dark+12),shade(o.colour,dark-10));
+    carBox(o,9.25,1.9,1.65,2.85,state.night?'#25435c':'#79aec4',state.night?'#25445d':'#44809a');
+    for(let a=-4.3;a<4.4;a+=1.1)for(const b of [-.96,.96])line([carPoint(o,a,b,1.7),carPoint(o,a,b,2.85)],shade(o.colour,dark),Math.max(.7,scene.scale));
+    carBox(o,9.8,1.85,2.85,3.15,shade(o.colour,dark+17),shade(o.colour,dark));
+    for(const b of [-.52,.52]){const p=isoProject(carPoint(o,4.93,b,1.1));ctx.fillStyle=state.night?'#fff2b5':'#e9e9cf';ctx.fillRect(p.x-scene.scale,p.y-scene.scale,2*scene.scale,1.6*scene.scale);}
+  }
   function drawParkedVehicles(){if(!state.showEnvironment||state.view!=='iso')return;for(const o of parkingPoses())o.kind==='coach'?drawCoach(o):drawQuietCar(o);}
   function drawQuietPerson(o){
     const p=isoProject(o),s=scene.scale,step=o.moving?Math.sin(o.phase)*1.3:0;
@@ -1746,7 +1854,7 @@ function drawSteppedAisle(section,u,spec){
     // Route ends lie outside the illustration; clipping prevents visible wrap-around.
     ctx.beginPath();ctx.rect(scene.x,scene.y,DISTRICT.registration.width*scene.scale,DISTRICT.registration.height*(state.lowAngle?2/3:1)*scene.scale);ctx.clip();
     const objects=ambientPoses(ambientTime).filter(o=>o.layer===layer).sort((a,b)=>a.x+a.y-b.x-b.y);
-    for(const o of objects){if(o.kind==='car')drawQuietCar(o);else drawQuietPerson(o);}
+    for(const o of objects){if(o.kind==='car')drawQuietCar(o);else if(o.kind==='bus')drawCoach(o);else if(o.kind==='tram')drawTram(o);else drawQuietPerson(o);}
     ctx.restore();
   }
   function motionEnabled(){return state.ambient||state.flyovers||state.eventMotion&&activeScene()!=='regular'||!!(DISTRICT.water&&state.waterMotion);}
@@ -1783,7 +1891,7 @@ function drawSteppedAisle(section,u,spec){
     if(document.hidden||!motionEnabled()||state.view!=='iso'||!state.showEnvironment){lastAnimationTime=null;return;}
     if(lastAnimationTime===null)lastAnimationTime=now;
     const dt=now-lastAnimationTime;
-    if(dt>=1000/30){ambientTime+=Math.min(dt,100)/1000;if(state.flyovers&&!state.designer&&state.eventScene==='regular')flyoverTime+=Math.min(dt,100)/1000;lastAnimationTime=now;paintScene();}
+    if(dt>=1000/30){const step=Math.min(dt,100)/1000;ambientTime+=step;if(state.ambient)advanceTraffic(step);if(state.flyovers&&!state.designer&&state.eventScene==='regular')flyoverTime+=step;lastAnimationTime=now;paintScene();}
     animationRequest=requestAnimationFrame(animationLoop);
   }
   function updateAnimation(){
@@ -2430,7 +2538,7 @@ function drawSteppedAisle(section,u,spec){
   // Career is an independent save. Sandbox state is restored whenever Career is left.
   const CAREER_KEY='grounds-career-v1';
   const CAREER_TIERS=['Div 3','Div 2','Div 1','Championship','Premier Division'];
-  const CAREER_GROUNDS=[['backwoods-ground','railway-works','woodland-ground'],['railway-works','woodland-ground','terrace-park'],['terrace-park','modern-riverside','nordic-town'],['modern-riverside','nordic-town','european-seaside']];
+  const CAREER_GROUNDS=[['starter-park-edge','starter-industrial-rail','starter-housing-estate'],['mid-market-town','mid-canal-works','mid-sports-park','mid-open-waterfront'],['mid-market-town','mid-canal-works','mid-sports-park','mid-open-waterfront'],['top-city-redevelopment','top-riverside','top-outskirts-campus']];
   const CAREER_PLACES=['Aldermere','Brackton','Casterwick','Dunbury','Eastmere','Farnwick','Glenford','Hartfell','Iverton','Kirkhaven','Larchford','Moorbridge','Northwick','Oakminster','Pentridge','Quarryford','Ravenmere','Southford','Tarnborough','Upton Vale','Vennford','Westmere','Wickford','Yarrowby','Ashwick'];
   const CAREER_ENDINGS=['Athletic','United','Rovers','Town'];
   let playMode='sandbox',career=null,sandboxMemory=null,careerTab='calendar',selectedCareerEvent=null,selectedCareerFixture=null,selectedCareerDate=null,careerCalendarMonth=null;
@@ -2710,7 +2818,7 @@ function drawSteppedAisle(section,u,spec){
     if(careerTab==='operations'){$('careerBody').innerHTML=operationsHtml()+careerNoticeHtml();bindOperations();bindCareerShared();return;}
     $('careerBody').innerHTML=`<div class="career-card"><h2>Grounds forecast</h2><p>Pitch condition: ${Math.round(career.pitch)}% · ${careerDate(career.day)}. Seven-day outlook for your ground; weather affects crowds, pitch wear and recovery.</p><div class="career-forecast">${groundsForecast()}</div><p class="career-muted">Heavy rain and snow reduce attendance. Dry spells slow pitch recovery. Forecast reflects the game's seasonal weather simulation.</p></div>${careerNoticeHtml()}`;bindCareerShared();
   }
-  function updateCareerGroundChoices(){const tier=Number($('careerDivision').value);$('careerGround').innerHTML=CAREER_GROUNDS[tier].map(id=>`<option value="${id}">${escapeCareer(DISTRICTS[id].name)} · ${id==='backwoods-ground'||id==='railway-works'?'tight site':id==='woodland-ground'?'roomier small site':'larger site'}</option>`).join('');}
+  function updateCareerGroundChoices(){const tier=Number($('careerDivision').value);$('careerGround').innerHTML=CAREER_GROUNDS[tier].map(id=>`<option value="${id}">${escapeCareer(DISTRICTS[id].name)} · ${tier===0?'compact grass site':tier<3?'paved development site':'large paved site'}</option>`).join('');}
   function onCreateCareer(){const name=$('clubName').value.trim().replace(/\s+/g,' '),tier=Number($('careerDivision').value),ground=$('careerGround').value,outlook=$('careerOutlook').value;
     if(name.length<3||name.length>32){$('careerSetupError').textContent='Please give your club a name of 3–32 characters.';return;}
     if(!CAREER_GROUNDS[tier]?.includes(ground))return;
@@ -2733,7 +2841,7 @@ function drawSteppedAisle(section,u,spec){
 
   let installPrompt=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;});
   $('installApp').addEventListener('click',async()=>{if(installPrompt){await installPrompt.prompt();installPrompt=null;return;}alert('In Chrome, open the ⋮ menu and choose “Install app” or “Add to Home screen”. If it offers only a Chrome shortcut, check that you opened the HTTPS GitHub Pages address and that index.html, manifest.webmanifest, sw.js and the icon PNGs are all at the repository root.');});
-  const APP_VERSION='34.3';let updateReady=false;
+  const APP_VERSION='34.4';let updateReady=false;
   $('checkAppUpdate').addEventListener('click',async()=>{
     if(updateReady){location.reload();return;}
     const button=$('checkAppUpdate'),status=$('updateStatus');button.disabled=true;status.textContent='Checking…';
