@@ -1,0 +1,18 @@
+{
+  "version": "31",
+  "checks": [
+    "JavaScript syntax parses",
+    "All twelve division and ground starting layouts fit all four site rotations",
+    "Five divisions of twenty clubs play 38 rounds and face each opponent twice",
+    "First season dates run from 1 August 2026 through 8 May 2027",
+    "Strong Division 3 club promoted and weak Division 1 club relegated in complete-season simulations",
+    "Final tables persist until the next season; all divisions return to twenty clubs after moves",
+    "Career model writes its own save key and leaves the sandbox key untouched",
+    "Confirmed event pays income and wears pitch, declined event stays closed, untouched offer expires"
+  ],
+  "limitations": [
+    "Browser visual review and real-phone performance not measured",
+    "Stadium upgrades have no cost or construction time",
+    "Grounds and Operations management are not yet interactive"
+  ]
+}
