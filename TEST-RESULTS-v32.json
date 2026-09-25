@@ -1,0 +1,12 @@
+{
+  "version": "32",
+  "checks": [
+    "Editable and standalone JavaScript parse",
+    "Fourteen district image references have matching artwork, with root-level fallback for existing GitHub upload",
+    "Career menu can close to regular ground view and reopen on its previous tab",
+    "Career and Sandbox save keys remain unchanged",
+    "Portrait bottom sheet and landscape side-panel CSS are present",
+    "ZIP integrity verified"
+  ],
+  "limitations": ["Real-phone visual and touch review still required"]
+}
