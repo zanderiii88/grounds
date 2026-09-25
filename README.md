@@ -1,16 +1,12 @@
-# GROUNDS — Prototype 34
+# GROUNDS — Prototype 34.2
 
-Upload these six app files to the root of your existing GitHub repository, replacing the old versions: `index.html`, `manifest.webmanifest`, `sw.js`, `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`. Keep the existing district artwork PNGs at the root. Uploading this ZIP as one file will not update the site; extract it first, then commit the files. GitHub Pages may take a few minutes to refresh. The 50 MB `START-HERE.html` is not required for the website or installable app.
+Extract this ZIP and replace the six app files in the root of your GitHub repository: `index.html`, `manifest.webmanifest`, `sw.js`, `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`. Keep the existing district artwork PNGs. The large `START-HERE.html` is not needed.
 
-## New in this update
+## Changes
 
-- Career progresses by day. Tap a date and choose Run to date, or use Next day. The simulation stops before a fixture or confirmed event, and daily briefings show offers and adverse weather. Routine days pass automatically when running ahead.
-- North-of-England seasonal weather changes attendance, pitch recovery and wear. Rain and snow get a light scene effect. The district paintings remain the current artwork; weather variants are drawn over them.
-- Operations offers Budget, Standard and Premium cold drinks, hot drinks, burgers and pies. Set each range, selling price and stock per stand. The bar shows margin and marks the margin at the recommended price.
-- Home matches and events have a 20-second live stock simulation with stand counters, a half-time pause for matches, a Simulate remainder option, and an event take report. Away matches advance without home stock purchases. Stock is bought when the event opens and unsold units count as waste. The report distinguishes food sales and stock cost from gate/event income.
-- Outside decorations now include mature trees, a grove, park, fountain, water garden, five-a-side pitch, landscaped entrance and industrial courtyard. Their footprints occupy multiple squares, and placement checks the whole area. Some large pieces will not fit at tight sites.
-- An Install app menu action invokes Chrome's install prompt when available and otherwise explains the browser-menu route and required app files. The service worker cache is refreshed for this version. The manifest has no orientation lock.
+- New careers start with no future event offers displayed. Offers are revealed one at a time on later days, generally a few weeks before their event date. The daily briefing offers Approve, Decline or Decide later; a reminder appears when an unanswered event is close.
+- A confirmed community event can trigger a competing Corporate showcase booking for the same date. Taking it cancels the community booking and lowers supporter and community favour; keeping the booking raises favour and declines the larger income.
+- The Club tab shows Supporters, Community and Team mood ratings, plus the latest reason for a change. Match results shift team and supporter mood; decisions change local favour. Supporter mood has a modest effect on attendance and team mood a modest effect on match performance.
+- The landscape layout and seven-day forecast from v34.1 are included.
 
-Existing `grounds-career-v1` Career and `stadium-workshop-layered-v27` Sandbox saves remain on the same device/browser profile. An older Career save gets a daily date and default food plan when loaded. Progress is still local; installing the app does not sync a save between browsers.
-
-On Android Chrome, open the HTTPS GitHub Pages URL, refresh once after publishing, and choose Install app from GROUNDS or Chrome's menu. If Chrome offers only a shortcut, verify all six app files exist at the site root and reload after Pages deploys. Browser installation support varies by platform.
+Existing local save keys are unchanged: `grounds-career-v1` and `stadium-workshop-layered-v27`. Old career saves acquire default ratings. Unanswered far-future offers from an old save are hidden until their reveal day; approved bookings remain confirmed. The service worker cache is updated to refresh the installed app after Pages publishes this version.

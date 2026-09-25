@@ -1,0 +1,9 @@
+{
+  "version": "34.2",
+  "checks": {
+    "inline_js_syntax": "passed (node --check)",
+    "model": "hidden offers, one-day reveal, corporate conflict, cancellation and rating impacts passed",
+    "migration": "v1 career key and default ratings retained",
+    "physical_phone_qa": "not run"
+  }
+}
