@@ -1,0 +1,13 @@
+{
+  "version": "33",
+  "checks": [
+    "JavaScript syntax parses",
+    "August 2026 calendar has 42 date cells, fixture markers and event markers",
+    "Selecting an event exposes its event detail and decision controls",
+    "Career Mode precedes Sandbox on the main menu",
+    "Existing Career and Sandbox save keys remain unchanged",
+    "Fourteen artwork references still resolve with root-level fallback",
+    "Update ZIP integrity verified"
+  ],
+  "limitations": ["Actual phone portrait/landscape visual and touch review still required"]
+}
