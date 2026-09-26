@@ -1,14 +1,14 @@
-# GROUNDS — Prototype 34.7
+# GROUNDS — Prototype 34.8
 
-Upload the seven app files to the root of your GitHub repository, replacing the previous versions: `index.html`, `manifest.webmanifest`, `sw.js`, `version.json`, `icon-192.png`, `icon-512.png`, and `icon-maskable-512.png`. Keep the existing `assets/` folder. The included artwork is unchanged and need not be uploaded again if it is already in place. Keep the `assets/career-sites/` paths if uploading the images.
+Upload the seven app files to the root of your GitHub repository, replacing the previous versions: `index.html`, `manifest.webmanifest`, `sw.js`, `version.json`, `icon-192.png`, `icon-512.png`, and `icon-maskable-512.png`. Keep the existing `assets/` folder. Its images are included for completeness and need not be uploaded again when already present.
 
-## Career management update
+## Event experience
 
-- Stand previews show the construction bill, seats and standing spaces gained or lost, and the remaining club balance. The cost is deducted on confirmation. Division 3 allows up to the second small seated stand; larger stands unlock in higher divisions. Career undo and redo are disabled so confirmed spending cannot be reversed without accounting for it.
-- Operations sets a home ticket price; price changes influence estimated demand and match gate receipts. A live match uses the price set before it opens.
-- The weather display includes pitch condition. Grounds offers one pitch care action per day: mowing, repairs, drainage upgrades, or extra groundskeeper cover during severe weather. Drainage and cover reduce pitch wear. Unprotected heavy rain or snow can worsen the pitch overnight.
-- An unfit home pitch can request a league postponement. Severe weather and low condition lead to an approved two-day delay. An unjustified request is refused and fined once.
-- Daily briefings link directly to Grounds and Operations. Match preparation highlights relevant navigation icons. Club Outlook shows live funds, likely crowd, pitch risk, ticket effects and mood.
-- A local business may offer an advertising investment if funds become tight after the season begins. The offer appears as a green amount and can be accepted or declined under Club.
+- Before opening an event, Operations shows a short readiness summary: expected attendance, pitch condition, ticket price and serving stands.
+- Beginning or simulating a match or other event opens a dedicated event view. The normal Career navigation is covered until the event report is acknowledged.
+- The live view shows score (for matches), attendance, a progress clock, sales by item, missed orders, stock by stand and a timeline of occurrences.
+- Matches pause at half time. You may restock 10 of a selected item per stand for its displayed cost, then resume or simulate the remainder. Away matches play through the same event view without home stock or gate income.
+- The final report shows the match score or event result, attendance, gate and food income, stock spend, pitch change, and for each food and drink item the quantities bought, sold, left and missed. It includes a supporter survey for enjoyment of the game or event and for service and prices. Survey scores react to results, prices and missed sales; service feedback affects supporter or community mood.
+- The report is saved on its calendar day. If the app closes while a live event or final report is open, continuing Career restores it. Earlier reports with missing item details identify them as unavailable.
 
-The existing `grounds-career-v1` and `stadium-workshop-layered-v27` save keys remain unchanged. Career saves gain new fields on load. The 34.6 startup fix remains included.
+The existing `grounds-career-v1` and `stadium-workshop-layered-v27` save keys are unchanged. The 34.6 startup fix and 34.7 Career management update remain included.
