@@ -1,17 +1,17 @@
-# GROUNDS — Prototype 34.9 aligned site pilot
+# GROUNDS v35.0 — Five grid locations
 
-This is a one-site experiment. The existing Market Town and all other locations are unchanged. Choose **Market Town · aligned pilot** from the Sandbox Setting menu to compare it without replacing your Career save. It also appears in Div 2 and Div 1 New Game site choices; starting a new Career replaces the current Career save as before.
+Upload the ZIP contents to the root of `zanderiii88/grounds`, retaining the `assets/career-sites/` paths. The `archive/` folder is a local copy of v34.9's old site and movement source and is not needed by the running page.
 
-## Upload
+## Sites
 
-Replace these seven files at the repository root: `index.html`, `manifest.webmanifest`, `sw.js`, `version.json`, `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`.
+- Low tier: Rural Village, 1970s Town, Railway Works
+- Mid tier: British City
+- Top tier: Modern Harbour
 
-Add these two files, keeping their folder path: `assets/career-sites/mid-market-town-aligned-day.webp` and `assets/career-sites/mid-market-town-aligned-night.webp`. The existing artwork stays in place. The `art-source/` folder documents the precise grid and can be kept locally; it is not required on GitHub Pages.
+All five appear in Sandbox. Division 3 starts at a low site; Divisions 2 and 1 use British City; the top divisions use Modern Harbour. Each has a day image and a darker night variant.
 
-## What to review
+Traffic and pavement walkers now use one explicit isometric road graph per tier. Actors traverse connected edges and choose the next edge at a junction. They no longer use the old independent straight-line waypoint lists. Movement is limited to the site access roads beside the stadium in this release; outlying decorative streets have no moving actors yet. The harbour's water is never included in the route graph.
 
-- The playable 50×50 world plot matches the paved diamond and fence exactly. The stadium pitch, stand footprints and placement grid use the same 2:1 isometric registration as the artwork.
-- Roads form a connected ring outside the site; vehicles travel on its lanes, and pedestrians use authored pavement lines around the plot. The bus pauses at an authored stop.
-- Day and night are rendered from the same geometry, so lighting changes without moving the roads, walls or gates.
+This is a fresh start using `grounds-career-v2` and `stadium-workshop-layered-v35`. The earlier `grounds-career-v1` and `stadium-workshop-layered-v27` browser data is left untouched and is not read by this build. Installing the build does not delete it.
 
-The visual style is deliberately simpler than the existing painted site. This pilot is for judging the alignment and whether this art direction is acceptable before rebuilding more sites. No preset stadium cycling is included in this experiment. Existing `grounds-career-v1` and `stadium-workshop-layered-v27` saves remain compatible.
+The detailed site illustrations were generated from the approved concepts. Their road edges should be reviewed on a phone against the mathematically defined movement graph; small visual offsets in the painted art may remain. The archived v34.9 ZIP is included for rollback.

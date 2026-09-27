@@ -173,7 +173,7 @@ body.placement-open #positionPanToggle[aria-pressed=true]{background:#d7e9d6;col
 }
 @media(orientation:landscape) and (max-height:700px){body.designer-overlay .designer{left:auto;right:8px;bottom:8px;width:min(44vw,420px);max-height:calc(100dvh - 57px)}body.designer-overlay .designer-scene-actions{right:auto;width:52vw}}
 .career-card #ticketPrice{width:85px;max-width:100%;padding:8px;border:1px solid #b7d0bd;border-radius:7px}.career-build-preview{margin:4px 0 7px;padding:6px 9px;border:1px solid #d5e7d9;border-radius:8px;background:#e9f2e9;color:#184537;font-size:11px;line-height:1.35}.career-build-preview.warn{background:#f9e9df;color:#8d3528}.finance-spend{color:#f39082;font-weight:800}.finance-offer{color:#8ef0a4;font-weight:800}.career-top small#careerFinanceDelta{display:block}.career-action-hint{box-shadow:inset 0 0 0 2px #edbc54!important;color:#efce82!important}.care-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.care-row button{min-height:37px;padding:5px 10px}.event-screen{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:calc(10px + env(safe-area-inset-top)) 10px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(#0a292cc7,#09251ddd);backdrop-filter:blur(4px);color:#f5f7ed}.event-screen[hidden]{display:none!important}.event-panel{width:min(850px,100%);max-height:100%;overflow:auto;padding:16px;border:1px solid #b4d5bb90;border-radius:16px;background:#123d38ee;box-shadow:0 15px 55px #081e1cbd}.event-panel h2{margin:3px 0 9px}.event-panel p{line-height:1.4}.event-kicker{letter-spacing:.12em;text-transform:uppercase;font-size:11px;color:#f1c679;font-weight:800}.event-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.event-panel .event-card,.event-report .event-card{padding:11px;border:1px solid #d5eee069;border-radius:10px;background:#e8f0e7ec;color:#183d34}.event-panel .event-card h3,.event-report .event-card h3{margin:0 0 7px;font-size:15px}.event-panel .event-card p,.event-report .event-card p{margin:5px 0;font-size:12px}.event-panel button{min-height:39px;padding:6px 12px}.event-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.event-timeline{list-style:none;padding:0;margin:0;max-height:160px;overflow:auto}.event-timeline li{padding:5px 0;border-bottom:1px solid #b5c9b8;font-size:12px}.event-stock{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 10px;font-size:12px}.event-table{width:100%;border-collapse:collapse;font-size:12px}.event-table th,.event-table td{text-align:left;padding:5px;border-bottom:1px solid #c4d7c9}.event-grade{font-size:30px;font-weight:850;color:#164f3d}.event-pulse{height:7px;border-radius:8px;background:#698f79;overflow:hidden;margin:10px 0}.event-pulse span{display:block;height:100%;background:#e5bb63}.event-muted{font-size:12px;color:#d0e2d5}.event-panel .live-score{background:#0c332f}.event-screen .career-action{background:#e8b85b;color:#143c32}@media(max-width:600px){.event-panel{padding:12px}.event-grid{grid-template-columns:1fr}.event-stock{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(orientation:landscape) and (max-height:700px){.event-panel{width:min(1050px,100%);padding:11px}.event-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.event-timeline{max-height:120px}}.live-score{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px 10px;border-radius:9px;background:#183f37;color:#fff;font-weight:800;font-size:17px}.live-score strong{font-size:24px;white-space:nowrap}.live-progress{height:7px;border-radius:8px;background:#bad3bc;overflow:hidden;margin:8px 0}.live-progress span{display:block;height:100%;background:#e9bc71}.event-report{border-left:4px solid #d5ac60}.event-report .career-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-</style></head><body class="menu-open"><main class="app" inert><header><div class="brand"><small>PROTOTYPE 34.9</small><strong>GROUNDS</strong></div><label class="district-picker" for="districtSelect"><span>Setting</span><select id="districtSelect"><option value="woodland-ground">Woodland Ground</option><option value="backwoods-ground">Backwoods Ground</option><option value="railway-works">Railway Works</option><option value="terrace-park">Terrace &amp; Park</option><option value="modern-riverside">Modern Riverside</option><option value="nordic-town">Nordic Town</option><option value="european-seaside">European Seaside</option><option value="starter-park-edge">Park Edge</option><option value="starter-industrial-rail">Industrial & Rail</option><option value="starter-housing-estate">Housing Estate</option><option value="mid-market-town">Market Town</option><option value="mid-market-town-aligned">Market Town · aligned pilot</option><option value="mid-canal-works">Canal Works</option><option value="mid-sports-park">Suburban Sports Park</option><option value="mid-open-waterfront">Open Waterfront</option><option value="top-city-redevelopment">City Redevelopment</option><option value="top-riverside">Riverside District</option><option value="top-outskirts-campus">Outskirts Campus</option></select></label><div class="header-actions"><button id="careerBackButton" hidden>▦ Career</button><button id="homeButton" aria-label="Return to start menu">⌂ Menu</button><button id="nightButton" aria-pressed="false">☾ Night</button><button id="designButton" class="primary" aria-pressed="false">✎ Designer</button></div></header><nav class="toolbar" aria-label="Scene controls"><div class="view-actions"><button id="isoButton" aria-pressed="true">Stadium</button><button id="topButton" aria-pressed="false">Plan</button><button id="settingsButton" aria-label="Display settings" aria-expanded="false">⚙</button></div><div class="zoom"><button id="zoomOut" aria-label="Zoom out">−</button><span id="zoomValue">100%</span><button id="zoomIn" aria-label="Zoom in">+</button><button id="fitButton">Fit</button></div></nav><div class="event-bar" id="eventBar"><label>Scene <select id="eventScene"><option value="regular">Regular</option><option value="pre">Pre-event</option><option value="football">Football</option><option value="concert">Concert · Carly XOX</option></select></label><label id="crowdControl">Crowd <select id="crowdLevel"><option value="small">Small · 25%</option><option value="medium">Medium · 66%</option><option value="sellout">Sellout · 100%</option></select></label><span id="eventStatus">Quiet neighbourhood</span></div><div class="capacity-bar" aria-live="polite"><strong id="capacityTotal"></strong><span id="capacityDetail"></span></div><div class="stage" id="canvasFrame"><div id="careerWeatherBadge" class="career-weather-badge" hidden></div><canvas id="gameCanvas" tabindex="0" aria-label="Stadium view. Enter Designer to edit sections."></canvas><div class="designer-scene-actions"><button id="designerCareer" hidden>▦ Career</button><button id="designerNight">☾ Night</button><button id="designerFit">Fit</button><button id="designerDone">✓ Done</button></div><div id="sceneHint">Drag to look around · Open Designer to shape your ground</div></div>
+</style></head><body class="menu-open"><main class="app" inert><header><div class="brand"><small>PROTOTYPE 35.0</small><strong>GROUNDS</strong></div><label class="district-picker" for="districtSelect"><span>Setting</span><select id="districtSelect"><option value="starter-park-edge">Rural Village</option><option value="starter-housing-estate">1970s Town</option><option value="starter-industrial-rail">Railway Works</option><option value="mid-market-town-aligned">British City</option><option value="top-city-redevelopment">Modern Harbour</option></select></label><div class="header-actions"><button id="careerBackButton" hidden>▦ Career</button><button id="homeButton" aria-label="Return to start menu">⌂ Menu</button><button id="nightButton" aria-pressed="false">☾ Night</button><button id="designButton" class="primary" aria-pressed="false">✎ Designer</button></div></header><nav class="toolbar" aria-label="Scene controls"><div class="view-actions"><button id="isoButton" aria-pressed="true">Stadium</button><button id="topButton" aria-pressed="false">Plan</button><button id="settingsButton" aria-label="Display settings" aria-expanded="false">⚙</button></div><div class="zoom"><button id="zoomOut" aria-label="Zoom out">−</button><span id="zoomValue">100%</span><button id="zoomIn" aria-label="Zoom in">+</button><button id="fitButton">Fit</button></div></nav><div class="event-bar" id="eventBar"><label>Scene <select id="eventScene"><option value="regular">Regular</option><option value="pre">Pre-event</option><option value="football">Football</option><option value="concert">Concert · Carly XOX</option></select></label><label id="crowdControl">Crowd <select id="crowdLevel"><option value="small">Small · 25%</option><option value="medium">Medium · 66%</option><option value="sellout">Sellout · 100%</option></select></label><span id="eventStatus">Quiet neighbourhood</span></div><div class="capacity-bar" aria-live="polite"><strong id="capacityTotal"></strong><span id="capacityDetail"></span></div><div class="stage" id="canvasFrame"><div id="careerWeatherBadge" class="career-weather-badge" hidden></div><canvas id="gameCanvas" tabindex="0" aria-label="Stadium view. Enter Designer to edit sections."></canvas><div class="designer-scene-actions"><button id="designerCareer" hidden>▦ Career</button><button id="designerNight">☾ Night</button><button id="designerFit">Fit</button><button id="designerDone">✓ Done</button></div><div id="sceneHint">Drag to look around · Open Designer to shape your ground</div></div>
 <section class="designer" id="designerPanel" aria-label="Stadium designer" hidden><div class="designer-inner"><div class="mode-tabs" role="group" aria-label="Designer mode"><button data-mode="stands" aria-pressed="true">Stands</button><button data-mode="grounds" aria-pressed="false">Outside</button><button data-mode="boards" aria-pressed="false">Sponsors</button><button data-mode="position" aria-pressed="false">Position</button></div><div id="conflictPanel" class="conflicts" hidden><div id="conflictText"></div><button id="moveConflicts">Move items</button><button id="removeConflicts">Remove conflicting items</button><button id="returnStands">Back to stands</button></div><div class="history-controls"><button id="undoButton">↶ Undo</button><button id="redoButton">↷ Redo</button><button id="rotateStadium">↻ Rotate 90°</button></div><div id="positionControls" hidden><div id="positionStatus" role="status"></div><div class="position-pad"><button id="moveNorth" aria-label="Move north one square">↗</button><button id="moveWest" aria-label="Move west one square">↖</button><button id="moveSouth" aria-label="Move south one square">↙</button><button id="moveEast" aria-label="Move east one square">↘</button></div><div class="position-tools"><button id="positionPanToggle" aria-pressed="false" title="Pan view">✥ Pan</button><button id="positionZoomOut" aria-label="Zoom out">−</button><button id="positionZoomIn" aria-label="Zoom in">+</button><button id="positionFit" title="Centre view">Fit</button><button id="positionRotate" title="Rotate stadium 90 degrees">↻ Rotate</button><button id="placementMenu" hidden title="Return to main menu">⌂</button></div><div class="position-actions"><button id="positionConfirm" class="primary">✓ Confirm</button><button id="positionCancel">✕ Cancel</button></div><div id="positionNotice">Move or rotate the preview, then Confirm. Each step is one grid square.</div></div><div id="standControls"><div id="careerBuildPreview" class="career-build-preview" hidden></div><div class="selection-bar"><strong id="selectionTitle">Tap a stand or corner</strong><span class="selection-hint">Tap again to deselect</span></div><div class="control-grid"><button class="category-up" id="categoryUp" aria-label="Previous category">▲</button><button id="previous" aria-label="Previous option">◀</button><div class="option-readout" aria-live="polite"><span id="categoryLabel">Seating & tiers</span><strong id="optionLabel">Choose a section</strong><span id="optionCount">Preview before confirming</span></div><button id="next" aria-label="Next option">▶</button><button class="category-down" id="categoryDown" aria-label="Next category">▼</button><div class="commit"><button class="primary" id="confirmButton" aria-label="Confirm changes">✓<small>Confirm</small></button><button class="cancel" id="cancelButton" aria-label="Cancel changes">✕<small>Cancel</small></button></div></div><div id="previewState">Left / right: options · Up / down: category</div><details id="sectionDetails"><summary>Select sections by name</summary><div class="selection-tools"><button data-select="N">North</button><button data-select="S">South</button><button data-select="W">West</button><button data-select="E">East</button><button data-select="CORNERS">Corners</button><button data-select="ALL">All</button><button data-select="CLEAR">Clear</button></div><div id="sectionPicker" class="section-grid"></div></details><div class="status-row"><span>Seating → rear building → roof → colours</span><span id="saveStatus">Saved on this device</span></div></div><div id="groundsControls" class="extra-controls" hidden><div class="extra-row"><button id="decorPrevious" aria-label="Previous decoration">◀</button><strong id="decorLabel"></strong><button id="decorNext" aria-label="Next decoration">▶</button></div><div id="decorStatus" class="extra-status" aria-live="polite"></div><div class="extra-row"><button id="decorRotate">Rotate</button><button id="decorMove">Move</button><button id="decorRemove">Remove</button></div><div class="extra-row"><button id="decorConfirm" class="primary">✓ Confirm</button><button id="decorCancel">✕ Cancel</button></div></div><div id="boardControls" class="extra-controls" hidden><div class="extra-row"><button id="boardPrevious" aria-label="Previous sponsor set">◀</button><strong id="boardLabel"></strong><button id="boardNext" aria-label="Next sponsor set">▶</button></div><p class="extra-status">Fictional sponsors · boards leave both goals clear</p><div class="extra-row"><button id="boardConfirm" class="primary">✓ Confirm</button><button id="boardCancel">✕ Cancel</button></div></div></div></section></main>
 <aside class="settings" id="settingsPanel" hidden><h2>Display & design</h2><label><input type="checkbox" id="waterMotion">Gentle water motion</label><label><input type="checkbox" id="ambient">Town activity</label><label><input type="checkbox" id="flyovers">Occasional flyovers</label><label><input type="checkbox" id="eventMotion">Event animation</label><label><input type="checkbox" id="lowAngle">Flatter 3:1 camera</label><label><input type="checkbox" id="showLabels">Section labels</label><label><input type="checkbox" id="showGrid">Site grid</label><label><input type="checkbox" id="showEnvironment" checked>Town backdrop</label><p>Changes save after ✓ Confirm. Display options do not change your stadium.</p><div class="row"><button id="saveButton">Save now</button><button id="resetButton">Reset ground</button><button id="closeSettings">Close</button></div></aside><div id="toast" class="toast" role="status" hidden></div><div id="startMenu" class="start-menu" role="dialog" aria-modal="true" aria-labelledby="menuTitle">
   <div class="menu-shade"></div><div class="menu-vignette"></div>
@@ -206,8 +206,8 @@ body.placement-open #positionPanToggle[aria-pressed=true]{background:#d7e9d6;col
   // One world model, two renderers. No live-site dependencies.
   // ---------------------------------------------------------------------------
 
-  const STORAGE_KEY = "stadium-workshop-layered-v27";
-  const LEGACY_STORAGE_KEY = "stadium-workshop-layered-v26";
+  const STORAGE_KEY = "stadium-workshop-layered-v35";
+  const LEGACY_STORAGE_KEY = "stadium-workshop-layered-v35";
 
   // Locked low-angle production projection. The square world grid is unchanged;
   // only its screen projection is flatter, closer to the FIFA Soccer Manager reference.
@@ -327,135 +327,73 @@ body.placement-open #positionPanToggle[aria-pressed=true]{background:#d7e9d6;col
   const ui={zoomValue:$("zoomValue"),saveStatus:$("saveStatus")};
   const categories=["stand","rear","roof","coverage","seats","exterior"];
   const categoryNames={stand:"Seating & tiers",rear:"Rear building",roof:"Roof structure",coverage:"Roof coverage",seats:"Seat colour",exterior:"Exterior finish"};
-  // District contract: registered artwork plus authored routes in nominal image pixels.
-  // A second district can replace this definition without changing stadium geometry.
-  // Fixed artwork registration. All coordinates below are authored against 1586×992 images.
-  // No roads are drawn at runtime. The full 64×64 buildable square lies inside each clear plaza.
-  const SHARED_SITE={minX:4,maxX:68,minY:-2,maxY:62};
-  const SHARED_PLACEMENT={minX:6,maxX:66,minY:0,maxY:60,accessRows:[0,58]};
-  const REGISTRATION={width:1586,height:992,origin:[810,492],tile:[9.2,4.6],worldAnchor:[36,30]};
-  const row=(a,b,n)=>Array.from({length:n},(_,i)=>[a[0]+(b[0]-a[0])*i/Math.max(1,n-1),a[1]+(b[1]-a[1])*i/Math.max(1,n-1)]);
-  const coachBays=row([106,539],[425,701],6);
-  const carBays=row([1387,399],[1529,470],6);
-  const COMMON={registration:REGISTRATION,site:SHARED_SITE,placement:SHARED_PLACEMENT,
-    road:{a:[-60,541],b:[1140,-59],junctions:[.14,.36,.71],laneOffset:1.05,speed:2.35,stopSeconds:.8},
-    walkingRoutes:[{a:[248,530],b:[635,724],layer:'front'},{a:[865,209],b:[1265,409],layer:'back'},{a:[350,403],b:[670,243],layer:'back'}],
-    walkers:Array.from({length:24},(_,i)=>({route:i%3,phase:((i*.61803398875+.13)%1)*950,speedFactor:.85+(i%7)*.05,pause:1.3+(i%4)*.6})),pedestrianSpeed:.44,
-    pubGroup:[],hospitality:{a:[280,341],b:[360,301],count:36},parking:{kind:'authored-bays',cars:carBays,coaches:coachBays,carDirection:[0,-1],coachDirection:[0,-1]}};
-  const TERRACE_DISTRICT={...COMMON,id:'terrace-park',name:'Terrace & Park',art:{day:'assets/district.png',night:'assets/district-night.png'},pubGroup:[[296,328],[302,331],[308,323],[315,326]]};
-  const RIVERSIDE_DISTRICT={...COMMON,id:'modern-riverside',name:'Modern Riverside',art:{day:'assets/riverside-day.png',night:'assets/riverside-night.png'},hospitality:{a:[405,256],b:[494,212],count:28},
-    walkingRoutes:[COMMON.walkingRoutes[0],COMMON.walkingRoutes[2],{a:[950,953],b:[1555,650],layer:'front'}],
-    walkers:Array.from({length:36},(_,i)=>({route:i<22?2:i%2,phase:((i*.61803398875+.13)%1)*950,speedFactor:.82+(i%9)*.047,pause:1+(i%6)*.4})),
-    water:{mask:[[1120,992],[1586,759],[1586,992]],flow:[-3,1.5],bounds:[1030,755,560,240]}};
-  const NORDIC_DISTRICT={...COMMON,id:'nordic-town',name:'Nordic Town',registration:{...REGISTRATION,origin:[792,502],tile:[9.4,4.7]},art:{day:'assets/nordic-day.png',night:'assets/nordic-night.png'},
-    hospitality:{a:[461,264],b:[550,220],count:30},parking:{...COMMON.parking,cars:[...row([1381,402],[1498,461],5),...row([1462,365],[1565,417],5)]},
-    walkingRoutes:[{a:[228,528],b:[623,725],layer:'front'},{a:[854,217],b:[1244,412],layer:'back'},{a:[350,404],b:[670,244],layer:'back'}]};
-  const SEASIDE_DISTRICT={...COMMON,id:'european-seaside',name:'European Seaside',registration:{...REGISTRATION,origin:[784,461],tile:[9,4.5]},art:{day:'assets/seaside-day.png',night:'assets/seaside-night.png'},
-    road:{...COMMON.road,a:[-40,462],b:[1020,-15],junctions:[.12,.39,.77]},
-    hospitality:{a:[316,280],b:[415,236],count:30},
-    parking:{...COMMON.parking,coaches:row([138,580],[444,733],6),cars:[...row([1193,245],[1477,387],9),...row([1242,210],[1526,352],9)]},
-    walkingRoutes:[{a:[269,545],b:[654,737],layer:'front'},{a:[902,242],b:[1220,401],layer:'back'},{a:[1018,830],b:[1510,584],layer:'front'}],
-    walkers:Array.from({length:36},(_,i)=>({route:i<22?2:i%2,phase:((i*.61803398875+.31)%1)*950,speedFactor:.85+(i%7)*.05,pause:1+(i%5)*.45})),
-    water:{mask:[[1240,992],[1586,819],[1586,992]],flow:[-2.3,1.15],bounds:[1190,815,400,180]}};
-  const WOODLAND_DISTRICT={...COMMON,id:'woodland-ground',name:'Woodland Ground',
-    registration:{...REGISTRATION,origin:[805,490],tile:[14.6,7.3]},
-    site:{minX:16,maxX:56,minY:10,maxY:50},placement:{minX:16,maxX:56,minY:10,maxY:50,accessRows:[10,48]},
-    art:{day:'assets/woodland-day.png',night:'assets/woodland-night.png'},
-    road:{a:[-50,502],b:[1000,-23],junctions:[.14],laneOffset:.65,speed:1.9,stopSeconds:.8},
-    walkingRoutes:[{a:[182,508],b:[730,782],layer:'front'},{a:[880,169],b:[1430,444],layer:'back'},{a:[204,426],b:[760,148],layer:'back'}],
-    walkers:Array.from({length:16},(_,i)=>({route:i%3,phase:((i*.61803398875+.17)%1)*950,speedFactor:.85+(i%7)*.05,pause:1.3+(i%4)*.6})),
-    hospitality:{a:[335,720],b:[375,740],count:12},
-    parking:{...COMMON.parking,cars:row([149,552],[326,641],6),coaches:[],carDirection:[0,-1]},prePeople:70,preStalls:4};
-  const TIGHT_SITE={minX:18,maxX:54,minY:12,maxY:48};
-  const TIGHT_PLACEMENT={minX:18,maxX:54,minY:12,maxY:48,accessRows:[12,46]};
-  const BACKWOODS_DISTRICT={...WOODLAND_DISTRICT,id:'backwoods-ground',name:'Backwoods Ground',
-    registration:{...REGISTRATION,origin:[800,495],tile:[16.8,8.4]},
-    site:TIGHT_SITE,placement:TIGHT_PLACEMENT,art:{day:'assets/backwoods-day.png',night:'assets/backwoods-night.png'},
-    road:{a:[-50,502],b:[1000,-23],junctions:[.15],laneOffset:.65,speed:1.9,stopSeconds:.8},
-    walkingRoutes:[{a:[170,500],b:[800,845],layer:'front'},{a:[860,135],b:[1445,430],layer:'back'},{a:[220,425],b:[700,180],layer:'back'}],
-    parking:{...COMMON.parking,cars:[[138,561],[214,601],[288,640]],coaches:[],carDirection:[0,-1]},
-    hospitality:{a:[465,732],b:[535,766],count:6},prePeople:42,preStalls:2};
-  const RAILWAY_DISTRICT={...WOODLAND_DISTRICT,id:'railway-works',name:'Railway Works',
-    registration:{...REGISTRATION,origin:[800,495],tile:[16.8,8.4]},
-    site:TIGHT_SITE,placement:TIGHT_PLACEMENT,art:{day:'assets/railway-day.png',night:'assets/railway-night.png'},
-    road:{a:[-55,477],b:[940,-21],junctions:[.11],laneOffset:.65,speed:1.9,stopSeconds:.8},
-    walkingRoutes:[{a:[140,485],b:[800,845],layer:'front'},{a:[875,135],b:[1435,410],layer:'back'},{a:[180,285],b:[710,20],layer:'back'}],
-    parking:{...COMMON.parking,cars:[[112,574],[174,605],[238,636],[302,667]],coaches:[],carDirection:[0,-1]},
-    hospitality:{a:[380,705],b:[450,740],count:7},prePeople:48,preStalls:3};
-  // New Career plates are registered against their own 1774×887 pixel grid.
-  // Roads and pavements are authored in those pixels; no road is invented by the renderer.
-  const NEW_SITE_BOUNDS={
-    starter:{site:{minX:18,maxX:54,minY:12,maxY:48},tile:[10.7,5.35],people:18},
-    mid:{site:{minX:11,maxX:61,minY:5,maxY:55},tile:[10,5],people:26},
-    top:{site:{minX:4,maxX:68,minY:-2,maxY:62},tile:[9.5,4.75],people:34}
+  // v35 sites share one explicit isometric road graph. Art is registered at
+  // 1774×887; the pitch and all routes use the same centred projection.
+  const STORAGE_SITE_ORIGIN=[887,443];
+  const GRID_PIXEL=(x,y)=>[887+(x-y)*3.8,443+(x+y)*1.9];
+  const REGISTRATION={width:1774,height:887,origin:STORAGE_SITE_ORIGIN,tile:[6,3],worldAnchor:[36,30]};
+  const SITE_SPECS={
+    low:{site:{minX:15,maxX:57,minY:14,maxY:46},people:18},
+    mid:{site:{minX:6,maxX:66,minY:6,maxY:54},people:26},
+    top:{site:{minX:-2,maxX:74,minY:0,maxY:60},people:34}
   };
-  function pavementLine(a,b,offset,start,end){
-    const dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy),nx=dy/length,ny=-dx/length;
-    return {a:[a[0]+dx*start+nx*offset,a[1]+dy*start+ny*offset],b:[a[0]+dx*end+nx*offset,a[1]+dy*end+ny*offset],layer:'front'};
+  const SIDE_EDGES={
+    low:[ [[-35,-28],[35,-28]],[[35,-28],[35,28]],[[35,28],[-35,28]],[[-35,28],[-35,-28]] ],
+    mid:[ [[-64,-51],[64,-51]],[[64,-51],[64,51]],[[64,51],[-64,51]],[[-64,51],[-64,-51]] ],
+    top:[ [[-64,-51],[64,-51]],[[64,-51],[64,51]],[[64,51],[-64,51]] ]
+  };
+  function makeRouteGraph(tier){
+    const nodes=new Map(),edges=[];
+    const raw=SIDE_EDGES[tier],endpoints=raw.flatMap(([a,b])=>[a,b]);
+    const split=[];
+    for(const [a,b] of raw){
+      const hits=endpoints.filter(p=>(b[0]-a[0])*(p[1]-a[1])===(b[1]-a[1])*(p[0]-a[0])&&
+        p[0]>=Math.min(a[0],b[0])&&p[0]<=Math.max(a[0],b[0])&&
+        p[1]>=Math.min(a[1],b[1])&&p[1]<=Math.max(a[1],b[1]));
+      hits.sort((p,q)=>(p[0]-a[0])**2+(p[1]-a[1])**2-((q[0]-a[0])**2+(q[1]-a[1])**2));
+      for(let i=1;i<hits.length;i++)if(hits[i].join(',')!==hits[i-1].join(','))split.push([hits[i-1],hits[i]]);
+    }
+    for(const [a,b] of split){
+      const ak=a.join(','),bk=b.join(',');
+      if(!nodes.has(ak))nodes.set(ak,{id:ak,world:a,point:GRID_PIXEL(...a),links:[]});
+      if(!nodes.has(bk))nodes.set(bk,{id:bk,world:b,point:GRID_PIXEL(...b),links:[]});
+      const edge={id:edges.length,a:ak,b:bk};edges.push(edge);
+      nodes.get(ak).links.push(edge.id);nodes.get(bk).links.push(edge.id);
+    }
+    return {nodes,edges};
   }
-  function newSite(id,name,tier,origin,routeA,routeB,walks,transit=null){
-    const spec=NEW_SITE_BOUNDS[tier],site=spec.site;
-    const vehicles=[
-      {id:'car-west',kind:'car',points:routeA,speed:86,colour:'#4e98cf',start:0},
-      {id:'car-east',kind:'car',points:routeB,speed:79,colour:'#e9bd53',start:0.018}
-    ];
-    if(transit)vehicles.push({...transit,speed:transit.kind==='tram'?68:72,colour:transit.kind==='tram'?'#4b91c6':'#397eb0'});
-    return {...COMMON,id,name,registration:{width:1774,height:887,origin,tile:spec.tile,worldAnchor:[36,30]},
-      site,placement:{...site,accessRows:[site.minY,site.maxY-2]},
+  const ROUTE_GRAPHS=Object.fromEntries(['low','mid','top'].map(t=>[t,makeRouteGraph(t)]));
+  function newSite(id,name,tier){
+    const spec=SITE_SPECS[tier];
+    return {id,name,tier,registration:REGISTRATION,site:spec.site,
+      placement:{...spec.site,accessRows:[spec.site.minY,spec.site.maxY-2]},
       art:{day:`assets/career-sites/${id}-day.webp`,night:`assets/career-sites/${id}-night.webp`},
-      traffic:{vehicles,junctionWait:.75,clearance:36},
-      walkingRoutes:id==='mid-open-waterfront'?[pavementLine(routeA[0],routeA[1],80,.12,.88),...walks.slice(1).map(([a,b,layer])=>({a,b,layer:layer||'front'}))]:[
-        pavementLine(routeA[0],routeA[1],85,.1,.8),pavementLine(routeA[1],routeA[2],65,.2,.89),pavementLine(routeA[1],routeA[2],-65,.12,.8)
-      ],
-      walkers:Array.from({length:spec.people},(_,i)=>({route:i%walks.length,phase:((i*.61803398875+.13)%1)*950,speedFactor:.88+(i%7)*.05,pause:1+(i%4)*.5})),
-      pedestrianSpeed:.51,
-      parking:{...COMMON.parking,cars:[],coaches:[]},pubGroup:[],prePeople:tier==='starter'?54:tier==='mid'?100:160};
-  }
-  // This pilot plate is drawn from the same 2:1 projection as the stadium grid.
-  const marketPixel=(x,y)=>[887+(x-y-6)*10,443+(x+y-66)*5];
-  function alignedMarketSite(){
-    const road=[marketPixel(4,-2),marketPixel(68,-2),marketPixel(68,62),marketPixel(4,62),marketPixel(4,-2)];
-    const reverse=[marketPixel(68,-2),marketPixel(4,-2),marketPixel(4,62),marketPixel(68,62),marketPixel(68,-2)];
-    const d=newSite('mid-market-town-aligned','Market Town · aligned pilot','mid',[887,443],road,reverse,[[marketPixel(11,4),marketPixel(61,4),'back']],null);
-    d.registration={...d.registration,origin:[887,443],tile:[10,5]};
-    d.traffic={junctionWait:.9,clearance:34,vehicles:[
-      {id:'market-car-a',kind:'car',points:road,speed:88,colour:'#4e98cf',start:.06},
-      {id:'market-car-b',kind:'car',points:reverse,speed:82,colour:'#e9bd53',start:.45},
-      {id:'market-bus',kind:'bus',points:road,speed:69,colour:'#397eb0',start:.24,stopPoint:marketPixel(68,35),stopSeconds:2.3}
-    ]};
-    d.walkingRoutes=[
-      {a:marketPixel(11,4),b:marketPixel(61,4),layer:'back'},
-      {a:marketPixel(62,5),b:marketPixel(62,55),layer:'front'},
-      {a:marketPixel(61,56),b:marketPixel(11,56),layer:'front'},
-      {a:marketPixel(10,55),b:marketPixel(10,5),layer:'front'}
-    ];
-    d.walkers=Array.from({length:26},(_,i)=>({route:i%4,phase:((i*.61803398875+.13)%1)*950,speedFactor:.88+(i%7)*.05,pause:1+(i%4)*.5}));
-    return d;
+      graph:ROUTE_GRAPHS[tier],traffic:{junctionWait:.6},pedestrianSpeed:.52,
+      walkers:Array.from({length:spec.people},(_,i)=>({phase:(i*.61803398875+.13)%1,speedFactor:.85+(i%7)*.05})),
+      parking:{kind:'authored-bays',cars:[],coaches:[],carDirection:[0,-1],coachDirection:[0,-1]},
+      pubGroup:[],hospitality:{a:[280,341],b:[360,301],count:16},
+      prePeople:tier==='low'?54:tier==='mid'?100:160,
+      ...(tier==='top'?{water:{mask:[[930,887],[1774,480],[1774,887]],flow:[-2,1],bounds:[930,480,844,407]}}:{})
+    };
   }
   const newDistricts=[
-    alignedMarketSite(),
-    newSite('starter-park-edge','Park Edge','starter',[895,440],[[-80,345],[900,805],[1810,350]],[[1810,350],[900,805],[-80,345]],[[[110,400],[680,660],'front'],[[1050,690],[1590,420],'front'],[[950,120],[1510,390],'back']]),
-    newSite('starter-industrial-rail','Industrial & Rail','starter',[840,450],[[-80,285],[920,770],[1810,315]],[[1810,315],[920,770],[-80,285]],[[[115,360],[670,630],'front'],[[1010,700],[1550,435],'front'],[[760,205],[1330,480],'back']]),
-    newSite('starter-housing-estate','Housing Estate','starter',[885,445],[[-80,355],[880,820],[1810,350]],[[1810,350],[880,820],[-80,355]],[[[110,415],[680,695],'front'],[[1010,735],[1600,435],'front'],[[800,180],[1300,420],'back']]),
-    newSite('mid-market-town','Market Town','mid',[900,435],[[-70,350],[955,810],[1805,395]],[[1805,395],[955,810],[-70,350]],[[[65,420],[590,655],'front'],[[1130,705],[1630,455],'front'],[[620,215],[1030,15],'back']],
-      {id:'market-bus',kind:'bus',points:[[480,290],[730,165],[1120,-30]],start:.06,stopPoint:[865,100],stopSeconds:2.2}),
-    newSite('mid-canal-works','Canal Works','mid',[875,450],[[-70,360],[940,810],[1810,365]],[[1810,365],[940,810],[-70,360]],[[[95,420],[670,675],'front'],[[1080,745],[1640,465],'front'],[[870,150],[1430,430],'back']]),
-    newSite('mid-sports-park','Suburban Sports Park','mid',[900,450],[[-70,350],[985,820],[1810,410]],[[1810,410],[985,820],[-70,350]],[[[110,420],[700,690],'front'],[[1090,740],[1610,470],'front'],[[780,185],[1360,475],'back']]),
-    newSite('mid-open-waterfront','Open Waterfront','mid',[905,440],[[-70,425],[440,170],[990,-105]],[[990,-105],[440,170],[-70,425]],[[[120,480],[620,735],'front'],[[950,715],[1490,445],'front'],[[610,270],[1250,590],'back']],
-      {id:'waterfront-tram',kind:'tram',points:[[-85,425],[430,170],[980,-105]],start:.02,stopPoint:[510,130],stopSeconds:2.6}),
-    newSite('top-city-redevelopment','City Redevelopment','top',[890,440],[[-90,345],[1110,805],[1810,460]],[[1810,460],[1110,805],[-90,345]],[[[140,390],[740,640],'front'],[[1180,745],[1620,520],'front'],[[680,145],[1350,415],'back']]),
-    newSite('top-riverside','Riverside District','top',[880,445],[[-70,355],[990,805],[1805,400]],[[1805,400],[990,805],[-70,355]],[[[120,425],[740,675],'front'],[[1120,760],[1640,500],'front'],[[930,155],[1500,435],'back']]),
-    newSite('top-outskirts-campus','Outskirts Campus','top',[870,445],[[-70,345],[1000,810],[1810,410]],[[1810,410],[1000,810],[-70,345]],[[[130,430],[750,690],'front'],[[1150,755],[1660,500],'front'],[[910,185],[1480,450],'back']],
-      {id:'campus-bus',kind:'bus',points:[[750,925],[1180,705],[1840,375]],start:.02,stopPoint:[1045,775],stopSeconds:2.3})
+    newSite('starter-park-edge','Rural Village','low'),
+    newSite('starter-housing-estate','1970s Town','low'),
+    newSite('starter-industrial-rail','Railway Works','low'),
+    newSite('mid-market-town-aligned','British City','mid'),
+    newSite('top-city-redevelopment','Modern Harbour','top')
   ];
-  const DISTRICTS={'woodland-ground':WOODLAND_DISTRICT,'backwoods-ground':BACKWOODS_DISTRICT,'railway-works':RAILWAY_DISTRICT,'terrace-park':TERRACE_DISTRICT,'modern-riverside':RIVERSIDE_DISTRICT,'nordic-town':NORDIC_DISTRICT,'european-seaside':SEASIDE_DISTRICT,
-    ...Object.fromEntries(newDistricts.map(d=>[d.id,d]))};
-  let DISTRICT=TERRACE_DISTRICT;
-  let trafficActors=[],junctionOwners=new Map();
-  function districtImage(path){const img=new Image();img.onerror=()=>{if(path.startsWith('assets/')&&!img._triedRoot){img._triedRoot=true;img.src=path.slice(7);}else notify('District artwork unavailable: '+path);};img.src=path;return img;}
-  const districtImages=Object.fromEntries(Object.entries(DISTRICTS).map(([id,d])=>[id,{day:districtImage(d.art.day),night:districtImage(d.art.night)}]));
+  const DISTRICTS=Object.fromEntries(newDistricts.map(d=>[d.id,d]));
+  let DISTRICT=DISTRICTS['starter-park-edge'];
+  let trafficActors=[],pedestrianActors=[];
+  function districtImage(path){const img=new Image();img.onerror=()=>notify('District artwork unavailable: '+path);img.src=path;return img;}
+  const districtImages=Object.fromEntries(newDistricts.map(d=>[d.id,{day:districtImage(d.art.day),night:districtImage(d.art.night)}]));
   let backdrop=districtImages[DISTRICT.id].day,nightBackdrop=districtImages[DISTRICT.id].night;
-  function activateDistrict(id){DISTRICT=DISTRICTS[id]||TERRACE_DISTRICT;backdrop=districtImages[DISTRICT.id].day;nightBackdrop=districtImages[DISTRICT.id].night;resetTraffic();}
+  function activateDistrict(id){
+    DISTRICT=DISTRICTS[id]||DISTRICTS['starter-park-edge'];
+    backdrop=districtImages[DISTRICT.id].day;nightBackdrop=districtImages[DISTRICT.id].night;
+    resetTraffic();
+  }
   let scene = {x:0,y:0,scale:1};
   const pan = {x:0,y:0};
   const sectionList = makeSections();
@@ -465,7 +403,7 @@ body.placement-open #positionPanToggle[aria-pressed=true]{background:#d7e9d6;col
     {id:'oak',label:'Mature oak · 4×4',w:4,h:4},{id:'birch',label:'Birch grove · 6×4',w:6,h:4},{id:'park',label:'Pocket park · 6×6',w:6,h:6},{id:'fountain',label:'Civic fountain · 4×4',w:4,h:4},{id:'water',label:'Water garden · 6×4',w:6,h:4},{id:'fiveaside',label:'Five-a-side pitch · 8×6',w:8,h:6},{id:'entrance',label:'Landscaped entrance · 8×4',w:8,h:4},{id:'courtyard',label:'Industrial courtyard · 6×6',w:6,h:6}];
   const BOARD_SETS=[{label:'No boards'},{label:'Local partners',colours:['#28726b','#ac483d','#25466d'],names:['NORTH END COFFEE','TOWNLINE','WORKSHOP SPORT']},{label:'Club colours',colours:['#a93336','#eee0bd','#343e4b'],names:['STADIUM WORKSHOP','HOME GROUND','YOUR TOWN']},{label:'Bright matchday',colours:['#2860a4','#7b4894','#ad6824'],names:['KICKOFF','HALF TIME','CORNER SHOP']}];
   let state = {
-    offset:{x:0,y:0},positionDraft:null,eventScene:"regular",crowdLevel:"medium",flyovers:!matchMedia("(prefers-reduced-motion: reduce)").matches,eventMotion:!matchMedia("(prefers-reduced-motion: reduce)").matches,rotation:0, district:"woodland-ground", groundSlots:{}, waterMotion:!matchMedia("(prefers-reduced-motion: reduce)").matches, mode:"stands", decorations:[], decorDraft:null, decorCell:null, decorType:0, movingId:null, sponsor:1, sponsorDraft:null,
+    offset:{x:0,y:0},positionDraft:null,eventScene:"regular",crowdLevel:"medium",flyovers:!matchMedia("(prefers-reduced-motion: reduce)").matches,eventMotion:!matchMedia("(prefers-reduced-motion: reduce)").matches,rotation:0, district:"starter-park-edge", groundSlots:{}, waterMotion:!matchMedia("(prefers-reduced-motion: reduce)").matches, mode:"stands", decorations:[], decorDraft:null, decorCell:null, decorType:0, movingId:null, sponsor:1, sponsorDraft:null,
     view: "iso",
     ambient:!matchMedia("(prefers-reduced-motion: reduce)").matches, night:false, designer:false, multi:true, category:0, patch:{},
     lowAngle: false,
@@ -531,7 +469,7 @@ body.placement-open #positionPanToggle[aria-pressed=true]{background:#d7e9d6;col
     return base;
   }
   function starterForDistrict(s,id){
-    if(id==='woodland-ground')return woodlandStarterState(s);
+    if(id==='starter-park-edge')return woodlandStarterState(s);
     if(id==='backwoods-ground'||id==='railway-works'||id.startsWith('starter-')){
       const base={...defaultSectionState(),stand:'grass',roof:'none',rear:'compact',coverage:'full',exterior:id.includes('industrial')||id==='railway-works'?'brick':'metal'};
       if(s.kind==='corner')return {...base,stand:'empty'};
@@ -1766,91 +1704,61 @@ function drawSteppedAisle(section,u,spec){
   let ambientTime=0,flyoverTime=0,lastAnimationTime=null,animationRequest=0;
   function imageWorld(p){const r=DISTRICT.registration,a=(p[0]-r.origin[0])/r.tile[0],b=(p[1]-r.origin[1])/r.tile[1];return{x:r.worldAnchor[0]+(a+b)/2,y:r.worldAnchor[1]+(b-a)/2,z:0};}
   function worldDistance(a,b){return Math.hypot(b.x-a.x,b.y-a.y);}
-  function pathDistance(points){return points.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p[0]-points[i][0],p[1]-points[i][1]),0);}
-  function pathPosition(points,distance){
-    let left=Math.max(0,distance);
-    for(let i=1;i<points.length;i++){
-      const a=points[i-1],b=points[i],length=Math.hypot(b[0]-a[0],b[1]-a[1]);
-      if(left<=length||i===points.length-1){const u=Math.min(1,left/Math.max(length,1));return {point:[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u],direction:[(b[0]-a[0])/length,(b[1]-a[1])/length]};}
-      left-=length;
-    }
-  }
-  function distanceToWaypoint(points,index){return pathDistance(points.slice(0,index+1));}
-  function nearestPathDistance(points,target){
-    let best=Infinity,along=0,result=0;
-    for(let i=1;i<points.length;i++){
-      const a=points[i-1],b=points[i],vx=b[0]-a[0],vy=b[1]-a[1],len2=vx*vx+vy*vy;
-      const u=Math.max(0,Math.min(1,((target[0]-a[0])*vx+(target[1]-a[1])*vy)/len2));
-      const error=(a[0]+u*vx-target[0])**2+(a[1]+u*vy-target[1])**2;
-      if(error<best){best=error;result=along+u*Math.sqrt(len2);}
-      along+=Math.sqrt(len2);
-    }
-    return result;
+  // v35 graph movement: actors are always on a declared road edge. Pedestrians
+  // follow that same edge with a pavement offset. At nodes they choose a linked
+  // edge; no arbitrary point-to-point shortcuts cross plots or harbour water.
+  function graphActor(index,pedestrian=false){
+    const g=DISTRICT.graph,edges=g.edges;
+    const edge=edges[(index*3+(pedestrian?1:0))%edges.length];
+    return {id:(pedestrian?'walker-':'vehicle-')+index,edge:edge.id,
+      from:index%2?edge.b:edge.a,to:index%2?edge.a:edge.b,
+      progress:(index*.173)%1,side:index%2?1:-1,
+      speed:pedestrian?12+(index%4)*2:66+(index%3)*7,
+      kind:pedestrian?'person':index===3&&DISTRICT.tier!=='low'?'bus':'car',
+      colour:pedestrian?['#de7155','#507fae','#996ca9','#d2a351','#65a091'][index%5]:['#4e98cf','#e9bd53','#d37d60','#397eb0'][index%4],
+      wait:0,pedestrian};
   }
   function resetTraffic(){
-    junctionOwners=new Map();
-    trafficActors=(DISTRICT.traffic?.vehicles||[]).map(v=>({
-      ...v,length:pathDistance(v.points),distance:0,wait:0,junctionDone:false,stopDone:false,
-      junctionAt:Math.max(1,distanceToWaypoint(v.points,1)-18),junctionRelease:distanceToWaypoint(v.points,1)+DISTRICT.traffic.clearance,
-      stopAt:v.stopPoint?nearestPathDistance(v.points,v.stopPoint):Infinity,state:'driving',junction:v.junction||'main'
-    }));
-    // Starting outside the plate avoids a cluster appearing on the junction at load.
-    trafficActors.forEach(v=>v.distance=Math.min(v.length-1,(v.start||0)*v.length));
+    trafficActors=Array.from({length:DISTRICT.tier==='low'?3:5},(_,i)=>graphActor(i));
+    pedestrianActors=Array.from({length:DISTRICT.walkers.length},(_,i)=>graphActor(i,true));
+  }
+  function advanceGraphActor(actor,dt){
+    if(actor.wait>0){actor.wait=Math.max(0,actor.wait-dt);return;}
+    const g=DISTRICT.graph,a=g.nodes.get(actor.from).point,b=g.nodes.get(actor.to).point;
+    const length=Math.hypot(b[0]-a[0],b[1]-a[1]);
+    actor.progress+=actor.speed*dt/length;
+    if(actor.progress<1)return;
+    const arrived=actor.to,node=g.nodes.get(arrived);
+    let choices=node.links.filter(id=>id!==actor.edge);
+    if(!choices.length)choices=node.links;
+    // Stable variety without random jumps between disconnected road pieces.
+    const nextId=choices[(Math.floor(ambientTime/3)+Number(actor.id.match(/\d+$/)[0]))%choices.length];
+    const edge=g.edges[nextId];
+    actor.from=arrived;actor.to=edge.a===arrived?edge.b:edge.a;
+    actor.edge=nextId;actor.progress=0;
+    if(!actor.pedestrian&&node.links.length>2)actor.wait=DISTRICT.traffic.junctionWait;
+    if(actor.pedestrian&&node.links.length===1)actor.wait=.4;
   }
   function advanceTraffic(dt){
-    if(!trafficActors.length)return;
-    const pause=DISTRICT.traffic.junctionWait;
-    for(const v of trafficActors){
-      if(v.state==='waiting'||v.state==='stopping'){
-        v.wait=Math.max(0,v.wait-dt);
-        if(v.wait>0)continue;
-        if(v.state==='stopping'){v.state='driving';v.stopDone=true;}
-        else if(junctionOwners.has(v.junction)&&junctionOwners.get(v.junction)!==v){continue;}
-        else{junctionOwners.set(v.junction,v);v.state='crossing';v.junctionDone=true;}
-      }
-      let travel=v.speed*dt;
-      if(!v.junctionDone&&v.distance<v.junctionAt&&v.distance+travel>=v.junctionAt){travel=v.junctionAt-v.distance;v.state='waiting';v.wait=pause;}
-      else if(!v.stopDone&&v.distance<v.stopAt&&v.distance+travel>=v.stopAt){travel=v.stopAt-v.distance;v.state='stopping';v.wait=v.stopSeconds||2.2;}
-      v.distance+=travel;
-      if(v.state==='crossing'&&v.distance>=v.junctionRelease){junctionOwners.delete(v.junction);v.state='driving';}
-      if(v.distance>=v.length){
-        if(junctionOwners.get(v.junction)===v)junctionOwners.delete(v.junction);
-        v.distance=0;v.junctionDone=false;v.stopDone=false;v.state='driving';v.wait=0;
-      }
-    }
+    for(const actor of trafficActors)advanceGraphActor(actor,dt);
+    for(const actor of pedestrianActors)advanceGraphActor(actor,dt);
   }
-  function trafficPose(v){
-    const p=pathPosition(v.points,v.distance),lane=[p.point[0]+p.direction[1]*7,p.point[1]-p.direction[0]*7],ahead=imageWorld([lane[0]+p.direction[0]*3,lane[1]+p.direction[1]*3]),world=imageWorld(lane);
+  function graphPose(actor){
+    const g=DISTRICT.graph,a=g.nodes.get(actor.from).point,b=g.nodes.get(actor.to).point;
+    const dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy)||1;
+    const offset=actor.pedestrian?actor.side*16.5:actor.side*5;
+    const pixel=[a[0]+dx*actor.progress-dy/length*offset,
+      a[1]+dy*actor.progress+dx/length*offset];
+    const world=imageWorld(pixel),ahead=imageWorld([pixel[0]+dx/length*3,pixel[1]+dy/length*3]);
     const magnitude=worldDistance(world,ahead)||1;
-    return {...world,dx:(ahead.x-world.x)/magnitude,dy:(ahead.y-world.y)/magnitude,layer:'back',kind:v.kind,colour:v.colour,stopped:v.state==='waiting'||v.state==='stopping',id:v.id};
+    return {...world,dx:(ahead.x-world.x)/magnitude,dy:(ahead.y-world.y)/magnitude,
+      layer:actor.pedestrian&&pixel[1]>443?'front':'back',kind:actor.kind,
+      colour:actor.colour,stopped:actor.wait>0,moving:actor.wait<=0,
+      phase:ambientTime*5+Number(actor.id.match(/\d+$/)[0])*2,id:actor.id};
   }
-  window.stadiumTrafficDebug=()=>trafficActors.map(v=>({id:v.id,kind:v.kind,state:v.state,distance:v.distance,junctionAt:v.junctionAt,stopAt:v.stopAt,point:pathPosition(v.points,v.distance).point}));
-  function carPose(t,reverse,phase){
-    const quietRoad=DISTRICT.road;
-    const a=imageWorld(reverse?quietRoad.b:quietRoad.a),b=imageWorld(reverse?quietRoad.a:quietRoad.b),length=worldDistance(a,b);
-    const dx=(b.x-a.x)/length,dy=(b.y-a.y)/length;
-    const speed=quietRoad.speed,stops=quietRoad.junctions.map(j=>(reverse?1-j:j)*length-2).filter(v=>v>0&&v<length).sort((a,b)=>a-b);
-    const cycle=length/speed+stops.length*quietRoad.stopSeconds;
-    let remaining=((t+phase*cycle)%cycle+cycle)%cycle,u=0,stopped=false;
-    for(const end of [...stops,length]){const travel=(end-u)/speed;if(remaining<travel){u+=remaining*speed;remaining=0;break;}remaining-=travel;u=end;if(end!==length){if(remaining<quietRoad.stopSeconds){stopped=true;remaining=0;break;}remaining-=quietRoad.stopSeconds;}}
-
-    // Screen/ground y increases downwards. (dy,-dx) is the LEFT lane in this world convention.
-    const offset=quietRoad.laneOffset;
-    return {x:a.x+dx*u+dy*offset,y:a.y+dy*u-dx*offset,z:0,dx,dy,layer:'back',kind:'car',stopped,speed:stopped?0:speed,colour:reverse?'#e9bd53':'#4e98cf',distance:u,length,centre:{x:a.x+dx*u,y:a.y+dy*u},laneOffset:offset};
-  }
-  function pedestrianPose(t,index){
-    const walkingRoutes=DISTRICT.walkingRoutes,walkers=DISTRICT.walkers;
-    const route=walkingRoutes[walkers[index].route],a=imageWorld(route.a),b=imageWorld(route.b),length=worldDistance(a,b),speed=DISTRICT.pedestrianSpeed*(walkers[index].speedFactor||1),travel=length/speed,pause=walkers[index].pause??3;
-    const cycle=2*(travel+pause),q=(t+walkers[index].phase)%cycle;
-    let u,dir,moving;
-    if(q<travel){u=q*speed;dir=1;moving=true;}else if(q<travel+pause){u=length;dir=-1;moving=false;}
-    else if(q<2*travel+pause){u=length-(q-travel-pause)*speed;dir=-1;moving=true;}else{u=0;dir=1;moving=false;}
-    const dx=(b.x-a.x)/length,dy=(b.y-a.y)/length;
-    // Opposing walkers have a small personal-space offset, still within the pavement.
-    const offset=dir*.17+((index*7)%5-2)*.05;
-    return {x:a.x+dx*u+dy*offset,y:a.y+dy*u-dx*offset,z:0,dx:dx*dir,dy:dy*dir,layer:route.layer,kind:'person',colour:['#de7155','#507fae','#996ca9','#d2a351','#65a091','#be7390'][index%6],phase:t*5+index*2,moving};
-  }
-  function ambientPoses(t){return [...(DISTRICT.traffic?trafficActors.map(trafficPose):[carPose(t,false,.30),carPose(t,true,.22)]),...Array.from({length:DISTRICT.walkers.length},(_,i)=>pedestrianPose(t,i)),...DISTRICT.pubGroup.map((p,i)=>({...imageWorld(p),dx:i%2?1:-1,dy:0,layer:"back",kind:"person",colour:["#90739d","#b9664e","#547f94","#7a9563"][i],phase:0,moving:false,social:true}))];}
+  window.stadiumTrafficDebug=()=>trafficActors.map(v=>({id:v.id,edge:v.edge,from:v.from,to:v.to,progress:v.progress,point:graphPose(v)}));
+  window.stadiumRouteGraph=()=>({tier:DISTRICT.tier,edges:DISTRICT.graph.edges.map(e=>({id:e.id,a:DISTRICT.graph.nodes.get(e.a).point,b:DISTRICT.graph.nodes.get(e.b).point})),walkers:pedestrianActors.length});
+  function ambientPoses(t){return [...trafficActors.map(graphPose),...pedestrianActors.map(graphPose)];}
   function carPoint(o,a,b,z){return{x:o.x+o.dx*a-o.dy*b,y:o.y+o.dy*a+o.dx*b,z};}
   function carBox(o,L,W,z0,z1,top,side){
     const corners=[[-L/2,-W/2],[L/2,-W/2],[L/2,W/2],[-L/2,W/2]];
@@ -2053,10 +1961,10 @@ function drawSteppedAisle(section,u,spec){
   }
   function hospitalityCrowd(){
     if(activeScene()!=='pre')return [];
-    // Hand-authored visible pavement strips, in backdrop coordinates; never follow the stadium.
-    const {a,b,count:n}=DISTRICT.hospitality;
-    return Array.from({length:n},(_,i)=>{const f=(i+.3+hashNumber(i+88)*.4)/n,off=(hashNumber(i+261)-.5)*9;
-      return {...imageWorld([a[0]+(b[0]-a[0])*f+off*.45,a[1]+(b[1]-a[1])*f+off]),kind:'person',layer:'back',colour:['#b86d56','#517baa','#d6b558','#769664'][i%4],phase:0,moving:false};});
+    const g=DISTRICT.graph,e=g.edges[0],a=g.nodes.get(e.a).point,b=g.nodes.get(e.b).point,n=DISTRICT.hospitality.count;
+    const dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy)||1;
+    return Array.from({length:n},(_,i)=>{const f=(i+.3+hashNumber(i+88)*.4)/n;
+      return {...imageWorld([a[0]+dx*f-dy/length*16.5,a[1]+dy*f+dx/length*16.5]),kind:'person',layer:'back',colour:['#b86d56','#517baa','#d6b558','#769664'][i%4],phase:0,moving:false};});
   }
   function eventPersonPose(o,t){
     const length=Math.hypot(o.end.x-o.x,o.end.y-o.y);if(length<.01)return {...o,phase:0,moving:false};
@@ -2406,7 +2314,7 @@ function drawSteppedAisle(section,u,spec){
   $('positionFit').onclick=()=>{pan.x=0;pan.y=0;setZoom(1);};
   $('placementMenu').onclick=exitCareerToMenu;
   $('undoButton').onclick=()=>{if(playMode!=='career')historyStep(undoStack,redoStack);};$('redoButton').onclick=()=>{if(playMode!=='career')historyStep(redoStack,undoStack);};$('rotateStadium').onclick=rotateStadium;
-  function groundSlot(id){return ({'woodland-ground':'woodland','backwoods-ground':'backwoods','railway-works':'railway'})[id]||'main';}
+  function groundSlot(id){return id;}
   function switchDistrict(id){
     if(playMode==='career'){notify('Career ground is fixed until relocation');return;}
     discardPreview();state.selected.clear();state.positionDraft=null;state.decorDraft=null;state.decorCell=null;state.sponsorDraft=null;state.movingId=null;
@@ -2491,7 +2399,7 @@ function drawSteppedAisle(section,u,spec){
   }
   function loadSavedDesign(){
     try{
-      const raw=localStorage.getItem(STORAGE_KEY)||localStorage.getItem(LEGACY_STORAGE_KEY)||localStorage.getItem('stadium-workshop-layered-v25')||localStorage.getItem('stadium-workshop-layered-v23');if(!raw)return;
+      const raw=localStorage.getItem(STORAGE_KEY);if(!raw)return;
       const saved=JSON.parse(raw);if(!saved.sections)return;
       state.night=!!saved.night;
       if(saved.groundSlots&&typeof saved.groundSlots==='object')for(const key of ['woodland','backwoods','railway','main']){
@@ -2555,12 +2463,11 @@ function drawSteppedAisle(section,u,spec){
 
   // Demo scenes are temporary in-memory views; the player's design and save are untouched.
   const menuScenes=[
-    {district:'woodland-ground',eventScene:'football',night:false,label:'Woodland Ground · matchday'},
-    {district:'backwoods-ground',eventScene:'football',night:true,label:'Backwoods Ground · under the lights'},
-    {district:'railway-works',eventScene:'pre',night:false,label:'Railway Works · arrivals'},
-    {district:'modern-riverside',eventScene:'pre',night:false,label:'Modern Riverside · arrivals'},
-    {district:'nordic-town',eventScene:'football',night:true,label:'Nordic Town · under the lights'},
-    {district:'european-seaside',eventScene:'concert',night:true,label:'European Seaside · concert night'},
+    {district:'starter-park-edge',eventScene:'football',night:false,label:'Rural Village · matchday'},
+    {district:'starter-housing-estate',eventScene:'pre',night:false,label:'1970s Town · arrivals'},
+    {district:'starter-industrial-rail',eventScene:'football',night:true,label:'Railway Works · under the lights'},
+    {district:'mid-market-town-aligned',eventScene:'football',night:false,label:'British City · matchday'},
+    {district:'top-city-redevelopment',eventScene:'pre',night:false,label:'Modern Harbour · arrivals'},
   ];
   let menuOpen=false,menuSaved=null,menuIndex=0,menuTimer=0,menuFadeTimer=0;
   function showcase(i){
@@ -2603,9 +2510,9 @@ function drawSteppedAisle(section,u,spec){
   window.stadiumMenuDebug=()=>({open:menuOpen,index:menuIndex,scene:menuScenes[menuIndex],savedDistrict:menuSaved?.state.district,saveKey:STORAGE_KEY});
 
   // Career is an independent save. Sandbox state is restored whenever Career is left.
-  const CAREER_KEY='grounds-career-v1';
+  const CAREER_KEY='grounds-career-v2';
   const CAREER_TIERS=['Div 3','Div 2','Div 1','Championship','Premier Division'];
-  const CAREER_GROUNDS=[['starter-park-edge','starter-industrial-rail','starter-housing-estate'],['mid-market-town','mid-market-town-aligned','mid-canal-works','mid-sports-park','mid-open-waterfront'],['mid-market-town','mid-market-town-aligned','mid-canal-works','mid-sports-park','mid-open-waterfront'],['top-city-redevelopment','top-riverside','top-outskirts-campus']];
+  const CAREER_GROUNDS=[['starter-park-edge','starter-housing-estate','starter-industrial-rail'],['mid-market-town-aligned'],['mid-market-town-aligned'],['top-city-redevelopment']];
   const CAREER_PLACES=['Aldermere','Brackton','Casterwick','Dunbury','Eastmere','Farnwick','Glenford','Hartfell','Iverton','Kirkhaven','Larchford','Moorbridge','Northwick','Oakminster','Pentridge','Quarryford','Ravenmere','Southford','Tarnborough','Upton Vale','Vennford','Westmere','Wickford','Yarrowby','Ashwick'];
   const CAREER_ENDINGS=['Athletic','United','Rovers','Town'];
   const escapeCareer=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
