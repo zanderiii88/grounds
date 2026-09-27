@@ -1,12 +1,12 @@
-# GROUNDS v35.5 — Marked district traffic routes
+# GROUNDS v35.6 — Left-hand traffic and city buses
 
-Upload the contents of this ZIP to the root of the existing GitHub Pages repository. Include the new `vehicle-paths.js` file with `index.html`. The service worker and in-game version number are 35.5.
+Upload the contents of this ZIP to the root of the existing GitHub Pages repository. Include `vehicle-paths.js` with `index.html`. The service worker and in-game version number are 35.6.
 
-- Moving cars follow the blue routes and buses follow the red routes drawn on the nine annotated daytime site maps. Each site's daytime and nighttime art uses the same paths.
-- Vehicles travel along complete authored paths rather than choosing another branch at every tiny junction. Route availability is specific to each site. Civic Gardens runs buses without cars, and Rail District has no moving cars or buses.
-- Rail District and Civic Gardens show many more pedestrians; other districts with light traffic have additional people too. Mid and top tier districts have more moving vehicles on their marked routes.
-- Moving buses have a taller body, windows, and a clearer roof profile.
+- Red bus routes and blue car routes now carry vehicles in the direction indicated by the marked line's position on the left side of the road. Vehicles no longer alternate directions along the same line.
+- Four ambiguous extracted car branches that crossed to the other side partway through were removed. The other marked routes remain available in both day and night views.
+- Moving buses now resemble tall, single-deck city buses with a broad dark window band, windscreen, wheels, a flat roof and left-side doors. Their orange colour follows the supplied reference.
+- The v35.5 pedestrian levels remain: Rail District is pedestrianised with no moving cars or buses; Civic Gardens has buses and no moving cars.
 
-This update changes movement and leaves the artwork and stadium placement registration as they were. Some annotated routes end within an image; a vehicle re-enters on its next assigned trip after reaching an endpoint. The earlier seat colour picker and pre-season stadium adjustment requests remain queued.
+The map artwork and stadium placement registration are unchanged. Some annotated routes terminate within the image, so vehicles re-enter for another trip after reaching a route endpoint. Seat colour selection and pre-season stadium editing remain planned for a later release.
 
-Career and Sandbox saves retain `grounds-career-v2` and `stadium-workshop-layered-v35`. Earlier `grounds-career-v1` and `stadium-workshop-layered-v27` records are not removed. Uploading files does not replace an existing local save.
+Career and Sandbox saves retain `grounds-career-v2` and `stadium-workshop-layered-v35`. Earlier `grounds-career-v1` and `stadium-workshop-layered-v27` records are not removed.

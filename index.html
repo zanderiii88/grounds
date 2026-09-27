@@ -211,7 +211,7 @@ body.placement-open #positionPanToggle[aria-pressed=true]{background:#d7e9d6;col
 <aside class="settings" id="settingsPanel" hidden><h2>Display & design</h2><label><input type="checkbox" id="waterMotion">Gentle water motion</label><label><input type="checkbox" id="ambient">Town activity</label><label><input type="checkbox" id="flyovers">Occasional flyovers</label><label><input type="checkbox" id="eventMotion">Event animation</label><label><input type="checkbox" id="lowAngle">Flatter 3:1 camera</label><label><input type="checkbox" id="showLabels">Section labels</label><label><input type="checkbox" id="showGrid">Site grid</label><label><input type="checkbox" id="showEnvironment" checked>Town backdrop</label><p>Changes save after ✓ Confirm. Display options do not change your stadium.</p><div class="row"><button id="saveButton">Save now</button><button id="resetButton">Reset ground</button><button id="closeSettings">Close</button></div></aside><div id="toast" class="toast" role="status" hidden></div><div id="startMenu" class="start-menu" role="dialog" aria-modal="true" aria-labelledby="menuTitle">
   <div class="menu-shade"></div><div class="menu-vignette"></div>
   <div class="menu-panel">
-    <p class="menu-kicker">A STADIUM BUILDING GAME <span>·</span> <span id="menuVersion">v35.5</span></p>
+    <p class="menu-kicker">A STADIUM BUILDING GAME <span>·</span> <span id="menuVersion">v35.6</span></p>
     <div class="girder-frame"><h1 id="menuTitle" class="girder-title">GROUNDS</h1></div>
     <p class="menu-subtitle">Every club starts somewhere.</p>
     <nav class="menu-actions" aria-label="Main menu">
@@ -1742,14 +1742,13 @@ function drawSteppedAisle(section,u,spec){
       wait:0,pedestrian};
   }
   function vehicleActor(kind,index,paths){
-    const route=paths[index%paths.length],reverse=index%2===1;
-    const points=reverse?route.slice().reverse():route;
+    const points=paths[index%paths.length];
     const lengths=[0];
     for(let j=1;j<points.length;j++)lengths.push(lengths[j-1]+Math.hypot(points[j][0]-points[j-1][0],points[j][1]-points[j-1][1]));
     const total=lengths[lengths.length-1];
     return {id:kind+'-'+index,kind,points,lengths,total,distance:(index*.173%1)*total,
-      speed:kind==='bus'?42+(index%2)*4:55+(index%3)*5,
-      colour:kind==='bus'?['#e9e8da','#406c9d','#d4b55b'][index%3]:['#4e98cf','#e9bd53','#d37d60','#397eb0'][index%4],
+      speed:kind==='bus'?43:56,
+      colour:kind==='bus'?'#efa313':['#4e98cf','#e9bd53','#d37d60','#397eb0'][index%4],
       layer:'back',stopped:false,moving:true,phase:0};
   }
   function resetTraffic(){
@@ -1862,13 +1861,42 @@ function drawSteppedAisle(section,u,spec){
     return [...cars,...coaches].sort((a,b)=>a.x+a.y-b.x-b.y);
   }
   function drawCoach(o){
-    const dark=state.night?-28:0;
-    for(const a of [-2.5,2.4])for(const b of [-.82,.82]){const p=isoProject(carPoint(o,a,b,.4));ctx.fillStyle='#29343f';ctx.beginPath();ctx.ellipse(p.x,p.y,2.3*scene.scale,3.2*scene.scale,0,0,Math.PI*2);ctx.fill();}
-    carBox(o,8.3,2.15,.5,3.7,shade(o.colour,dark+8),shade(o.colour,dark-12));
-    carBox(o,7.8,2.18,2.05,3.4,state.night?'#26354d':'#7896a9',state.night?'#334862':'#39586a');
-    carBox(o,8.3,2.15,3.4,3.7,shade(o.colour,dark+14),shade(o.colour,dark));
-    for(let a=-3.4;a<3.4;a+=1.0)for(const b of [-1.1,1.1])line([carPoint(o,a,b,2.05),carPoint(o,a,b,3.4)],shade(o.colour,dark),Math.max(.6,scene.scale));
-    for(const b of [-.55,.55]){const p=isoProject(carPoint(o,4.18,b,1.2));ctx.fillStyle='#eee8bf';ctx.fillRect(p.x-scene.scale,p.y-scene.scale,2*scene.scale,1.4*scene.scale);}
+    // Full-height single-deck city bus, with left-side doors and a dark continuous glazing band.
+    const dark=state.night?-24:0,body=shade(o.colour,dark),trim=shade(o.colour,dark-22);
+    const visibleSide=o.dy>o.dx?-1.085:1.085;
+    const s=scene.scale;
+    const shadow=isoProject(o);ctx.fillStyle='rgba(12,23,25,.25)';ctx.beginPath();ctx.ellipse(shadow.x,shadow.y,18*s,5*s,0,0,Math.PI*2);ctx.fill();
+    for(const a of [-2.8,2.6])for(const b of [-.88,.88]){
+      const p=isoProject(carPoint(o,a,b,.42));ctx.fillStyle='#202832';ctx.beginPath();ctx.ellipse(p.x,p.y,2.7*s,3.5*s,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#a3a9a7';ctx.beginPath();ctx.ellipse(p.x,p.y,1.4*s,1.9*s,0,0,Math.PI*2);ctx.fill();
+    }
+    carBox(o,8.3,2.15,.5,3.75,body,trim);
+    const glass=state.night?'#263544':'#30383d';
+    // Window panels are inset in the upright flank, leaving a strong coloured lower body.
+    for(let a=-3.75;a<3.35;a+=1.18){
+      const right=Math.min(a+1.12,3.55),b=visibleSide+(visibleSide>0?.015:-.015);
+      poly([carPoint(o,a,b,2.04),carPoint(o,right,b,2.04),carPoint(o,right,b,3.37),carPoint(o,a,b,3.37)],glass);
+      line([carPoint(o,right,b,2.04),carPoint(o,right,b,3.37)],body,Math.max(.8,s));
+    }
+    // The entrance and centre exit sit on the left (kerb) side in UK traffic.
+    if(visibleSide<0)for(const a of [1.95,-1.25]){
+      const b=-1.11;
+      poly([carPoint(o,a,b,.59),carPoint(o,a+1.08,b,.59),carPoint(o,a+1.08,b,3.24),carPoint(o,a,b,3.24)],'#292e31');
+      line([carPoint(o,a+.54,b,.65),carPoint(o,a+.54,b,3.22)],'#6a7273',Math.max(.8,s));
+    }
+    const frontVisible=o.dx+o.dy>0,faceA=frontVisible?4.17:-4.17;
+    if(frontVisible){
+      poly([carPoint(o,faceA,-.95,1.7),carPoint(o,faceA,.95,1.7),carPoint(o,faceA,.95,3.31),carPoint(o,faceA,-.95,3.31)],glass);
+      line([carPoint(o,faceA,-.98,3.34),carPoint(o,faceA,.98,3.34)],'#1d252b',Math.max(1,s));
+      for(const b of [-.72,.72]){
+        const p=isoProject(carPoint(o,faceA,b,1.06));ctx.fillStyle=state.night?'#fff3bd':'#f9ecc9';ctx.fillRect(p.x-1.4*s,p.y-.8*s,2.8*s,1.6*s);
+      }
+    }else for(const b of [-.72,.72]){
+      const p=isoProject(carPoint(o,faceA,b,1.05));ctx.fillStyle='#b73d29';ctx.fillRect(p.x-1.2*s,p.y-.7*s,2.4*s,1.4*s);
+    }
+    // A flat roof and small roof hatch finish the city-bus silhouette.
+    carBox(o,8.3,2.15,3.54,3.78,shade(o.colour,dark+13),trim);
+    poly([carPoint(o,-.8,-.65,3.81),carPoint(o,.6,-.65,3.81),carPoint(o,.6,.65,3.81),carPoint(o,-.8,.65,3.81)],shade(o.colour,dark+25));
   }
   function drawTram(o){
     const dark=state.night?-25:0;
@@ -3022,7 +3050,7 @@ function drawSteppedAisle(section,u,spec){
 
   let installPrompt=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;});
   $('installApp').addEventListener('click',async()=>{if(installPrompt){await installPrompt.prompt();installPrompt=null;return;}alert('In Chrome, open the ⋮ menu and choose “Install app” or “Add to Home screen”. If it offers only a Chrome shortcut, check that you opened the HTTPS GitHub Pages address and that index.html, manifest.webmanifest, sw.js and the icon PNGs are all at the repository root.');});
-  const APP_VERSION='35.5';let updateReady=false,availableVersion=null;
+  const APP_VERSION='35.6';let updateReady=false,availableVersion=null;
   $('menuVersion').textContent='v'+APP_VERSION;
   $('checkAppUpdate').addEventListener('click',async()=>{
     if(updateReady){const url=new URL('./',location.href);url.searchParams.set('version',availableVersion);url.searchParams.set('refresh',Date.now());location.assign(url.href);return;}
