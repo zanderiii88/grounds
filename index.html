@@ -211,7 +211,7 @@ body.placement-open #positionPanToggle[aria-pressed=true]{background:#d7e9d6;col
 <aside class="settings" id="settingsPanel" hidden><h2>Display & design</h2><label><input type="checkbox" id="waterMotion">Gentle water motion</label><label><input type="checkbox" id="ambient">Town activity</label><label><input type="checkbox" id="flyovers">Occasional flyovers</label><label><input type="checkbox" id="eventMotion">Event animation</label><label><input type="checkbox" id="lowAngle">Flatter 3:1 camera</label><label><input type="checkbox" id="showLabels">Section labels</label><label><input type="checkbox" id="showGrid">Site grid</label><label><input type="checkbox" id="showEnvironment" checked>Town backdrop</label><p>Changes save after ✓ Confirm. Display options do not change your stadium.</p><div class="row"><button id="saveButton">Save now</button><button id="resetButton">Reset ground</button><button id="closeSettings">Close</button></div></aside><div id="toast" class="toast" role="status" hidden></div><div id="startMenu" class="start-menu" role="dialog" aria-modal="true" aria-labelledby="menuTitle">
   <div class="menu-shade"></div><div class="menu-vignette"></div>
   <div class="menu-panel">
-    <p class="menu-kicker">A STADIUM BUILDING GAME <span>·</span> <span id="menuVersion">v35.4</span></p>
+    <p class="menu-kicker">A STADIUM BUILDING GAME <span>·</span> <span id="menuVersion">v35.5</span></p>
     <div class="girder-frame"><h1 id="menuTitle" class="girder-title">GROUNDS</h1></div>
     <p class="menu-subtitle">Every club starts somewhere.</p>
     <nav class="menu-actions" aria-label="Main menu">
@@ -230,6 +230,7 @@ body.placement-open #positionPanToggle[aria-pressed=true]{background:#d7e9d6;col
     <button data-career-tab="calendar"><span>▦</span>Calendar</button><button data-career-tab="stadium"><span>▰</span>Stadium</button><button data-career-tab="grounds"><span>♣</span>Grounds</button><button data-career-tab="operations"><span>▤</span>Operations</button><button data-career-tab="club"><span>⚑</span>Club</button>
   </nav><button id="careerEye" aria-label="Hide navigation" aria-pressed="true" hidden><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12s3.7-6 10-6 10 6 10 6-3.7 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>
 </div><section id="eventScreen" class="event-screen" role="dialog" aria-modal="true" aria-label="Live event and result" hidden><div id="eventPanel" class="event-panel"></div></section><div id="careerPlacement" class="career-placement" hidden><strong>Place your permanent home</strong><span>Drag the pitch or use the arrows · Pan the scene · Confirm to lock this site</span></div>
+<script src="vehicle-paths.js"></script>
 <script>
 (() => {
   "use strict";
@@ -388,7 +389,7 @@ body.placement-open #positionPanToggle[aria-pressed=true]{background:#d7e9d6;col
       placement:{...spec.site,accessRows:[spec.site.minY,spec.site.maxY-2]},
       art:{day:`assets/career-sites/${id}-day.webp`,night:`assets/career-sites/${id}-night.webp`},
       graph:ROUTE_GRAPHS[id],traffic:{junctionWait:.6},pedestrianSpeed:.52,
-      walkers:Array.from({length:spec.people},(_,i)=>({phase:(i*.61803398875+.13)%1,speedFactor:.85+(i%7)*.05})),
+      walkers:Array.from({length:id==='top-rail-district'?115:id==='top-civic-gardens'?90:id==='top-city-redevelopment'?80:id==='starter-industrial-rail'?30:spec.people},(_,i)=>({phase:(i*.61803398875+.13)%1,speedFactor:.85+(i%7)*.05})),
       parking:{kind:'authored-bays',cars:[],coaches:[],carDirection:[0,-1],coachDirection:[0,-1]},
       pubGroup:[],hospitality:{a:[280,341],b:[360,301],count:16},
       prePeople:tier==='low'?54:tier==='mid'?130:250,
@@ -1740,10 +1741,43 @@ function drawSteppedAisle(section,u,spec){
       colour:pedestrian?['#de7155','#507fae','#996ca9','#d2a351','#65a091'][index%5]:['#4e98cf','#e9bd53','#d37d60','#397eb0'][index%4],
       wait:0,pedestrian};
   }
-  function trafficCount(){return DISTRICT.tier==='low'?5:DISTRICT.tier==='mid'?9:14;}
+  function vehicleActor(kind,index,paths){
+    const route=paths[index%paths.length],reverse=index%2===1;
+    const points=reverse?route.slice().reverse():route;
+    const lengths=[0];
+    for(let j=1;j<points.length;j++)lengths.push(lengths[j-1]+Math.hypot(points[j][0]-points[j-1][0],points[j][1]-points[j-1][1]));
+    const total=lengths[lengths.length-1];
+    return {id:kind+'-'+index,kind,points,lengths,total,distance:(index*.173%1)*total,
+      speed:kind==='bus'?42+(index%2)*4:55+(index%3)*5,
+      colour:kind==='bus'?['#e9e8da','#406c9d','#d4b55b'][index%3]:['#4e98cf','#e9bd53','#d37d60','#397eb0'][index%4],
+      layer:'back',stopped:false,moving:true,phase:0};
+  }
   function resetTraffic(){
-    trafficActors=Array.from({length:trafficCount()},(_,i)=>graphActor(i));
+    const routes=VEHICLE_PATHS[DISTRICT.id]||{car:[],bus:[]};
+    const multiplier=DISTRICT.tier==='low'?1:DISTRICT.tier==='mid'?2:3;
+    trafficActors=[];
+    for(const kind of ['car','bus']){
+      const paths=routes[kind].filter(path=>path.length>4);
+      if(!paths.length)continue;
+      const count=kind==='car'?Math.max(paths.length*2,4*multiplier):Math.max(2,2*multiplier);
+      for(let i=0;i<count;i++)trafficActors.push(vehicleActor(kind,i,paths));
+    }
     pedestrianActors=Array.from({length:DISTRICT.walkers.length},(_,i)=>graphActor(i,true));
+  }
+  function advanceVehicle(actor,dt){
+    actor.distance+=actor.speed*dt;
+    if(actor.distance>actor.total)actor.distance%=actor.total;
+  }
+  function vehiclePose(actor){
+    const {points,lengths,total}=actor;
+    let j=1;while(j<lengths.length-1&&lengths[j]<actor.distance)j++;
+    const a=points[j-1],b=points[j],part=(actor.distance-lengths[j-1])/(lengths[j]-lengths[j-1]||1);
+    const pixel=[a[0]+(b[0]-a[0])*part,a[1]+(b[1]-a[1])*part];
+    const world=imageWorld(pixel),ahead=imageWorld([pixel[0]+(b[0]-a[0])*.1,pixel[1]+(b[1]-a[1])*.1]);
+    const magnitude=worldDistance(world,ahead)||1;
+    return {...world,dx:(ahead.x-world.x)/magnitude,dy:(ahead.y-world.y)/magnitude,
+      layer:pixel[1]>443?'front':'back',kind:actor.kind,colour:actor.colour,
+      stopped:false,moving:true,phase:ambientTime*5+Number(actor.id.match(/\d+$/)[0])*2,id:actor.id};
   }
   function advanceGraphActor(actor,dt){
     if(actor.wait>0){actor.wait=Math.max(0,actor.wait-dt);return;}
@@ -1775,7 +1809,7 @@ function drawSteppedAisle(section,u,spec){
     }
   }
   function advanceTraffic(dt){
-    for(const actor of trafficActors)advanceGraphActor(actor,dt);
+    for(const actor of trafficActors)advanceVehicle(actor,dt);
     for(const actor of pedestrianActors)advanceGraphActor(actor,dt);
   }
   function graphPose(actor){
@@ -1793,9 +1827,9 @@ function drawSteppedAisle(section,u,spec){
       colour:actor.colour,stopped:actor.wait>0,moving:actor.wait<=0,
       phase:ambientTime*5+Number(actor.id.match(/\d+$/)[0])*2,id:actor.id};
   }
-  window.stadiumTrafficDebug=()=>trafficActors.map(v=>({id:v.id,edge:v.edge,from:v.from,to:v.to,progress:v.progress,point:graphPose(v)}));
+  window.stadiumTrafficDebug=()=>trafficActors.map(v=>({id:v.id,path:v.points,progress:v.distance/v.total,point:vehiclePose(v)}));
   window.stadiumRouteGraph=()=>({tier:DISTRICT.tier,edges:DISTRICT.graph.edges.map(e=>({id:e.id,a:DISTRICT.graph.nodes.get(e.a).point,b:DISTRICT.graph.nodes.get(e.b).point})),walkers:pedestrianActors.length});
-  function ambientPoses(t){return [...trafficActors.map(graphPose),...pedestrianActors.map(graphPose)];}
+  function ambientPoses(t){return [...trafficActors.map(vehiclePose),...pedestrianActors.map(graphPose)];}
   function carPoint(o,a,b,z){return{x:o.x+o.dx*a-o.dy*b,y:o.y+o.dy*a+o.dx*b,z};}
   function carBox(o,L,W,z0,z1,top,side){
     const corners=[[-L/2,-W/2],[L/2,-W/2],[L/2,W/2],[-L/2,W/2]];
@@ -1830,11 +1864,11 @@ function drawSteppedAisle(section,u,spec){
   function drawCoach(o){
     const dark=state.night?-28:0;
     for(const a of [-2.5,2.4])for(const b of [-.82,.82]){const p=isoProject(carPoint(o,a,b,.4));ctx.fillStyle='#29343f';ctx.beginPath();ctx.ellipse(p.x,p.y,2.3*scene.scale,3.2*scene.scale,0,0,Math.PI*2);ctx.fill();}
-    carBox(o,7.2,1.7,.5,3.2,shade(o.colour,dark+8),shade(o.colour,dark-12));
-    carBox(o,6.7,1.74,1.8,2.9,state.night?'#26354d':'#7896a9',state.night?'#334862':'#39586a');
-    carBox(o,7.2,1.7,2.9,3.2,shade(o.colour,dark+14),shade(o.colour,dark));
-    for(let a=-2.9;a<3;a+=.85)for(const b of [-.876,.876])line([carPoint(o,a,b,1.8),carPoint(o,a,b,2.9)],shade(o.colour,dark),Math.max(.6,scene.scale));
-    for(const b of [-.55,.55]){const p=isoProject(carPoint(o,3.63,b,.9));ctx.fillStyle='#eee8bf';ctx.fillRect(p.x-scene.scale,p.y-scene.scale,2*scene.scale,1.4*scene.scale);}
+    carBox(o,8.3,2.15,.5,3.7,shade(o.colour,dark+8),shade(o.colour,dark-12));
+    carBox(o,7.8,2.18,2.05,3.4,state.night?'#26354d':'#7896a9',state.night?'#334862':'#39586a');
+    carBox(o,8.3,2.15,3.4,3.7,shade(o.colour,dark+14),shade(o.colour,dark));
+    for(let a=-3.4;a<3.4;a+=1.0)for(const b of [-1.1,1.1])line([carPoint(o,a,b,2.05),carPoint(o,a,b,3.4)],shade(o.colour,dark),Math.max(.6,scene.scale));
+    for(const b of [-.55,.55]){const p=isoProject(carPoint(o,4.18,b,1.2));ctx.fillStyle='#eee8bf';ctx.fillRect(p.x-scene.scale,p.y-scene.scale,2*scene.scale,1.4*scene.scale);}
   }
   function drawTram(o){
     const dark=state.night?-25:0;
@@ -2988,7 +3022,7 @@ function drawSteppedAisle(section,u,spec){
 
   let installPrompt=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;});
   $('installApp').addEventListener('click',async()=>{if(installPrompt){await installPrompt.prompt();installPrompt=null;return;}alert('In Chrome, open the ⋮ menu and choose “Install app” or “Add to Home screen”. If it offers only a Chrome shortcut, check that you opened the HTTPS GitHub Pages address and that index.html, manifest.webmanifest, sw.js and the icon PNGs are all at the repository root.');});
-  const APP_VERSION='35.4';let updateReady=false,availableVersion=null;
+  const APP_VERSION='35.5';let updateReady=false,availableVersion=null;
   $('menuVersion').textContent='v'+APP_VERSION;
   $('checkAppUpdate').addEventListener('click',async()=>{
     if(updateReady){const url=new URL('./',location.href);url.searchParams.set('version',availableVersion);url.searchParams.set('refresh',Date.now());location.assign(url.href);return;}

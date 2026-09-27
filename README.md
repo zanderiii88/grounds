@@ -1,12 +1,12 @@
-# GROUNDS v35.4 — Club roles and riveted title
+# GROUNDS v35.5 — Marked district traffic routes
 
-Upload the contents of this ZIP to the root of the existing GitHub Pages repository. The service worker and in-game version number are updated to 35.4.
+Upload the contents of this ZIP to the root of the existing GitHub Pages repository. Include the new `vehicle-paths.js` file with `index.html`. The service worker and in-game version number are 35.5.
 
-- New Career setup has four optional responsibilities: matchday operations, pitch care, venue bookings, and club partnerships. All are selected by default. Unticked tasks are handled by staff; the choices can later be changed on the Club screen.
-- When delegated, staff set standard ticket prices and food stock, simulate home events through the calendar, maintain the pitch when needed, decide venue bookings while protecting confirmed community events, and accept available partnership funding. Final event reports remain available.
-- The Club President's welcome letter now names the club and describes the player's selected and delegated responsibilities.
-- The main GROUNDS title has a metallic girder finish, seams and rivet detailing.
-- Operations shows the per-stand start, half-time and current stock table during an event. The final report and half-time stock transfer remain available.
-- v35.3 site registration and movement routes remain in place. The illustrated roads may still show local geometric differences; these images were not redrawn for this release.
+- Moving cars follow the blue routes and buses follow the red routes drawn on the nine annotated daytime site maps. Each site's daytime and nighttime art uses the same paths.
+- Vehicles travel along complete authored paths rather than choosing another branch at every tiny junction. Route availability is specific to each site. Civic Gardens runs buses without cars, and Rail District has no moving cars or buses.
+- Rail District and Civic Gardens show many more pedestrians; other districts with light traffic have additional people too. Mid and top tier districts have more moving vehicles on their marked routes.
+- Moving buses have a taller body, windows, and a clearer roof profile.
 
-Career and Sandbox saves retain `grounds-career-v2` and `stadium-workshop-layered-v35`. Earlier `grounds-career-v1` and `stadium-workshop-layered-v27` records are not removed. Existing careers begin with all responsibilities selected, preserving their current manual behaviour.
+This update changes movement and leaves the artwork and stadium placement registration as they were. Some annotated routes end within an image; a vehicle re-enters on its next assigned trip after reaching an endpoint. The earlier seat colour picker and pre-season stadium adjustment requests remain queued.
+
+Career and Sandbox saves retain `grounds-career-v2` and `stadium-workshop-layered-v35`. Earlier `grounds-career-v1` and `stadium-workshop-layered-v27` records are not removed. Uploading files does not replace an existing local save.
