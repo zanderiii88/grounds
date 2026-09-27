@@ -173,7 +173,7 @@ body.placement-open #positionPanToggle[aria-pressed=true]{background:#d7e9d6;col
 }
 @media(orientation:landscape) and (max-height:700px){body.designer-overlay .designer{left:auto;right:8px;bottom:8px;width:min(44vw,420px);max-height:calc(100dvh - 57px)}body.designer-overlay .designer-scene-actions{right:auto;width:52vw}}
 .career-card #ticketPrice{width:85px;max-width:100%;padding:8px;border:1px solid #b7d0bd;border-radius:7px}.career-build-preview{margin:4px 0 7px;padding:6px 9px;border:1px solid #d5e7d9;border-radius:8px;background:#e9f2e9;color:#184537;font-size:11px;line-height:1.35}.career-build-preview.warn{background:#f9e9df;color:#8d3528}.finance-spend{color:#f39082;font-weight:800}.finance-offer{color:#8ef0a4;font-weight:800}.career-top small#careerFinanceDelta{display:block}.career-action-hint{box-shadow:inset 0 0 0 2px #edbc54!important;color:#efce82!important}.care-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.care-row button{min-height:37px;padding:5px 10px}.event-screen{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:calc(10px + env(safe-area-inset-top)) 10px calc(10px + env(safe-area-inset-bottom));background:linear-gradient(#0a292cc7,#09251ddd);backdrop-filter:blur(4px);color:#f5f7ed}.event-screen[hidden]{display:none!important}.event-panel{width:min(850px,100%);max-height:100%;overflow:auto;padding:16px;border:1px solid #b4d5bb90;border-radius:16px;background:#123d38ee;box-shadow:0 15px 55px #081e1cbd}.event-panel h2{margin:3px 0 9px}.event-panel p{line-height:1.4}.event-kicker{letter-spacing:.12em;text-transform:uppercase;font-size:11px;color:#f1c679;font-weight:800}.event-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.event-panel .event-card,.event-report .event-card{padding:11px;border:1px solid #d5eee069;border-radius:10px;background:#e8f0e7ec;color:#183d34}.event-panel .event-card h3,.event-report .event-card h3{margin:0 0 7px;font-size:15px}.event-panel .event-card p,.event-report .event-card p{margin:5px 0;font-size:12px}.event-panel button{min-height:39px;padding:6px 12px}.event-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.event-timeline{list-style:none;padding:0;margin:0;max-height:160px;overflow:auto}.event-timeline li{padding:5px 0;border-bottom:1px solid #b5c9b8;font-size:12px}.event-stock{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 10px;font-size:12px}.event-table{width:100%;border-collapse:collapse;font-size:12px}.event-table th,.event-table td{text-align:left;padding:5px;border-bottom:1px solid #c4d7c9}.event-grade{font-size:30px;font-weight:850;color:#164f3d}.event-pulse{height:7px;border-radius:8px;background:#698f79;overflow:hidden;margin:10px 0}.event-pulse span{display:block;height:100%;background:#e5bb63}.event-muted{font-size:12px;color:#d0e2d5}.event-panel .live-score{background:#0c332f}.event-screen .career-action{background:#e8b85b;color:#143c32}@media(max-width:600px){.event-panel{padding:12px}.event-grid{grid-template-columns:1fr}.event-stock{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(orientation:landscape) and (max-height:700px){.event-panel{width:min(1050px,100%);padding:11px}.event-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.event-timeline{max-height:120px}}.live-score{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:8px 10px;border-radius:9px;background:#183f37;color:#fff;font-weight:800;font-size:17px}.live-score strong{font-size:24px;white-space:nowrap}.live-progress{height:7px;border-radius:8px;background:#bad3bc;overflow:hidden;margin:8px 0}.live-progress span{display:block;height:100%;background:#e9bc71}.event-report{border-left:4px solid #d5ac60}.event-report .career-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-</style></head><body class="menu-open"><main class="app" inert><header><div class="brand"><small>PROTOTYPE 35.0</small><strong>GROUNDS</strong></div><label class="district-picker" for="districtSelect"><span>Setting</span><select id="districtSelect"><option value="starter-park-edge">Rural Village</option><option value="starter-housing-estate">1970s Town</option><option value="starter-industrial-rail">Railway Works</option><option value="mid-market-town-aligned">British City</option><option value="top-city-redevelopment">Modern Harbour</option></select></label><div class="header-actions"><button id="careerBackButton" hidden>▦ Career</button><button id="homeButton" aria-label="Return to start menu">⌂ Menu</button><button id="nightButton" aria-pressed="false">☾ Night</button><button id="designButton" class="primary" aria-pressed="false">✎ Designer</button></div></header><nav class="toolbar" aria-label="Scene controls"><div class="view-actions"><button id="isoButton" aria-pressed="true">Stadium</button><button id="topButton" aria-pressed="false">Plan</button><button id="settingsButton" aria-label="Display settings" aria-expanded="false">⚙</button></div><div class="zoom"><button id="zoomOut" aria-label="Zoom out">−</button><span id="zoomValue">100%</span><button id="zoomIn" aria-label="Zoom in">+</button><button id="fitButton">Fit</button></div></nav><div class="event-bar" id="eventBar"><label>Scene <select id="eventScene"><option value="regular">Regular</option><option value="pre">Pre-event</option><option value="football">Football</option><option value="concert">Concert · Carly XOX</option></select></label><label id="crowdControl">Crowd <select id="crowdLevel"><option value="small">Small · 25%</option><option value="medium">Medium · 66%</option><option value="sellout">Sellout · 100%</option></select></label><span id="eventStatus">Quiet neighbourhood</span></div><div class="capacity-bar" aria-live="polite"><strong id="capacityTotal"></strong><span id="capacityDetail"></span></div><div class="stage" id="canvasFrame"><div id="careerWeatherBadge" class="career-weather-badge" hidden></div><canvas id="gameCanvas" tabindex="0" aria-label="Stadium view. Enter Designer to edit sections."></canvas><div class="designer-scene-actions"><button id="designerCareer" hidden>▦ Career</button><button id="designerNight">☾ Night</button><button id="designerFit">Fit</button><button id="designerDone">✓ Done</button></div><div id="sceneHint">Drag to look around · Open Designer to shape your ground</div></div>
+</style></head><body class="menu-open"><main class="app" inert><header><div class="brand"><small>PROTOTYPE 35.1</small><strong>GROUNDS</strong></div><label class="district-picker" for="districtSelect"><span>Setting</span><select id="districtSelect"><option value="starter-park-edge">Rural Village</option><option value="starter-housing-estate">1970s Town</option><option value="starter-industrial-rail">Railway Works</option><option value="mid-market-town-aligned">British City</option><option value="top-city-redevelopment">Modern Harbour</option></select></label><div class="header-actions"><button id="careerBackButton" hidden>▦ Career</button><button id="homeButton" aria-label="Return to start menu">⌂ Menu</button><button id="nightButton" aria-pressed="false">☾ Night</button><button id="designButton" class="primary" aria-pressed="false">✎ Designer</button></div></header><nav class="toolbar" aria-label="Scene controls"><div class="view-actions"><button id="isoButton" aria-pressed="true">Stadium</button><button id="topButton" aria-pressed="false">Plan</button><button id="settingsButton" aria-label="Display settings" aria-expanded="false">⚙</button></div><div class="zoom"><button id="zoomOut" aria-label="Zoom out">−</button><span id="zoomValue">100%</span><button id="zoomIn" aria-label="Zoom in">+</button><button id="fitButton">Fit</button></div></nav><div class="event-bar" id="eventBar"><label>Scene <select id="eventScene"><option value="regular">Regular</option><option value="pre">Pre-event</option><option value="football">Football</option><option value="concert">Concert · Carly XOX</option></select></label><label id="crowdControl">Crowd <select id="crowdLevel"><option value="small">Small · 25%</option><option value="medium">Medium · 66%</option><option value="sellout">Sellout · 100%</option></select></label><span id="eventStatus">Quiet neighbourhood</span></div><div class="capacity-bar" aria-live="polite"><strong id="capacityTotal"></strong><span id="capacityDetail"></span></div><div class="stage" id="canvasFrame"><div id="careerWeatherBadge" class="career-weather-badge" hidden></div><canvas id="gameCanvas" tabindex="0" aria-label="Stadium view. Enter Designer to edit sections."></canvas><div class="designer-scene-actions"><button id="designerCareer" hidden>▦ Career</button><button id="designerNight">☾ Night</button><button id="designerFit">Fit</button><button id="designerDone">✓ Done</button></div><div id="sceneHint">Drag to look around · Open Designer to shape your ground</div></div>
 <section class="designer" id="designerPanel" aria-label="Stadium designer" hidden><div class="designer-inner"><div class="mode-tabs" role="group" aria-label="Designer mode"><button data-mode="stands" aria-pressed="true">Stands</button><button data-mode="grounds" aria-pressed="false">Outside</button><button data-mode="boards" aria-pressed="false">Sponsors</button><button data-mode="position" aria-pressed="false">Position</button></div><div id="conflictPanel" class="conflicts" hidden><div id="conflictText"></div><button id="moveConflicts">Move items</button><button id="removeConflicts">Remove conflicting items</button><button id="returnStands">Back to stands</button></div><div class="history-controls"><button id="undoButton">↶ Undo</button><button id="redoButton">↷ Redo</button><button id="rotateStadium">↻ Rotate 90°</button></div><div id="positionControls" hidden><div id="positionStatus" role="status"></div><div class="position-pad"><button id="moveNorth" aria-label="Move north one square">↗</button><button id="moveWest" aria-label="Move west one square">↖</button><button id="moveSouth" aria-label="Move south one square">↙</button><button id="moveEast" aria-label="Move east one square">↘</button></div><div class="position-tools"><button id="positionPanToggle" aria-pressed="false" title="Pan view">✥ Pan</button><button id="positionZoomOut" aria-label="Zoom out">−</button><button id="positionZoomIn" aria-label="Zoom in">+</button><button id="positionFit" title="Centre view">Fit</button><button id="positionRotate" title="Rotate stadium 90 degrees">↻ Rotate</button><button id="placementMenu" hidden title="Return to main menu">⌂</button></div><div class="position-actions"><button id="positionConfirm" class="primary">✓ Confirm</button><button id="positionCancel">✕ Cancel</button></div><div id="positionNotice">Move or rotate the preview, then Confirm. Each step is one grid square.</div></div><div id="standControls"><div id="careerBuildPreview" class="career-build-preview" hidden></div><div class="selection-bar"><strong id="selectionTitle">Tap a stand or corner</strong><span class="selection-hint">Tap again to deselect</span></div><div class="control-grid"><button class="category-up" id="categoryUp" aria-label="Previous category">▲</button><button id="previous" aria-label="Previous option">◀</button><div class="option-readout" aria-live="polite"><span id="categoryLabel">Seating & tiers</span><strong id="optionLabel">Choose a section</strong><span id="optionCount">Preview before confirming</span></div><button id="next" aria-label="Next option">▶</button><button class="category-down" id="categoryDown" aria-label="Next category">▼</button><div class="commit"><button class="primary" id="confirmButton" aria-label="Confirm changes">✓<small>Confirm</small></button><button class="cancel" id="cancelButton" aria-label="Cancel changes">✕<small>Cancel</small></button></div></div><div id="previewState">Left / right: options · Up / down: category</div><details id="sectionDetails"><summary>Select sections by name</summary><div class="selection-tools"><button data-select="N">North</button><button data-select="S">South</button><button data-select="W">West</button><button data-select="E">East</button><button data-select="CORNERS">Corners</button><button data-select="ALL">All</button><button data-select="CLEAR">Clear</button></div><div id="sectionPicker" class="section-grid"></div></details><div class="status-row"><span>Seating → rear building → roof → colours</span><span id="saveStatus">Saved on this device</span></div></div><div id="groundsControls" class="extra-controls" hidden><div class="extra-row"><button id="decorPrevious" aria-label="Previous decoration">◀</button><strong id="decorLabel"></strong><button id="decorNext" aria-label="Next decoration">▶</button></div><div id="decorStatus" class="extra-status" aria-live="polite"></div><div class="extra-row"><button id="decorRotate">Rotate</button><button id="decorMove">Move</button><button id="decorRemove">Remove</button></div><div class="extra-row"><button id="decorConfirm" class="primary">✓ Confirm</button><button id="decorCancel">✕ Cancel</button></div></div><div id="boardControls" class="extra-controls" hidden><div class="extra-row"><button id="boardPrevious" aria-label="Previous sponsor set">◀</button><strong id="boardLabel"></strong><button id="boardNext" aria-label="Next sponsor set">▶</button></div><p class="extra-status">Fictional sponsors · boards leave both goals clear</p><div class="extra-row"><button id="boardConfirm" class="primary">✓ Confirm</button><button id="boardCancel">✕ Cancel</button></div></div></div></section></main>
 <aside class="settings" id="settingsPanel" hidden><h2>Display & design</h2><label><input type="checkbox" id="waterMotion">Gentle water motion</label><label><input type="checkbox" id="ambient">Town activity</label><label><input type="checkbox" id="flyovers">Occasional flyovers</label><label><input type="checkbox" id="eventMotion">Event animation</label><label><input type="checkbox" id="lowAngle">Flatter 3:1 camera</label><label><input type="checkbox" id="showLabels">Section labels</label><label><input type="checkbox" id="showGrid">Site grid</label><label><input type="checkbox" id="showEnvironment" checked>Town backdrop</label><p>Changes save after ✓ Confirm. Display options do not change your stadium.</p><div class="row"><button id="saveButton">Save now</button><button id="resetButton">Reset ground</button><button id="closeSettings">Close</button></div></aside><div id="toast" class="toast" role="status" hidden></div><div id="startMenu" class="start-menu" role="dialog" aria-modal="true" aria-labelledby="menuTitle">
   <div class="menu-shade"></div><div class="menu-vignette"></div>
@@ -327,24 +327,25 @@ body.placement-open #positionPanToggle[aria-pressed=true]{background:#d7e9d6;col
   const ui={zoomValue:$("zoomValue"),saveStatus:$("saveStatus")};
   const categories=["stand","rear","roof","coverage","seats","exterior"];
   const categoryNames={stand:"Seating & tiers",rear:"Rear building",roof:"Roof structure",coverage:"Roof coverage",seats:"Seat colour",exterior:"Exterior finish"};
-  // v35 sites share one explicit isometric road graph. Art is registered at
-  // 1774×887; the pitch and all routes use the same centred projection.
+  // Each illustration has its own verified asphalt route in image pixels.
+  // The generated street layouts differ, so a tier-wide grid can cross plots.
   const STORAGE_SITE_ORIGIN=[887,443];
-  const GRID_PIXEL=(x,y)=>[887+(x-y)*3.8,443+(x+y)*1.9];
   const REGISTRATION={width:1774,height:887,origin:STORAGE_SITE_ORIGIN,tile:[6,3],worldAnchor:[36,30]};
   const SITE_SPECS={
     low:{site:{minX:15,maxX:57,minY:14,maxY:46},people:18},
     mid:{site:{minX:6,maxX:66,minY:6,maxY:54},people:26},
     top:{site:{minX:-2,maxX:74,minY:0,maxY:60},people:34}
   };
-  const SIDE_EDGES={
-    low:[ [[-35,-28],[35,-28]],[[35,-28],[35,28]],[[35,28],[-35,28]],[[-35,28],[-35,-28]] ],
-    mid:[ [[-64,-51],[64,-51]],[[64,-51],[64,51]],[[64,51],[-64,51]],[[-64,51],[-64,-51]] ],
-    top:[ [[-64,-51],[64,-51]],[[64,-51],[64,51]],[[64,51],[-64,51]] ]
+  const SITE_ROUTES={
+    'starter-park-edge':{side:1,edges:[[[634,439],[854,549]]]},
+    'starter-housing-estate':{side:1,edges:[[[662,459],[902,579]]]},
+    'starter-industrial-rail':{side:1,edges:[[[702,464],[922,574]]]},
+    'mid-market-town-aligned':{side:1,edges:[[[919,668],[1154,785]]]},
+    'top-city-redevelopment':{side:-1,edges:[[[828,247],[1068,367]]]}
   };
-  function makeRouteGraph(tier){
+  function makeRouteGraph(id){
     const nodes=new Map(),edges=[];
-    const raw=SIDE_EDGES[tier],endpoints=raw.flatMap(([a,b])=>[a,b]);
+    const raw=SITE_ROUTES[id].edges,endpoints=raw.flatMap(([a,b])=>[a,b]);
     const split=[];
     for(const [a,b] of raw){
       const hits=endpoints.filter(p=>(b[0]-a[0])*(p[1]-a[1])===(b[1]-a[1])*(p[0]-a[0])&&
@@ -355,20 +356,20 @@ body.placement-open #positionPanToggle[aria-pressed=true]{background:#d7e9d6;col
     }
     for(const [a,b] of split){
       const ak=a.join(','),bk=b.join(',');
-      if(!nodes.has(ak))nodes.set(ak,{id:ak,world:a,point:GRID_PIXEL(...a),links:[]});
-      if(!nodes.has(bk))nodes.set(bk,{id:bk,world:b,point:GRID_PIXEL(...b),links:[]});
+      if(!nodes.has(ak))nodes.set(ak,{id:ak,point:a,links:[]});
+      if(!nodes.has(bk))nodes.set(bk,{id:bk,point:b,links:[]});
       const edge={id:edges.length,a:ak,b:bk};edges.push(edge);
       nodes.get(ak).links.push(edge.id);nodes.get(bk).links.push(edge.id);
     }
     return {nodes,edges};
   }
-  const ROUTE_GRAPHS=Object.fromEntries(['low','mid','top'].map(t=>[t,makeRouteGraph(t)]));
+  const ROUTE_GRAPHS=Object.fromEntries(Object.keys(SITE_ROUTES).map(id=>[id,makeRouteGraph(id)]));
   function newSite(id,name,tier){
     const spec=SITE_SPECS[tier];
     return {id,name,tier,registration:REGISTRATION,site:spec.site,
       placement:{...spec.site,accessRows:[spec.site.minY,spec.site.maxY-2]},
       art:{day:`assets/career-sites/${id}-day.webp`,night:`assets/career-sites/${id}-night.webp`},
-      graph:ROUTE_GRAPHS[tier],traffic:{junctionWait:.6},pedestrianSpeed:.52,
+      graph:ROUTE_GRAPHS[id],traffic:{junctionWait:.6},pedestrianSpeed:.52,
       walkers:Array.from({length:spec.people},(_,i)=>({phase:(i*.61803398875+.13)%1,speedFactor:.85+(i%7)*.05})),
       parking:{kind:'authored-bays',cars:[],coaches:[],carDirection:[0,-1],coachDirection:[0,-1]},
       pubGroup:[],hospitality:{a:[280,341],b:[360,301],count:16},
@@ -1704,15 +1705,13 @@ function drawSteppedAisle(section,u,spec){
   let ambientTime=0,flyoverTime=0,lastAnimationTime=null,animationRequest=0;
   function imageWorld(p){const r=DISTRICT.registration,a=(p[0]-r.origin[0])/r.tile[0],b=(p[1]-r.origin[1])/r.tile[1];return{x:r.worldAnchor[0]+(a+b)/2,y:r.worldAnchor[1]+(b-a)/2,z:0};}
   function worldDistance(a,b){return Math.hypot(b.x-a.x,b.y-a.y);}
-  // v35 graph movement: actors are always on a declared road edge. Pedestrians
-  // follow that same edge with a pavement offset. At nodes they choose a linked
-  // edge; no arbitrary point-to-point shortcuts cross plots or harbour water.
+  // Actors stay on the active illustration's authored route and adjacent pavement.
   function graphActor(index,pedestrian=false){
     const g=DISTRICT.graph,edges=g.edges;
     const edge=edges[(index*3+(pedestrian?1:0))%edges.length];
     return {id:(pedestrian?'walker-':'vehicle-')+index,edge:edge.id,
       from:index%2?edge.b:edge.a,to:index%2?edge.a:edge.b,
-      progress:(index*.173)%1,side:index%2?1:-1,
+      progress:(index*.173)%1,side:pedestrian?SITE_ROUTES[DISTRICT.id].side:(index%2?1:-1),
       speed:pedestrian?12+(index%4)*2:66+(index%3)*7,
       kind:pedestrian?'person':index===3&&DISTRICT.tier!=='low'?'bus':'car',
       colour:pedestrian?['#de7155','#507fae','#996ca9','#d2a351','#65a091'][index%5]:['#4e98cf','#e9bd53','#d37d60','#397eb0'][index%4],
@@ -1746,9 +1745,11 @@ function drawSteppedAisle(section,u,spec){
   function graphPose(actor){
     const g=DISTRICT.graph,a=g.nodes.get(actor.from).point,b=g.nodes.get(actor.to).point;
     const dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy)||1;
+    const edge=g.edges[actor.edge],canonical=g.nodes.get(edge.a).point,next=g.nodes.get(edge.b).point;
+    const ox=next[0]-canonical[0],oy=next[1]-canonical[1],ol=Math.hypot(ox,oy)||1;
     const offset=actor.pedestrian?actor.side*16.5:actor.side*5;
-    const pixel=[a[0]+dx*actor.progress-dy/length*offset,
-      a[1]+dy*actor.progress+dx/length*offset];
+    const pixel=[a[0]+dx*actor.progress-oy/ol*offset,
+      a[1]+dy*actor.progress+ox/ol*offset];
     const world=imageWorld(pixel),ahead=imageWorld([pixel[0]+dx/length*3,pixel[1]+dy/length*3]);
     const magnitude=worldDistance(world,ahead)||1;
     return {...world,dx:(ahead.x-world.x)/magnitude,dy:(ahead.y-world.y)/magnitude,
@@ -1963,8 +1964,9 @@ function drawSteppedAisle(section,u,spec){
     if(activeScene()!=='pre')return [];
     const g=DISTRICT.graph,e=g.edges[0],a=g.nodes.get(e.a).point,b=g.nodes.get(e.b).point,n=DISTRICT.hospitality.count;
     const dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy)||1;
+    const side=SITE_ROUTES[DISTRICT.id].side;
     return Array.from({length:n},(_,i)=>{const f=(i+.3+hashNumber(i+88)*.4)/n;
-      return {...imageWorld([a[0]+dx*f-dy/length*16.5,a[1]+dy*f+dx/length*16.5]),kind:'person',layer:'back',colour:['#b86d56','#517baa','#d6b558','#769664'][i%4],phase:0,moving:false};});
+      return {...imageWorld([a[0]+dx*f-dy/length*16.5*side,a[1]+dy*f+dx/length*16.5*side]),kind:'person',layer:'back',colour:['#b86d56','#517baa','#d6b558','#769664'][i%4],phase:0,moving:false};});
   }
   function eventPersonPose(o,t){
     const length=Math.hypot(o.end.x-o.x,o.end.y-o.y);if(length<.01)return {...o,phase:0,moving:false};

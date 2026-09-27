@@ -1,4 +1,4 @@
-const CACHE='grounds-pwa-v35-0';
+const CACHE='grounds-pwa-v35-1';
 const CORE=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));
