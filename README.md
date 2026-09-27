@@ -1,14 +1,17 @@
-# GROUNDS — Prototype 34.8
+# GROUNDS — Prototype 34.9 aligned site pilot
 
-Upload the seven app files to the root of your GitHub repository, replacing the previous versions: `index.html`, `manifest.webmanifest`, `sw.js`, `version.json`, `icon-192.png`, `icon-512.png`, and `icon-maskable-512.png`. Keep the existing `assets/` folder. Its images are included for completeness and need not be uploaded again when already present.
+This is a one-site experiment. The existing Market Town and all other locations are unchanged. Choose **Market Town · aligned pilot** from the Sandbox Setting menu to compare it without replacing your Career save. It also appears in Div 2 and Div 1 New Game site choices; starting a new Career replaces the current Career save as before.
 
-## Event experience
+## Upload
 
-- Before opening an event, Operations shows a short readiness summary: expected attendance, pitch condition, ticket price and serving stands.
-- Beginning or simulating a match or other event opens a dedicated event view. The normal Career navigation is covered until the event report is acknowledged.
-- The live view shows score (for matches), attendance, a progress clock, sales by item, missed orders, stock by stand and a timeline of occurrences.
-- Matches pause at half time. You may restock 10 of a selected item per stand for its displayed cost, then resume or simulate the remainder. Away matches play through the same event view without home stock or gate income.
-- The final report shows the match score or event result, attendance, gate and food income, stock spend, pitch change, and for each food and drink item the quantities bought, sold, left and missed. It includes a supporter survey for enjoyment of the game or event and for service and prices. Survey scores react to results, prices and missed sales; service feedback affects supporter or community mood.
-- The report is saved on its calendar day. If the app closes while a live event or final report is open, continuing Career restores it. Earlier reports with missing item details identify them as unavailable.
+Replace these seven files at the repository root: `index.html`, `manifest.webmanifest`, `sw.js`, `version.json`, `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`.
 
-The existing `grounds-career-v1` and `stadium-workshop-layered-v27` save keys are unchanged. The 34.6 startup fix and 34.7 Career management update remain included.
+Add these two files, keeping their folder path: `assets/career-sites/mid-market-town-aligned-day.webp` and `assets/career-sites/mid-market-town-aligned-night.webp`. The existing artwork stays in place. The `art-source/` folder documents the precise grid and can be kept locally; it is not required on GitHub Pages.
+
+## What to review
+
+- The playable 50×50 world plot matches the paved diamond and fence exactly. The stadium pitch, stand footprints and placement grid use the same 2:1 isometric registration as the artwork.
+- Roads form a connected ring outside the site; vehicles travel on its lanes, and pedestrians use authored pavement lines around the plot. The bus pauses at an authored stop.
+- Day and night are rendered from the same geometry, so lighting changes without moving the roads, walls or gates.
+
+The visual style is deliberately simpler than the existing painted site. This pilot is for judging the alignment and whether this art direction is acceptable before rebuilding more sites. No preset stadium cycling is included in this experiment. Existing `grounds-career-v1` and `stadium-workshop-layered-v27` saves remain compatible.
