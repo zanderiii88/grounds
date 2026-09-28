@@ -1,7 +1,7 @@
-import {sceneSvg,stadiumProfile} from './scene.js?v=1.7.0';
-import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.7.0';
+import {sceneSvg,stadiumProfile} from './scene.js?v=1.7.1';
+import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.7.1';
 
-const APP_VERSION='1.7.0';
+const APP_VERSION='1.7.1';
 const SAVE_KEY='clubline-career-r1';
 const SITES=[['city','City Waterfront'],['gardens','Civic Gardens'],['rail','Rail District'],['university','University Quarter'],['oldtown','Old Town']];
 const availableSites=c=>c.capacity>=45000?SITES.slice(0,3):SITES;
@@ -31,7 +31,7 @@ const addDays=(s,n)=>new Date(Date.parse(s+'T12:00:00Z')+86400000*n).toISOString
 const rand=(arr)=>arr[Math.floor(Math.random()*arr.length)];
 let dragGhost=null,dragTarget=null,activeDrag=null,suppressDragClick=false,autoResumeTimer=null;
 let editing=null,selectedStand='N4';
-let source,career=null,view='title',section='squad',sub='lineup',setup={clubId:'C01',site:'city',names:{},colour:null},selectedPlayer=null,selectedSlot=null,instructionPlayer=null,statsScope='club',statsSort='goals',statsDescending=true,match=null,timer=null,notice='',updateMessage='',availableVersion=null,checkingUpdate=false;
+let saveWarning='',source,career=null,view='title',section='squad',sub='lineup',setup={clubId:'C01',site:'city',names:{},colour:null},selectedPlayer=null,selectedSlot=null,instructionPlayer=null,statsScope='club',statsSort='goals',statsDescending=true,match=null,timer=null,notice='',updateMessage='',availableVersion=null,checkingUpdate=false;
 const root=document.getElementById('app');
 
 try {source=await (await fetch('./data/league.json',{cache:'no-store'})).json();}
@@ -84,9 +84,22 @@ function scheduleSeason(){
 function newCareer(){
  const c=club(setup.clubId),choice=bestLineup(c.id,c.formation);
  career={version:1,clubId:c.id,names:{...setup.names},colour:setup.colour||c.colour,site:setup.site,date:'2026-08-13',time:'09:00',balance:c.budget*5,formation:c.formation,style:c.style,order:'Standard',lineup:choice.lineup,bench:choice.bench,players:Object.fromEntries(source.players.map(p=>[p.id,{fitness:p.fitness,form:[],happiness:64+(p.number*7)%25,ambitious:ambitiousIds.has(p.id),instruction:'Standard',reason:'Content with their squad role.'}])),stats:{},loans:{},owners:{},transferList:[],offers:[],stadium:defaultLayout(c),schedule:scheduleSeason(),reports:[],news:[],kit:{home:'solid',away:'stripes'}};
- view='career';section='squad';sub='lineup';save();render();
+ view='career';section='squad';sub='lineup';const saved=save();render();
+ if(!saved)toast('The season is open, but this device could not save it. Free storage before reloading.');
 }
-function save(){if(career)localStorage.setItem(SAVE_KEY,JSON.stringify({career,match}));}
+function save(){
+ if(!career)return true;
+ const data=JSON.stringify({career,match});
+ try{localStorage.setItem(SAVE_KEY,data);saveWarning='';return true}
+ catch(error){
+  // An old GROUNDS career shares this origin. It is no longer needed for Clubline.
+  if(error?.name==='QuotaExceededError'||error?.code===22||error?.code===1014){
+   try{localStorage.removeItem('grounds-career-v2');localStorage.setItem(SAVE_KEY,data);saveWarning='';return true}catch{}
+  }
+  saveWarning='Device storage is unavailable. This career may be lost if you close or reload the game.';
+  return false;
+ }
+}
 function load(){try{const saved=JSON.parse(localStorage.getItem(SAVE_KEY));if(saved?.career?.version===1){career=saved.career;career.owners??={};career.transferList??=[];career.offers??=[];career.stats??={};career.loans??={};for(const p of source.players){const state=career.players[p.id]??(career.players[p.id]={fitness:p.fitness,form:[]});state.happiness??=70;state.ambitious??=ambitiousIds.has(p.id);state.instruction??='Standard';state.reason??='Content with their squad role.'}career.stadium=normaliseLayout(career.stadium,club(career.clubId));if(career.site==='harbour')career.site='city';match=saved.match||null;if(match)match.kickoff??='15:00';return true}}catch{}return false}
 const hasSave=()=>{try{return JSON.parse(localStorage.getItem(SAVE_KEY))?.career?.version===1}catch{return false}};
 function nextFixture(){if(!career)return null;for(const round of career.schedule){const f=round.fixtures.find(x=>(x.home===career.clubId||x.away===career.clubId)&&x.homeGoals===null);if(f)return {...f,date:round.date,round}}return null}
@@ -157,7 +170,7 @@ function setupView(){
 }
 
 function topbar(){const next=nextFixture();return `<header class="topbar">${logo(true)}<div class="top-pill"><small>Date / time</small><b>${fmtDate(career.date)} · ${career.time}</b></div><div class="top-pill"><small>Club balance</small><b class="money">${fmtMoney(career.balance)}</b></div><div class="top-pill"><small>Next match</small><b>${next?`${next.home===career.clubId?'H':'A'} ${next.kickoff||'15:00'} · ${html(clubName(opposition(next,career.clubId)))}`:'Season complete'}</b></div><button class="btn slim ghost" data-action="menu">Menu</button></header>`}
-function dashboard(){const c=myClub(),next=nextFixture(),homeMatch=match&&match.home===career.clubId;return `<div class="app-shell" style="--club:${myColour()}">${scene({...c,colour:myColour()},career.site,false,homeMatch,!!(match&&match.kickoff>='17:30'))}<div class="shell-content">${topbar()}<div class="dash-grid"><div><div class="glass panel welcome"><span class="eyebrow">${html(c.ground)} / ${capacity(career.stadium,c).toLocaleString('en-GB')} seats</span><h1>${html(clubName(c.id))}</h1><div class="next-line">${next?`Next: ${next.home===c.id?'at home to':'away at'} ${html(clubName(opposition(next,c.id)))} · ${fmtDate(next.date)} · ${next.kickoff||'15:00'}`:'The league season is complete.'}</div></div>${attentionList()}<nav class="section-nav" aria-label="Club sections">${[['squad','Squad'],['facilities','Facilities'],['finances','Finances'],['organiser','Organiser']].map(([id,label])=>`<button class="btn ${section===id?'active':''}" data-action="section" data-section="${id}">${label}</button>`).join('')}</nav></div><div class="glass panel section-content">${sectionContent()}</div></div><div class="advance-dock"><button class="btn primary arrow" data-action="advance">${next&&career.date===next.date?'Matchday':'Advance time'}</button><span>${next?`${next.date===career.date?'Kick-off event ahead':'Next fixture '+fmtDate(next.date)}`:'Season finished'}</span></div></div>${match?matchOverlay():''}${career.offers?.some(o=>o.status==='new')?`<button class="offer-alert" data-action="open-offers">Transfer offer received · Review →</button>`:''}</div>`}
+function dashboard(){const c=myClub(),next=nextFixture(),homeMatch=match&&match.home===career.clubId;return `<div class="app-shell" style="--club:${myColour()}">${scene({...c,colour:myColour()},career.site,false,homeMatch,!!(match&&match.kickoff>='17:30'))}<div class="shell-content">${topbar()}<div class="dash-grid"><div><div class="glass panel welcome"><span class="eyebrow">${html(c.ground)} / ${capacity(career.stadium,c).toLocaleString('en-GB')} seats</span><h1>${html(clubName(c.id))}</h1><div class="next-line">${next?`Next: ${next.home===c.id?'at home to':'away at'} ${html(clubName(opposition(next,c.id)))} · ${fmtDate(next.date)} · ${next.kickoff||'15:00'}`:'The league season is complete.'}</div></div>${saveWarning?`<div class="save-warning" role="alert">${html(saveWarning)}</div>`:''}${attentionList()}<nav class="section-nav" aria-label="Club sections">${[['squad','Squad'],['facilities','Facilities'],['finances','Finances'],['organiser','Organiser']].map(([id,label])=>`<button class="btn ${section===id?'active':''}" data-action="section" data-section="${id}">${label}</button>`).join('')}</nav></div><div class="glass panel section-content">${sectionContent()}</div></div><div class="advance-dock"><button class="btn primary arrow" data-action="advance">${next&&career.date===next.date?'Matchday':'Advance time'}</button><span>${next?`${next.date===career.date?'Kick-off event ahead':'Next fixture '+fmtDate(next.date)}`:'Season finished'}</span></div></div>${match?matchOverlay():''}${career.offers?.some(o=>o.status==='new')?`<button class="offer-alert" data-action="open-offers">Transfer offer received · Review →</button>`:''}</div>`}
 
 function sectionContent(){return section==='squad'?squadSection():section==='facilities'?facilitiesSection():section==='finances'?financesSection():organiserSection()}
 
