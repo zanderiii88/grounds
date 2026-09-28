@@ -1,12 +1,23 @@
-# GROUNDS v35.7 — Visible matchday and calmer streets
+# Clubline — Release 1
 
-Upload the contents of this ZIP to the root of the existing GitHub Pages repository. Include `vehicle-paths.js` with `index.html`. The service worker and in-game version number are 35.7.
+An independent, mobile-first football club career prototype. It does not read or overwrite GROUNDS saves.
 
-- Each site has at most one moving bus, with a long break between trips. Cars remain on their directed marked routes. Vehicle paths have been simplified into straighter road stretches and clear turns, within six image pixels of the prior marked routes.
-- Home is fixed at the upper right during play. Back appears at the lower right of Career pages and the live event, returning to the stadium view. A Live event or Final report button reopens a panel left in progress.
-- Home matchdays use the stadium's football scene with players and people in the stands. Pre-match crowds appear in and around the ground. Visible seating occupancy tracks event attendance relative to capacity, and more pedestrians appear outside during the event.
-- The live match or venue event uses a compact lower panel for phase, score, attendance, sales, missed orders and the latest occurrence. The stadium remains visible above it. Half-time stock, transfers and restocking are in an expandable section; the final report retains its detailed view.
+## Play
 
-The site artwork and stadium placement geometry have not changed. Seat colour selection and pre-season stadium editing remain planned for a later release.
+Upload the contents of this ZIP to the root of a GitHub Pages repository, or serve this folder locally with a web server. Open `index.html` through the resulting URL. The game stores the career in this browser using the `clubline-career-r1` key.
 
-Career and Sandbox saves retain `grounds-career-v2` and `stadium-workshop-layered-v35`. Earlier `grounds-career-v1` and `stadium-workshop-layered-v27` records are not removed.
+Choose one of 12 fictional clubs, optionally rename any team, pick a large-district location and lock a primary colour. The colour appears on the ground's seats. Your team plays 22 fixtures, home and away against each other club.
+
+Select players by tapping a name then an XI or bench slot. Drag and drop also works. Use the Formation, Play style and Orders tabs for your match plan. Advance through dates with the button at the bottom left. On matchday you can simulate instantly or confirm your lineup and watch the text match at three speeds. Goals, cards, injuries and half-time pause play. Full-time reports include player ratings, minutes, condition and home match revenue.
+
+## Scope of this release
+
+The ground preview is a new schematic isometric scene, with size, roof, location and seat colour variations. Detailed stadium assets, construction, full kit editing, transfers, pricing and venue operations are scheduled for later releases. The single season can be restarted with New career; there is no GROUNDS save migration.
+
+The finances are provisional: opening cash derives from the club's pilot budget, weekly wages are deducted on Mondays, and home matchday income is estimated automatically. Opponent match results use club attack and defence ratings. The user's watched and quick-simulated matches use the same event engine, with live tactical choices affecting later chances.
+
+## Files
+
+- `index.html`, `style.css`, `app.js`, `scene.js`: the standalone game.
+- `data/league.json`: 12 clubs and 288 player records with recalibrated positional ratings.
+- `assets/icon.svg`, `manifest.webmanifest`: branding metadata.
