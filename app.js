@@ -1,5 +1,6 @@
-import {sceneSvg} from './scene.js';
+import {sceneSvg} from './scene.js?v=1.2.0';
 
+const APP_VERSION='1.2.0';
 const SAVE_KEY='clubline-career-r1';
 const SITES=[['city','Old Town'],['harbour','Harbourfront'],['university','University Quarter'],['gardens','Civic Gardens'],['rail','Rail District']];
 const COLOURS=['#862e43','#de414b','#e17837','#e7bd63','#257b5e','#1b8189','#3a6cbc','#633d8d','#edf0e9','#252c38'];
@@ -17,7 +18,7 @@ const fmtMoney=n=>'£'+Math.round(n||0).toLocaleString('en-GB');
 const fmtDate=s=>new Date(s+'T12:00:00Z').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric',timeZone:'UTC'});
 const addDays=(s,n)=>new Date(Date.parse(s+'T12:00:00Z')+86400000*n).toISOString().slice(0,10);
 const rand=(arr)=>arr[Math.floor(Math.random()*arr.length)];
-let source,career=null,view='title',section='squad',sub='lineup',setup={clubId:'C01',site:'city',names:{},colour:null},selectedPlayer=null,selectedSlot=null,match=null,timer=null,notice='';
+let source,career=null,view='title',section='squad',sub='lineup',setup={clubId:'C01',site:'city',names:{},colour:null},selectedPlayer=null,selectedSlot=null,match=null,timer=null,notice='',updateMessage='',availableVersion=null,checkingUpdate=false;
 const root=document.getElementById('app');
 
 try {source=await (await fetch('./data/league.json',{cache:'no-store'})).json();}
@@ -77,8 +78,23 @@ function standings(){
 }
 function toast(message){notice=message;document.querySelector('.toast')?.remove();const div=document.createElement('div');div.className='toast';div.textContent=message;document.body.appendChild(div);setTimeout(()=>div.remove(),3500)}
 function scene(current,site,open=false){return `<div class="scene ${open?'open':''}">${sceneSvg(current,site)}</div>`}
-function logo(small=false){return `<img class="logo ${small?'small':''}" src="assets/clubline-logo.svg" alt="Clubline">`}
-function titleView(){const c=club('C01');return `<div class="app-shell title-screen" style="--club:${c.colour}">${scene(c,'city',true)}<div class="shell-content"><div class="menu-hero"><div class="hero-copy glass">${logo()}<p class="title-tagline">Your club. Your call.</p><div class="hero-actions"><button class="btn primary arrow wide" data-action="new-game">New career</button>${hasSave()?'<button class="btn wide" data-action="continue">Continue</button>':''}</div><small>12 clubs · Premier Division · 22 fixtures</small></div></div></div></div>`}
+function logo(small=false){return `<img class="logo ${small?'small':''}" src="assets/clubline-logo.svg?v=${APP_VERSION}" alt="Clubline">`}
+function titleView(){const c=club('C01');return `<div class="app-shell title-screen" style="--club:${c.colour}">${scene(c,'city',true)}<div class="shell-content"><div class="menu-hero"><div class="hero-copy glass">${logo()}<p class="title-tagline">Your club. Your call.</p><div class="hero-actions"><button class="btn primary arrow wide" data-action="new-game">New career</button>${hasSave()?'<button class="btn wide" data-action="continue">Continue</button>':''}</div><small>12 clubs · Premier Division · 22 fixtures</small><div class="update-area"><button class="btn ghost slim" data-action="check-update" ${checkingUpdate?'disabled':''}>${checkingUpdate?'Checking…':'↻ Check for updates'}</button><span class="build-label">v${APP_VERSION}</span>${availableVersion?'<button class="btn slim primary" data-action="load-update">Load update</button>':''}${updateMessage?`<p role="status">${html(updateMessage)}</p>`:''}</div></div></div></div></div>`}
+async function checkForUpdates(){
+ if(checkingUpdate)return;
+ checkingUpdate=true;updateMessage='';availableVersion=null;render();
+ try{
+  const response=await fetch(`./version.json?check=${Date.now()}`,{cache:'no-store'});
+  if(!response.ok)throw new Error('Version unavailable');
+  const data=await response.json();
+  if(!/^\d+\.\d+\.\d+$/.test(data.version))throw new Error('Invalid version');
+  const current=APP_VERSION.split('.').map(Number),remote=data.version.split('.').map(Number);
+  const newer=remote.some((n,i)=>n>current[i]&&remote.slice(0,i).every((v,j)=>v===current[j]));
+  if(newer){availableVersion=data.version;updateMessage=`Clubline v${data.version} is ready.`}
+  else updateMessage=`You're up to date (v${APP_VERSION}).`;
+ }catch{updateMessage="Couldn't check for updates. Try again when online."}
+ checkingUpdate=false;if(view==='title')render();
+}
 function setupView(){
  const c=club(setup.clubId),name=setup.names[c.id]||c.name,col=setup.colour||c.colour;
  return `<div class="app-shell" style="--club:${col}">${scene({...c,colour:col},setup.site,true)}<div class="shell-content"><header class="topbar">${logo(true)}<button class="btn ghost" data-action="back-title">← Back</button></header><div class="setup-layout"><div class="glass setup-card"><span class="eyebrow">01 / Choose your club</span><h2>Premier Division</h2><div class="setup-list">${source.clubs.map(x=>`<button class="club-choice ${x.id===c.id?'active':''}" data-action="choose-club" data-id="${x.id}"><strong>${html(setup.names[x.id]||x.name)}</strong><span>ATT ${x.attack} &nbsp; DEF ${x.defence} &nbsp; ${Math.round(x.capacity/1000)}k seats · Facilities ${x.facilities}★ · Youth ${x.youth}★</span></button>`).join('')}</div><p class="muted" style="margin:14px 0 0;font-size:.75rem">All club names can be changed before kick-off.</p></div><div class="glass setup-detail"><span class="eyebrow">02 / Make it yours</span><h2>${html(name)}</h2><div class="stat-pair"><div class="stat-block"><small>Attack</small><strong>${c.attack}</strong></div><div class="stat-block"><small>Defence</small><strong>${c.defence}</strong></div><div class="stat-block"><small>Seats</small><strong>${(c.capacity/1000).toFixed(0)}k</strong></div></div><div class="detail-row"><span>Starting style</span><b>${html(c.style)}</b></div><div class="detail-row"><span>Home ground</span><b>${html(c.ground)}</b></div><div class="detail-row"><span>Opening funds</span><b>${fmtMoney(c.budget*5)}</b></div><div class="detail-row"><span>Club facilities</span>${stars(c.facilities,'Club facilities')}</div><div class="detail-row"><span>Youth programme</span>${stars(c.youth,'Youth programme')}</div><label class="field">Your club name<input id="clubRename" maxlength="32" value="${html(name)}"></label><button class="btn slim" data-action="rename-all">${setup.showNames?'Hide division names':'Rename any club'}</button>${setup.showNames?`<div class="list" style="max-height:150px;overflow:auto;margin-top:9px">${source.clubs.map(x=>`<label class="field" style="margin:3px 0">${html(x.name)}<input data-rename="${x.id}" maxlength="32" value="${html(setup.names[x.id]||x.name)}"></label>`).join('')}</div>`:''}<label class="field">Primary colour, locked for your home kit</label><div class="swatches">${COLOURS.map(x=>`<button class="swatch ${col===x?'on':''}" style="background:${x}" data-action="colour" data-colour="${x}" aria-label="Choose ${x}"></button>`).join('')}<input type="color" id="customColour" aria-label="Custom primary colour" value="${col}" style="width:40px;height:32px;padding:0;border:0;background:transparent"></div><label class="field">Home location</label><div class="site-options">${SITES.map(([key,label])=>`<button class="btn ${setup.site===key?'selected':''}" data-action="site" data-site="${key}">${label}</button>`).join('')}</div><div class="setup-ground-preview" aria-label="Preview of selected home ground">${sceneSvg({...c,colour:col},setup.site)}<span>${html(c.ground)} · ${c.capacity.toLocaleString('en-GB')} seats</span></div><div class="setup-footer"><button class="btn club arrow" data-action="start-season">Start season</button></div></div></div></div></div>`;
@@ -265,6 +281,8 @@ root.addEventListener('click',event=>{
  const action=el.dataset.action;
  if(action==='new-game'){setup={clubId:'C01',site:'city',names:{},colour:null};view='setup';render()}
  else if(action==='continue'){if(load()){view='career';render()}}
+ else if(action==='check-update')checkForUpdates();
+ else if(action==='load-update'&&availableVersion){const url=new URL(location.href);url.searchParams.set('update',availableVersion);url.searchParams.set('t',Date.now());location.assign(url.href)}
  else if(action==='back-title'||action==='menu'){view='title';render()}
  else if(action==='choose-club'){setup.clubId=el.dataset.id;setup.colour=null;render()}
  else if(action==='rename-all'){setup.showNames=!setup.showNames;render()}

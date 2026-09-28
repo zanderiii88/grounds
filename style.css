@@ -25,3 +25,4 @@
 .logo{display:block;width:182px;height:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 5px 8px #0009)}.logo::after{display:none}.logo.small{width:157px}.topbar .logo{margin-right:auto}.title-screen .hero-copy .logo{width:100%;max-width:372px;margin:0 0 25px}.title-screen .hero-copy{min-width:0}.title-screen .title-tagline{font-size:1.45rem;line-height:1.15}
 @media(max-width:850px){.topbar .logo{width:157px}}
 @media(max-width:540px){.title-screen .hero-copy .logo{max-width:100%}.title-screen .title-tagline{font-size:1.25rem}}
+.update-area{margin-top:22px;padding-top:13px;border-top:1px solid #ffffff28;display:flex;align-items:center;gap:7px;flex-wrap:wrap}.update-area .btn.ghost{color:#c8d5da;padding-left:0}.update-area .build-label{font-size:.69rem;color:#95a8af;margin-left:auto}.update-area p{flex-basis:100%;margin:2px 0 0;font-size:.78rem;color:#d8e4e6;line-height:1.35}

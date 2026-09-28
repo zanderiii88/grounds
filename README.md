@@ -1,10 +1,12 @@
-# Clubline — Release 1.1
+# Clubline — Release 1.2
 
 An independent, mobile-first football club career prototype. It does not read or overwrite GROUNDS saves.
 
 ## Play
 
 Upload the contents of this ZIP to the root of a GitHub Pages repository, or serve this folder locally with a web server. Open `index.html` through the resulting URL. The game stores the career in this browser using the `clubline-career-r1` key.
+
+The title screen has **Check for updates**. It compares the running build with `version.json` on the uploaded site and offers **Load update** when a newer version is available. Keep `version.json` with the uploaded contents for this to work. Reloading does not delete the career saved in this browser.
 
 Choose one of 12 fictional clubs in the Premier Division, optionally rename any team, pick a large-district location and lock a primary colour. Club selection includes facilities and youth programme stars. The colour appears on the ground's seats. Your team plays 22 fixtures, home and away against each other club.
 
@@ -21,4 +23,5 @@ The finances are provisional: opening cash derives from the club's pilot budget,
 - `index.html`, `style.css`, `app.js`, `scene.js`: the standalone game.
 - `data/league.json`: 12 clubs and 288 player records with recalibrated positional ratings.
 - `assets/clubline-logo.svg`: the new Clubline wordmark and rising red arrow.
-- `assets/icon.svg`, `manifest.webmanifest`: branding metadata.
+- `assets/icon.svg` and `assets/icon-192.png`, `icon-512.png`, `icon-180.png`: the angular C and trend arrow app icon.
+- `manifest.webmanifest`, `version.json`: install branding and update checking.
