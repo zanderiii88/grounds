@@ -1,7 +1,7 @@
-import {sceneSvg,stadiumProfile} from './scene.js?v=1.7.1';
-import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.7.1';
+import {sceneSvg,stadiumProfile} from './scene.js?v=1.7.2';
+import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.7.2';
 
-const APP_VERSION='1.7.1';
+const APP_VERSION='1.7.2';
 const SAVE_KEY='clubline-career-r1';
 const SITES=[['city','City Waterfront'],['gardens','Civic Gardens'],['rail','Rail District'],['university','University Quarter'],['oldtown','Old Town']];
 const availableSites=c=>c.capacity>=45000?SITES.slice(0,3):SITES;
@@ -34,7 +34,7 @@ let editing=null,selectedStand='N4';
 let saveWarning='',source,career=null,view='title',section='squad',sub='lineup',setup={clubId:'C01',site:'city',names:{},colour:null},selectedPlayer=null,selectedSlot=null,instructionPlayer=null,statsScope='club',statsSort='goals',statsDescending=true,match=null,timer=null,notice='',updateMessage='',availableVersion=null,checkingUpdate=false;
 const root=document.getElementById('app');
 
-try {source=await (await fetch('./data/league.json',{cache:'no-store'})).json();}
+try {source=await (await fetch('./data/league.json?v=1.7.2',{cache:'no-store'})).json();}
 catch(error){root.innerHTML='<main class="app-shell"><div class="shell-content"><h1>Clubline</h1><p>Could not load the league data. Open the game through a web server or GitHub Pages.</p></div></main>';throw error;}
 const ambitiousIds=new Set(source.clubs.map(c=>source.players.filter(p=>p.clubId===c.id).sort((a,b)=>a.overall-b.overall).slice(0,6).sort((a,b)=>b.potential-a.potential)[0]?.id));
 const menuScenes=source.clubs.map((c,i)=>({club:c,site:availableSites(c)[(i+Math.floor(i/3))%availableSites(c).length][0],evening:i%2===1}));
@@ -82,10 +82,16 @@ function scheduleSeason(){
  return rounds;
 }
 function newCareer(){
+ try{
  const c=club(setup.clubId),choice=bestLineup(c.id,c.formation);
  career={version:1,clubId:c.id,names:{...setup.names},colour:setup.colour||c.colour,site:setup.site,date:'2026-08-13',time:'09:00',balance:c.budget*5,formation:c.formation,style:c.style,order:'Standard',lineup:choice.lineup,bench:choice.bench,players:Object.fromEntries(source.players.map(p=>[p.id,{fitness:p.fitness,form:[],happiness:64+(p.number*7)%25,ambitious:ambitiousIds.has(p.id),instruction:'Standard',reason:'Content with their squad role.'}])),stats:{},loans:{},owners:{},transferList:[],offers:[],stadium:defaultLayout(c),schedule:scheduleSeason(),reports:[],news:[],kit:{home:'solid',away:'stripes'}};
  view='career';section='squad';sub='lineup';const saved=save();render();
  if(!saved)toast('The season is open, but this device could not save it. Free storage before reloading.');
+ }catch(error){
+  console.error('Could not start the season',error);
+  career=null;match=null;view='setup';
+  render();toast('Could not start the season. Use Check for updates on the main menu and try again.');
+ }
 }
 function save(){
  if(!career)return true;
@@ -520,3 +526,5 @@ document.addEventListener('pointerup',()=>{
 });
 
 render();
+
+if('serviceWorker' in navigator&&location.protocol==='https:')window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').then(reg=>reg.update()).catch(()=>{}));
