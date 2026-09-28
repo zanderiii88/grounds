@@ -1,14 +1,20 @@
-import {sceneSvg} from './scene.js?v=1.3.0';
+import {sceneSvg} from './scene.js?v=1.4.0';
 
-const APP_VERSION='1.3.0';
+const APP_VERSION='1.4.0';
 const SAVE_KEY='clubline-career-r1';
-const SITES=[['city','Old Town'],['harbour','Harbourfront'],['university','University Quarter'],['gardens','Civic Gardens'],['rail','Rail District']];
+const SITES=[['city','City Waterfront'],['gardens','Civic Gardens'],['rail','Rail District'],['university','University Quarter'],['oldtown','Old Town']];
+const availableSites=c=>c.capacity>=45000?SITES.slice(0,3):SITES;
 const COLOURS=['#862e43','#de414b','#e17837','#e7bd63','#257b5e','#1b8189','#3a6cbc','#633d8d','#edf0e9','#252c38'];
 const FORMATIONS={
  '4-3-3':[['LW','ST','RW'],['CM','DM','CM'],['LB','CB','CB','RB'],['GK']],
  '4-2-3-1':[['ST'],['LW','AM','RW'],['DM','DM'],['LB','CB','CB','RB'],['GK']],
  '4-4-2':[['ST','ST'],['LW','CM','CM','RW'],['LB','CB','CB','RB'],['GK']],
- '3-5-2':[['ST','ST'],['LB','CM','DM','CM','RB'],['CB','CB','CB'],['GK']]
+ '3-5-2':[['ST','ST'],['LB','CM','DM','CM','RB'],['CB','CB','CB'],['GK']],
+ '4-1-4-1':[['ST'],['LW','CM','CM','RW'],['DM'],['LB','CB','CB','RB'],['GK']],
+ '4-3-2-1':[['ST'],['AM','AM'],['CM','DM','CM'],['LB','CB','CB','RB'],['GK']],
+ '3-4-3':[['LW','ST','RW'],['LB','CM','CM','RB'],['CB','CB','CB'],['GK']],
+ '5-3-2':[['ST','ST'],['CM','DM','CM'],['LB','CB','CB','CB','RB'],['GK']],
+ '4-1-2-1-2':[['ST','ST'],['AM'],['CM','CM'],['DM'],['LB','CB','CB','RB'],['GK']]
 };
 const STYLES=['Balanced','High press','Possession','Direct','Counter'];
 const ORDERS=['Standard','Attack','Protect lead'];
@@ -18,6 +24,7 @@ const fmtMoney=n=>'£'+Math.round(n||0).toLocaleString('en-GB');
 const fmtDate=s=>new Date(s+'T12:00:00Z').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric',timeZone:'UTC'});
 const addDays=(s,n)=>new Date(Date.parse(s+'T12:00:00Z')+86400000*n).toISOString().slice(0,10);
 const rand=(arr)=>arr[Math.floor(Math.random()*arr.length)];
+let dragGhost=null,dragTarget=null,activeDrag=null,suppressDragClick=false,autoResumeTimer=null;
 let source,career=null,view='title',section='squad',sub='lineup',setup={clubId:'C01',site:'city',names:{},colour:null},selectedPlayer=null,selectedSlot=null,match=null,timer=null,notice='',updateMessage='',availableVersion=null,checkingUpdate=false;
 const root=document.getElementById('app');
 
@@ -54,7 +61,7 @@ function scheduleSeason(){
   const fixtures=[];
   for(let i=0;i<6;i++){
    const a=rotation[i],b=rotation[11-i],reverse=(r%2===0) !== (cycle===0);
-   fixtures.push({home:reverse?b:a,away:reverse?a:b,homeGoals:null,awayGoals:null});
+   fixtures.push({home:reverse?b:a,away:reverse?a:b,kickoff:['15:00','17:30','19:45'][(r+i+cycle)%3],homeGoals:null,awayGoals:null});
   }
   rounds.push({date:addDays('2026-08-15',rounds.length*7),fixtures});
   rotation.splice(1,0,rotation.pop());
@@ -67,7 +74,7 @@ function newCareer(){
  view='career';section='squad';sub='lineup';save();render();
 }
 function save(){if(career)localStorage.setItem(SAVE_KEY,JSON.stringify({career,match}));}
-function load(){try{const saved=JSON.parse(localStorage.getItem(SAVE_KEY));if(saved?.career?.version===1){career=saved.career;career.owners??={};career.transferList??=[];career.offers??=[];match=saved.match||null;return true}}catch{}return false}
+function load(){try{const saved=JSON.parse(localStorage.getItem(SAVE_KEY));if(saved?.career?.version===1){career=saved.career;career.owners??={};career.transferList??=[];career.offers??=[];if(career.site==='harbour')career.site='city';match=saved.match||null;if(match)match.kickoff??='15:00';return true}}catch{}return false}
 const hasSave=()=>{try{return JSON.parse(localStorage.getItem(SAVE_KEY))?.career?.version===1}catch{return false}};
 function nextFixture(){if(!career)return null;for(const round of career.schedule){const f=round.fixtures.find(x=>(x.home===career.clubId||x.away===career.clubId)&&x.homeGoals===null);if(f)return {...f,date:round.date,round}}return null}
 function allResults(){return career.schedule.flatMap(r=>r.fixtures.filter(f=>f.homeGoals!==null).map(f=>({...f,date:r.date})))}
@@ -80,7 +87,7 @@ function standings(){
  return Object.values(table).sort((a,b)=>b.Pts-a.Pts||(b.GF-b.GA)-(a.GF-a.GA)||b.GF-a.GF||clubName(a.id).localeCompare(clubName(b.id)));
 }
 function toast(message){notice=message;document.querySelector('.toast')?.remove();const div=document.createElement('div');div.className='toast';div.textContent=message;document.body.appendChild(div);setTimeout(()=>div.remove(),3500)}
-function scene(current,site,open=false,crowd=false){return `<div class="scene ${open?'open':''}">${sceneSvg(current,site,crowd)}</div>`}
+function scene(current,site,open=false,crowd=false,evening=false){return `<div class="scene ${open?'open':''}">${sceneSvg(current,site,crowd,evening)}</div>`}
 function logo(small=false){return `<img class="logo ${small?'small':''}" src="assets/clubline-logo.svg?v=${APP_VERSION}" alt="Clubline">`}
 function titleView(){const c=club('C01');return `<div class="app-shell title-screen" style="--club:${c.colour}">${scene(c,'city',true)}<div class="shell-content"><div class="menu-hero"><div class="hero-copy glass">${logo()}<p class="title-tagline">Your club. Your call.</p><div class="hero-actions"><button class="btn primary arrow wide" data-action="new-game">New career</button>${hasSave()?'<button class="btn wide" data-action="continue">Continue</button>':''}</div><small>12 clubs · Premier Division · 22 fixtures</small><div class="update-area"><button class="btn ghost slim" data-action="check-update" ${checkingUpdate?'disabled':''}>${checkingUpdate?'Checking…':'↻ Check for updates'}</button><span class="build-label">v${APP_VERSION}</span>${availableVersion?'<button class="btn slim primary" data-action="load-update">Load update</button>':''}${updateMessage?`<p role="status">${html(updateMessage)}</p>`:''}</div></div></div></div></div>`}
 async function checkForUpdates(){
@@ -100,11 +107,11 @@ async function checkForUpdates(){
 }
 function setupView(){
  const c=club(setup.clubId),name=setup.names[c.id]||c.name,col=setup.colour||c.colour;
- return `<div class="app-shell" style="--club:${col}">${scene({...c,colour:col},setup.site,true)}<div class="shell-content"><header class="topbar">${logo(true)}<button class="btn ghost" data-action="back-title">← Back</button></header><div class="setup-layout"><div class="glass setup-card"><span class="eyebrow">01 / Choose your club</span><h2>Premier Division</h2><div class="setup-list">${source.clubs.map(x=>`<button class="club-choice ${x.id===c.id?'active':''}" data-action="choose-club" data-id="${x.id}"><strong>${html(setup.names[x.id]||x.name)}</strong><span>ATT ${x.attack} &nbsp; DEF ${x.defence} &nbsp; ${Math.round(x.capacity/1000)}k seats · Facilities ${x.facilities}★ · Youth ${x.youth}★</span></button>`).join('')}</div><p class="muted" style="margin:14px 0 0;font-size:.75rem">All club names can be changed before kick-off.</p></div><div class="glass setup-detail"><span class="eyebrow">02 / Make it yours</span><h2>${html(name)}</h2><div class="stat-pair"><div class="stat-block"><small>Attack</small><strong>${c.attack}</strong></div><div class="stat-block"><small>Defence</small><strong>${c.defence}</strong></div><div class="stat-block"><small>Seats</small><strong>${(c.capacity/1000).toFixed(0)}k</strong></div></div><div class="detail-row"><span>Starting style</span><b>${html(c.style)}</b></div><div class="detail-row"><span>Home ground</span><b>${html(c.ground)}</b></div><div class="detail-row"><span>Opening funds</span><b>${fmtMoney(c.budget*5)}</b></div><div class="detail-row"><span>Club facilities</span>${stars(c.facilities,'Club facilities')}</div><div class="detail-row"><span>Youth programme</span>${stars(c.youth,'Youth programme')}</div><label class="field">Your club name<input id="clubRename" maxlength="32" value="${html(name)}"></label><button class="btn slim" data-action="rename-all">${setup.showNames?'Hide division names':'Rename any club'}</button>${setup.showNames?`<div class="list" style="max-height:150px;overflow:auto;margin-top:9px">${source.clubs.map(x=>`<label class="field" style="margin:3px 0">${html(x.name)}<input data-rename="${x.id}" maxlength="32" value="${html(setup.names[x.id]||x.name)}"></label>`).join('')}</div>`:''}<label class="field">Primary colour, locked for your home kit</label><div class="swatches">${COLOURS.map(x=>`<button class="swatch ${col===x?'on':''}" style="background:${x}" data-action="colour" data-colour="${x}" aria-label="Choose ${x}"></button>`).join('')}<input type="color" id="customColour" aria-label="Custom primary colour" value="${col}" style="width:40px;height:32px;padding:0;border:0;background:transparent"></div><label class="field">Home location</label><div class="site-options">${SITES.map(([key,label])=>`<button class="btn ${setup.site===key?'selected':''}" data-action="site" data-site="${key}">${label}</button>`).join('')}</div><div class="setup-ground-preview" aria-label="Preview of selected home ground">${sceneSvg({...c,colour:col},setup.site)}<span>${html(c.ground)} · ${c.capacity.toLocaleString('en-GB')} seats</span></div><div class="setup-footer"><button class="btn club arrow" data-action="start-season">Start season</button></div></div></div></div></div>`;
+ return `<div class="app-shell" style="--club:${col}">${scene({...c,colour:col},setup.site,true)}<div class="shell-content"><header class="topbar">${logo(true)}<button class="btn ghost" data-action="back-title">← Back</button></header><div class="setup-layout"><div class="glass setup-card"><span class="eyebrow">01 / Choose your club</span><h2>Premier Division</h2><div class="setup-list">${source.clubs.map(x=>`<button class="club-choice ${x.id===c.id?'active':''}" data-action="choose-club" data-id="${x.id}"><strong>${html(setup.names[x.id]||x.name)}</strong><span>ATT ${x.attack} &nbsp; DEF ${x.defence} &nbsp; ${Math.round(x.capacity/1000)}k seats · Facilities ${x.facilities}★ · Youth ${x.youth}★</span></button>`).join('')}</div><p class="muted" style="margin:14px 0 0;font-size:.75rem">All club names can be changed before kick-off.</p></div><div class="glass setup-detail"><span class="eyebrow">02 / Make it yours</span><h2>${html(name)}</h2><div class="stat-pair"><div class="stat-block"><small>Attack</small><strong>${c.attack}</strong></div><div class="stat-block"><small>Defence</small><strong>${c.defence}</strong></div><div class="stat-block"><small>Seats</small><strong>${(c.capacity/1000).toFixed(0)}k</strong></div></div><div class="detail-row"><span>Starting style</span><b>${html(c.style)}</b></div><div class="detail-row"><span>Home ground</span><b>${html(c.ground)}</b></div><div class="detail-row"><span>Opening funds</span><b>${fmtMoney(c.budget*5)}</b></div><div class="detail-row"><span>Club facilities</span>${stars(c.facilities,'Club facilities')}</div><div class="detail-row"><span>Youth programme</span>${stars(c.youth,'Youth programme')}</div><label class="field">Your club name<input id="clubRename" maxlength="32" value="${html(name)}"></label><button class="btn slim" data-action="rename-all">${setup.showNames?'Hide division names':'Rename any club'}</button>${setup.showNames?`<div class="list" style="max-height:150px;overflow:auto;margin-top:9px">${source.clubs.map(x=>`<label class="field" style="margin:3px 0">${html(x.name)}<input data-rename="${x.id}" maxlength="32" value="${html(setup.names[x.id]||x.name)}"></label>`).join('')}</div>`:''}<label class="field">Primary colour, locked for your home kit</label><div class="swatches">${COLOURS.map(x=>`<button class="swatch ${col===x?'on':''}" style="background:${x}" data-action="colour" data-colour="${x}" aria-label="Choose ${x}"></button>`).join('')}<input type="color" id="customColour" aria-label="Custom primary colour" value="${col}" style="width:40px;height:32px;padding:0;border:0;background:transparent"></div><label class="field">Home location</label><div class="site-options">${availableSites(c).map(([key,label])=>`<button class="btn ${setup.site===key?'selected':''}" data-action="site" data-site="${key}">${label}</button>`).join('')}</div><div class="setup-ground-preview" aria-label="Preview of selected home ground">${sceneSvg({...c,colour:col},setup.site)}<span>${html(c.ground)} · ${c.capacity.toLocaleString('en-GB')} seats</span></div><div class="setup-footer"><button class="btn club arrow" data-action="start-season">Start season</button></div></div></div></div></div>`;
 }
 
-function topbar(){const next=nextFixture();return `<header class="topbar">${logo(true)}<div class="top-pill"><small>Date / time</small><b>${fmtDate(career.date)} · ${career.time}</b></div><div class="top-pill"><small>Club balance</small><b class="money">${fmtMoney(career.balance)}</b></div><div class="top-pill"><small>Next match</small><b>${next?`${next.home===career.clubId?'H':'A'} · ${html(clubName(opposition(next,career.clubId)))}`:'Season complete'}</b></div><button class="btn slim ghost" data-action="menu">Menu</button></header>`}
-function dashboard(){const c=myClub(),next=nextFixture(),homeMatch=match&&match.home===career.clubId;return `<div class="app-shell" style="--club:${myColour()}">${scene({...c,colour:myColour()},career.site,false,homeMatch)}<div class="shell-content">${topbar()}<div class="dash-grid"><div><div class="glass panel welcome"><span class="eyebrow">${html(c.ground)} / ${c.capacity.toLocaleString('en-GB')} seats</span><h1>${html(clubName(c.id))}</h1><div class="next-line">${next?`Next: ${next.home===c.id?'at home to':'away at'} ${html(clubName(opposition(next,c.id)))} · ${fmtDate(next.date)}`:'The league season is complete.'}</div></div><nav class="section-nav" aria-label="Club sections">${[['squad','Squad'],['facilities','Facilities'],['finances','Finances'],['organiser','Organiser']].map(([id,label])=>`<button class="btn ${section===id?'active':''}" data-action="section" data-section="${id}">${label}</button>`).join('')}</nav></div><div class="glass panel section-content">${sectionContent()}</div></div><div class="advance-dock"><button class="btn primary arrow" data-action="advance">${next&&career.date===next.date?'Matchday':'Advance time'}</button><span>${next?`${next.date===career.date?'Kick-off event ahead':'Next fixture '+fmtDate(next.date)}`:'Season finished'}</span></div></div>${match?matchOverlay():''}${career.offers?.some(o=>o.status==='new')?`<button class="offer-alert" data-action="open-offers">Transfer offer received · Review →</button>`:''}</div>`}
+function topbar(){const next=nextFixture();return `<header class="topbar">${logo(true)}<div class="top-pill"><small>Date / time</small><b>${fmtDate(career.date)} · ${career.time}</b></div><div class="top-pill"><small>Club balance</small><b class="money">${fmtMoney(career.balance)}</b></div><div class="top-pill"><small>Next match</small><b>${next?`${next.home===career.clubId?'H':'A'} ${next.kickoff||'15:00'} · ${html(clubName(opposition(next,career.clubId)))}`:'Season complete'}</b></div><button class="btn slim ghost" data-action="menu">Menu</button></header>`}
+function dashboard(){const c=myClub(),next=nextFixture(),homeMatch=match&&match.home===career.clubId;return `<div class="app-shell" style="--club:${myColour()}">${scene({...c,colour:myColour()},career.site,false,homeMatch,!!(match&&match.kickoff>='17:30'))}<div class="shell-content">${topbar()}<div class="dash-grid"><div><div class="glass panel welcome"><span class="eyebrow">${html(c.ground)} / ${c.capacity.toLocaleString('en-GB')} seats</span><h1>${html(clubName(c.id))}</h1><div class="next-line">${next?`Next: ${next.home===c.id?'at home to':'away at'} ${html(clubName(opposition(next,c.id)))} · ${fmtDate(next.date)} · ${next.kickoff||'15:00'}`:'The league season is complete.'}</div></div><nav class="section-nav" aria-label="Club sections">${[['squad','Squad'],['facilities','Facilities'],['finances','Finances'],['organiser','Organiser']].map(([id,label])=>`<button class="btn ${section===id?'active':''}" data-action="section" data-section="${id}">${label}</button>`).join('')}</nav></div><div class="glass panel section-content">${sectionContent()}</div></div><div class="advance-dock"><button class="btn primary arrow" data-action="advance">${next&&career.date===next.date?'Matchday':'Advance time'}</button><span>${next?`${next.date===career.date?'Kick-off event ahead':'Next fixture '+fmtDate(next.date)}`:'Season finished'}</span></div></div>${match?matchOverlay():''}${career.offers?.some(o=>o.status==='new')?`<button class="offer-alert" data-action="open-offers">Transfer offer received · Review →</button>`:''}</div>`}
 
 function sectionContent(){return section==='squad'?squadSection():section==='facilities'?facilitiesSection():section==='finances'?financesSection():organiserSection()}
 
@@ -129,14 +136,14 @@ function shirt(p,compact=false){return `<span class="shirt ${compact?'shirt-smal
 function lineupEditor(inModal=false){
  const pool=squadPlayers(career.clubId).sort((a,b)=>b.overall-a.overall);
  let idx=0;
- const pitch=FORMATIONS[career.formation].map(line=>`<div class="pitch-line">${line.map(pos=>{const at=idx++,id=career.lineup[at],p=player(id);return `<button class="slot shirt-slot ${!p?'empty':''} ${selectedSlot===at?'selected':''}" data-action="slot" data-index="${at}" data-drop-slot="${at}" aria-label="${pos}: ${p?html(p.name)+', rated '+p.overall+', condition '+playerFitness(id)+' percent':'Empty'}"><span class="slot-name">${p?html(p.name.split(' ').at(-1)):'Select'}</span>${shirt(p)}<span class="slot-stats">${pos} · ${p?p.overall:'—'} · ${p?playerFitness(id)+'%':'—'}</span></button>`}).join('')}</div>`).join('');
- return `<div class="squad-toolbar"><span class="badge">${career.formation}</span><span class="badge">${career.style}</span><button class="btn slim" data-action="auto-lineup">Auto pick</button></div><div class="formation-pitch">${pitch}</div><small>Bench · tap a player, then a slot. Drag and drop also works.</small><div class="bench shirt-bench">${career.bench.map((id,i)=>{const p=player(id);return `<button class="slot shirt-slot ${selectedSlot===11+i?'selected':''}" data-action="slot" data-index="${11+i}" data-drop-slot="${11+i}"><span class="slot-name">${p?html(p.name.split(' ').at(-1)):'Select'}</span>${shirt(p,true)}<span class="slot-stats">${p?p.primary+' · '+p.overall+' · '+playerFitness(id)+'%':'Empty'}</span></button>`}).join('')}</div><div class="player-list">${pool.map(p=>`<button draggable="true" class="player-card ${selectedPlayer===p.id?'active':''}" data-action="select-player" data-player="${p.id}">${shirt(p,true)}<span class="player-card-copy"><strong>${html(p.name)}</strong><span class="meta">${p.primary}${p.secondary?' / '+p.secondary:''} · ${p.overall} OVR · ${playerFitness(p.id)}% condition</span><span class="meta">Age ${p.age} ${career.lineup.includes(p.id)?'· XI':career.bench.includes(p.id)?'· Bench':''}</span></span></button>`).join('')}</div>${inModal?'<div class="modal-actions"><button class="btn primary" data-action="confirm-lineup">Confirm lineup</button></div>':''}`;
+ const pitch=FORMATIONS[career.formation].map(line=>`<div class="pitch-line">${line.map(pos=>{const at=idx++,id=career.lineup[at],p=player(id);return `<button class="slot shirt-slot ${!p?'empty':''} ${selectedSlot===at?'selected':''}" data-action="slot" data-index="${at}" data-drop-slot="${at}" data-player="${id||''}" draggable="${!!p}" aria-label="${pos}: ${p?html(p.name)+', rated '+p.overall+', condition '+playerFitness(id)+' percent':'Empty'}"><span class="slot-name">${p?html(p.name.split(' ').at(-1)):'Select'}</span>${shirt(p)}<span class="slot-stats">${pos} · ${p?p.overall:'—'} · ${p?playerFitness(id)+'%':'—'}</span></button>`}).join('')}</div>`).join('');
+ return `<div class="squad-toolbar"><label class="field">Formation <select class="select" data-squad-formation>${Object.keys(FORMATIONS).map(f=>`<option value="${f}" ${f===career.formation?'selected':''}>${f}</option>`).join('')}</select></label><span class="badge">${career.style}</span><button class="btn slim" data-action="auto-lineup">Auto pick</button></div><div class="formation-pitch">${pitch}</div><small>Bench · tap a player, then a slot. Drag and drop also works.</small><div class="bench shirt-bench">${career.bench.map((id,i)=>{const p=player(id);return `<button class="slot shirt-slot ${selectedSlot===11+i?'selected':''}" data-action="slot" data-index="${11+i}" data-drop-slot="${11+i}" data-player="${id||''}" draggable="${!!p}"><span class="slot-name">${p?html(p.name.split(' ').at(-1)):'Select'}</span>${shirt(p,true)}<span class="slot-stats">${p?p.primary+' · '+p.overall+' · '+playerFitness(id)+'%':'Empty'}</span></button>`}).join('')}</div><div class="player-list">${pool.map(p=>`<button draggable="true" class="player-card ${selectedPlayer===p.id?'active':''}" data-action="select-player" data-player="${p.id}">${shirt(p,true)}<span class="player-card-copy"><strong>${html(p.name)}</strong><span class="meta">${p.primary}${p.secondary?' / '+p.secondary:''} · ${p.overall} OVR · ${playerFitness(p.id)}% condition</span><span class="meta">Age ${p.age} ${career.lineup.includes(p.id)?'· XI':career.bench.includes(p.id)?'· Bench':''}</span></span></button>`).join('')}</div>${inModal?'<div class="modal-actions"><button class="btn primary" data-action="confirm-lineup">Confirm lineup</button></div>':''}`;
 }
 function facilitiesSection(){return `<span class="eyebrow">Club / Facilities</span><h2>${html(myClub().ground)}</h2><p>Your ${myClub().capacity.toLocaleString('en-GB')}-seat ground is the visible home of the club. Stadium construction and groundskeeping are planned for a later release.</p><div class="detail-row"><span>Location</span><b>${html(SITES.find(x=>x[0]===career.site)?.[1])}</b></div><div class="detail-row"><span>Seat colour</span><b><span style="display:inline-block;width:15px;height:15px;background:${myColour()};vertical-align:middle"></span> ${html(myColour().toUpperCase())}</b></div><div class="detail-row"><span>Capacity</span><b>${myClub().capacity.toLocaleString('en-GB')}</b></div><div class="empty-note" style="margin-top:18px">The ground and its colour are visible now. Designer, facilities and site compatibility upgrades follow in Release 3.</div>`}
 function financesSection(){const home=career.reports.filter(r=>r.home),income=home.reduce((n,r)=>n+r.income,0);return `<span class="eyebrow">Club / Finances</span><h2>Club balance</h2><div class="stat-pair"><div class="stat-block"><small>Available cash</small><strong style="font-size:1.7rem">${fmtMoney(career.balance)}</strong></div><div class="stat-block"><small>Home income</small><strong style="font-size:1.7rem">${fmtMoney(income)}</strong></div></div><p>Home fixtures produce ticket, food and shop income automatically in this release. The breakdown appears on each match report.</p><div class="detail-row"><span>Weekly squad wages</span><b>${fmtMoney(squadPlayers(career.clubId).reduce((n,p)=>n+p.wage,0))}</b></div><div class="detail-row"><span>Matchday pricing</span><b>Standard for the league</b></div><div class="empty-note" style="margin-top:18px">Pricing, concessions, commercial events and seasonal kit redesigns are planned for later releases.</div>`}
 function organiserSection(){
  const table=standings(),next=nextFixture(),fixtureLines=career.schedule.flatMap(r=>r.fixtures.filter(f=>f.home===career.clubId||f.away===career.clubId).map(f=>({...f,date:r.date}))).filter(f=>f.homeGoals===null).slice(0,5);
- return `<span class="eyebrow">Season / Organiser</span><h2>Premier Division</h2>${tabBar([['table','Table'],['calendar','Calendar'],['news','League news']])}${sub==='calendar'?`<div class="list">${fixtureLines.map(f=>`<div class="row"><span>${fmtDate(f.date)}<br><small>${f.home===career.clubId?'Home':'Away'} · ${html(clubName(opposition(f,career.clubId)))}</small></span><b>15:00</b></div>`).join('')||'<div class="empty-note">All league fixtures have been played.</div>'}</div>`:sub==='news'?`<div class="list">${career.news.slice(-12).reverse().map(n=>`<div class="row"><span>${html(n.text)}</span><small>${fmtDate(n.date)}</small></div>`).join('')||'<div class="empty-note">The season is just beginning. Results and injuries will appear here.</div>'}</div>`:`<div class="table-wrap"><table class="league-table"><thead><tr><th>#</th><th>Club</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead><tbody>${table.map((t,i)=>`<tr class="${t.id===career.clubId?'mine':''}"><td>${i+1}</td><td>${html(clubName(t.id))}</td><td>${t.P}</td><td>${t.W}</td><td>${t.D}</td><td>${t.L}</td><td>${t.GF-t.GA}</td><td><b>${t.Pts}</b></td></tr>`).join('')}</tbody></table></div><p style="margin-top:14px">${next?'Next round '+fmtDate(next.date):'Season complete'}</p>`}`;
+ return `<span class="eyebrow">Season / Organiser</span><h2>Premier Division</h2>${tabBar([['table','Table'],['calendar','Calendar'],['news','League news']])}${sub==='calendar'?`<div class="list">${fixtureLines.map(f=>`<div class="row"><span>${fmtDate(f.date)}<br><small>${f.home===career.clubId?'Home':'Away'} · ${html(clubName(opposition(f,career.clubId)))}</small></span><b>${f.kickoff||'15:00'}</b></div>`).join('')||'<div class="empty-note">All league fixtures have been played.</div>'}</div>`:sub==='news'?`<div class="list">${career.news.slice(-12).reverse().map(n=>`<div class="row"><span>${html(n.text)}</span><small>${fmtDate(n.date)}</small></div>`).join('')||'<div class="empty-note">The season is just beginning. Results and injuries will appear here.</div>'}</div>`:`<div class="table-wrap"><table class="league-table"><thead><tr><th>#</th><th>Club</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead><tbody>${table.map((t,i)=>`<tr class="${t.id===career.clubId?'mine':''}"><td>${i+1}</td><td>${html(clubName(t.id))}</td><td>${t.P}</td><td>${t.W}</td><td>${t.D}</td><td>${t.L}</td><td>${t.GF-t.GA}</td><td><b>${t.Pts}</b></td></tr>`).join('')}</tbody></table></div><p style="margin-top:14px">${next?'Next round '+fmtDate(next.date):'Season complete'}</p>`}`;
 }
 
 function render(){clearInterval(timer);timer=null;root.innerHTML=view==='title'?titleView():view==='setup'?setupView():dashboard();if(match?.phase==='live'&&!match.paused)startClock()}
@@ -146,7 +153,7 @@ function advance(){
  if(match){toast('Finish the match first.');return}
  const next=nextFixture();
  if(!next){toast('The season is complete. Check the final table in Organiser.');return}
- if(career.date===next.date&&career.time==='09:00'){career.time='14:45';match={phase:'choice',fixtureDate:next.date,home:next.home,away:next.away,homeGoals:0,awayGoals:0,minute:0,added:2,events:[],paused:false,speed:4,subCount:0,ratings:{},goalCounts:{},cardCounts:{},injured:[],participants:{},lineup:[...career.lineup],bench:[...career.bench]};save();render();return}
+ if(career.date===next.date&&career.time==='09:00'){career.time=next.kickoff?`${String(Math.floor((Number(next.kickoff.slice(0,2))*60+Number(next.kickoff.slice(3))-15)/60)).padStart(2,'0')}:${String((Number(next.kickoff.slice(0,2))*60+Number(next.kickoff.slice(3))-15)%60).padStart(2,'0')}`:'14:45';match={phase:'choice',fixtureDate:next.date,kickoff:next.kickoff||'15:00',home:next.home,away:next.away,homeGoals:0,awayGoals:0,minute:0,added:2,events:[],paused:false,speed:2,subCount:0,ratings:{},goalCounts:{},cardCounts:{},injured:[],participants:{},lineup:[...career.lineup],bench:[...career.bench]};save();render();return}
  career.date=addDays(career.date,1);career.time='09:00';
  for(const p of squadPlayers(career.clubId)){
   const state=career.players[p.id];if(state.injuryDays>0)state.injuryDays--;
@@ -233,7 +240,14 @@ function tickMatch(quick){
   else if(Math.random()<.008)injuryEvent(chosen);
   else if(m%15===0)match.events.push({minute:m,type:'info',text:`${clockLabel(m)} The contest remains finely balanced.`});
  }
- if(!quick){save();render()}
+ if(!quick){
+  save();render();
+  if(match?.paused&&['goal','yellow','red','injury'].includes(match.pauseReason)){
+   const pausedAt=match.minute,reason=match.pauseReason;
+   clearTimeout(autoResumeTimer);
+   autoResumeTimer=setTimeout(()=>{if(match?.phase==='live'&&match.paused&&match.minute===pausedAt&&match.pauseReason===reason){match.paused=false;match.flash=null;save();render()}},1800);
+  }
+ }
 }
 
 function quickScore(home,away){const baseH=1.25+(club(home).attack-club(away).defence)*.024+.2,baseA=1.12+(club(away).attack-club(home).defence)*.024;const poisson=mean=>{let n=0,p=1,threshold=Math.exp(-Math.max(.2,mean));do{n++;p*=Math.random()}while(p>threshold);return n-1};return [poisson(baseH),poisson(baseA)]}
@@ -269,12 +283,12 @@ function matchOverlay(){
  if(match.phase==='confirm')body=`<span class="eyebrow">Matchday / Lineup confirmation</span><h2>Pick your eleven</h2><p>Confirm your XI, bench and shape before kick-off. You can change tactics and make substitutions during the match.</p><div class="match-columns"><div>${lineupEditor(true)}</div><div class="glass panel"><h3>Match plan</h3><div class="detail-row"><span>Formation</span><select class="select" data-match-setting="formation">${Object.keys(FORMATIONS).map(x=>`<option ${x===career.formation?'selected':''}>${x}</option>`).join('')}</select></div><div class="detail-row"><span>Style</span><select class="select" data-match-setting="style">${STYLES.map(x=>`<option ${x===career.style?'selected':''}>${x}</option>`).join('')}</select></div><div class="detail-row"><span>Orders</span><select class="select" data-match-setting="order">${ORDERS.map(x=>`<option ${x===career.order?'selected':''}>${x}</option>`).join('')}</select></div><button class="btn ghost" data-action="choice-back" style="margin-top:20px">← Match options</button></div></div>`;
  if(match.phase==='live'){
   const last=match.flash,score=`${match.homeGoals} : ${match.awayGoals}`;
-  body=`<span class="eyebrow">${home?html(myClub().ground):'Away match'} / ${clockLabel(match.minute)} ${match.paused?'· Paused':''}</span><div class="scoreline"><span>${html(clubName(match.home))}</span><strong>${score}</strong><span>${html(clubName(match.away))}</span></div>${last?`<div class="flash ${last.type==='yellow'?'yellow':last.type==='red'?'red':''}">${last.type==='goal'?'GOAL!:':last.type==='yellow'?'YELLOW CARD:':last.type==='red'?'RED CARD:':last.type==='injury'?'INJURY:':'HALF-TIME'} ${last.playerId?html(player(last.playerId).name):''} ${clockLabel(last.minute)}</div>`:''}<div class="match-toolbar"><small>Match pace</small>${[7,4,2].map(n=>`<button class="btn slim ${match.speed===n?'selected':''}" data-action="speed" data-speed="${n}">${n} min / half</button>`).join('')}${match.paused?'<button class="btn primary slim" data-action="resume-match">Continue ▶</button>':'<button class="btn slim" data-action="pause-match">Pause</button>'}<button class="btn slim" data-action="finish-sim">Sim rest</button></div><div class="match-columns"><div class="commentary" id="commentary">${match.events.slice(-30).map(e=>`<div class="comment ${e.type}"><small>${clockLabel(e.minute)} ${e.team?html(clubName(e.team)):''}</small><br>${html(e.text)}</div>`).join('')}</div><div class="glass panel"><h3>Touchline decisions</h3><div class="detail-row"><span>Formation</span><select class="select" data-match-setting="formation">${Object.keys(FORMATIONS).map(x=>`<option ${x===career.formation?'selected':''}>${x}</option>`).join('')}</select></div><div class="detail-row"><span>Style</span><select class="select" data-match-setting="style">${STYLES.map(x=>`<option ${x===career.style?'selected':''}>${x}</option>`).join('')}</select></div><div class="detail-row"><span>Orders</span><select class="select" data-match-setting="order">${ORDERS.map(x=>`<option ${x===career.order?'selected':''}>${x}</option>`).join('')}</select></div><div class="divider"></div><small>Substitutions ${match.subCount}/5 · tap a bench player, then the player to replace</small><div class="bench">${match.bench.filter(Boolean).map(id=>`<button class="btn slim ${selectedPlayer===id?'selected':''}" data-action="match-bench" data-player="${id}">${html(player(id).name)} ${playerFitness(id)}%</button>`).join('')}</div><div class="list" style="max-height:190px;overflow:auto">${match.lineup.map((id,i)=>id?`<button class="row" style="color:var(--text);text-align:left;cursor:pointer" data-action="match-replace" data-index="${i}"><span>${slotsFor(career.formation)[i]} · ${html(player(id).name)}</span><small>${playerFitness(id)}%</small></button>`:`<button class="row" data-action="match-replace" data-index="${i}"><span>Empty · replace sent-off player</span></button>`).join('')}</div></div></div>`;
+  body=`<span class="eyebrow">${home?html(myClub().ground):'Away match'} / ${clockLabel(match.minute)} ${match.paused?'· Paused':''}</span><div class="scoreline"><span>${html(clubName(match.home))}</span><strong>${score}</strong><span>${html(clubName(match.away))}</span></div>${last?`<div class="flash ${last.type==='yellow'?'yellow':last.type==='red'?'red':''}">${last.type==='goal'?'GOAL!:':last.type==='yellow'?'YELLOW CARD:':last.type==='red'?'RED CARD:':last.type==='injury'?'INJURY:':'HALF-TIME'} ${last.playerId?html(player(last.playerId).name):''} ${clockLabel(last.minute)}</div>`:''}<div class="match-toolbar"><small>Match pace</small>${[4,2,1].map(n=>`<button class="btn slim ${match.speed===n?'selected':''}" data-action="speed" data-speed="${n}">${n} min / half</button>`).join('')}${match.paused?'<button class="btn primary slim" data-action="resume-match">Continue ▶</button>':'<button class="btn slim" data-action="pause-match">Pause</button>'}<button class="btn slim" data-action="sim-next">Sim to next event</button><button class="btn slim" data-action="sim-half">Sim to end of half</button><button class="btn slim" data-action="finish-sim">Sim match</button></div><div class="match-columns"><div class="commentary" id="commentary">${match.events.slice(-30).map(e=>`<div class="comment ${e.type}"><small>${clockLabel(e.minute)} ${e.team?html(clubName(e.team)):''}</small><br>${html(e.text)}</div>`).join('')}</div><div class="glass panel"><h3>Touchline decisions</h3><div class="detail-row"><span>Formation</span><select class="select" data-match-setting="formation">${Object.keys(FORMATIONS).map(x=>`<option ${x===career.formation?'selected':''}>${x}</option>`).join('')}</select></div><div class="detail-row"><span>Style</span><select class="select" data-match-setting="style">${STYLES.map(x=>`<option ${x===career.style?'selected':''}>${x}</option>`).join('')}</select></div><div class="detail-row"><span>Orders</span><select class="select" data-match-setting="order">${ORDERS.map(x=>`<option ${x===career.order?'selected':''}>${x}</option>`).join('')}</select></div><div class="divider"></div><small>Substitutions ${match.subCount}/5 · tap a bench player, then the player to replace</small><div class="bench">${match.bench.filter(Boolean).map(id=>`<button class="btn slim ${selectedPlayer===id?'selected':''}" data-action="match-bench" data-player="${id}">${html(player(id).name)} ${playerFitness(id)}%</button>`).join('')}</div><div class="list" style="max-height:190px;overflow:auto">${match.lineup.map((id,i)=>id?`<button class="row" style="color:var(--text);text-align:left;cursor:pointer" data-action="match-replace" data-index="${i}"><span>${slotsFor(career.formation)[i]} · ${html(player(id).name)}</span><small>${playerFitness(id)}%</small></button>`:`<button class="row" data-action="match-replace" data-index="${i}"><span>Empty · replace sent-off player</span></button>`).join('')}</div></div></div>`;
  }
  if(match.phase==='report'){
   const report=career.reports.at(-1);body=`<span class="eyebrow">Full-time / ${fmtDate(report.date)}</span><h2>Match report card</h2><div class="scoreline"><span>${html(clubName(match.home))}</span><strong>${match.homeGoals} : ${match.awayGoals}</strong><span>${html(clubName(match.away))}</span></div><div class="report-grid"><div><small>Attendance</small><strong>${report.home?report.attendance.toLocaleString('en-GB'):'Away'}</strong></div><div><small>Ticket sales</small><strong>${fmtMoney(report.tickets)}</strong></div><div><small>Food & drink</small><strong>${fmtMoney(report.concessions)}</strong></div><div><small>Club shop</small><strong>${fmtMoney(report.shop)}</strong></div></div><p>Matchday costs: ${fmtMoney(report.operating)} · Net home income: ${fmtMoney(report.income)}</p><div class="match-columns"><div><h3>Your players</h3><div class="report-list list">${report.performances.sort((a,b)=>(b.rating||0)-(a.rating||0)).map(x=>`<div class="row"><span><b>${html(player(x.id).name)}</b><br><small>${player(x.id).primary} · ${x.minutes} min · ${x.goals?x.goals+' goal'+(x.goals>1?'s':'')+' · ':''}${x.cards?'Card · ':''}${x.injuryDays?'Injured · ':''}Fit ${x.fitness}%</small></span><strong>${x.rating??'—'}</strong></div>`).join('')}</div></div><div><h3>Key moments</h3><div class="commentary">${report.events.filter(e=>['goal','yellow','red','injury','chance'].includes(e.type)).map(e=>`<div class="comment ${e.type}"><small>${clockLabel(e.minute)}</small><br>${html(e.text)}</div>`).join('')||'<div class="muted">A quiet game.</div>'}</div></div></div><div class="modal-actions"><button class="btn primary arrow" data-action="close-report">Continue career</button></div>`;
  }
- return `<div class="overlay" role="dialog" aria-modal="true" aria-label="Matchday"><div class="modal">${home?`<div class="match-ground" aria-label="Crowd at ${html(myClub().ground)}">${sceneSvg({...myClub(),colour:myColour()},career.site,true)}<span>${html(myClub().ground)} · ${myClub().capacity.toLocaleString('en-GB')} seats</span></div>`:''}<div class="modal-head"><div style="flex:1">${body}</div></div></div></div>`;
+ return `<div class="overlay" role="dialog" aria-modal="true" aria-label="Matchday"><div class="modal">${home?`<div class="match-ground" aria-label="Crowd at ${html(myClub().ground)}">${sceneSvg({...myClub(),colour:myColour()},career.site,true,match.kickoff>='17:30',true)}<span>${html(myClub().ground)} · ${myClub().capacity.toLocaleString('en-GB')} seats</span></div>`:''}<div class="modal-head"><div style="flex:1">${body}</div></div></div></div>`;
 }
 
 function swapLineup(target,id){
@@ -284,6 +298,28 @@ function swapLineup(target,id){
  if(oldXi>=0)career.lineup[oldXi]=old;
  if(oldBench>=0)career.bench[oldBench]=old;
  list[offset]=id;selectedPlayer=null;selectedSlot=null;save();render();
+}
+function setFormation(shape){
+ if(!FORMATIONS[shape]||!career)return;
+ career.formation=shape;
+ const picks=bestLineup(career.clubId,shape);
+ career.lineup=picks.lineup;career.bench=picks.bench;
+ selectedPlayer=null;selectedSlot=null;save();render();
+}
+function skipMatch(kind){
+ if(!match||match.phase!=='live')return;
+ clearTimeout(autoResumeTimer);
+ const startEvents=match.events.length,stop=match.minute<46?46:95;
+ match.paused=false;match.flash=null;
+ while(match?.phase==='live'&&match.minute<stop){
+  tickMatch(true);
+  if(kind==='next'&&match.events.length>startEvents&&['goal','yellow','red','injury','chance'].includes(match.events.at(-1).type))break;
+ }
+ if(match?.phase==='live'){
+  match.paused=true;match.pauseReason='skip';
+  if(match.minute===46)match.events.push({minute:45,type:'info',text:`Half-time. ${clubName(match.home)} ${match.homeGoals}–${match.awayGoals} ${clubName(match.away)}.`});
+ }
+ save();render();
 }
 function substitute(index){
  if(!match||match.phase!=='live'||!selectedPlayer)return;
@@ -297,6 +333,7 @@ function substitute(index){
 }
 
 root.addEventListener('click',event=>{
+ if(suppressDragClick){suppressDragClick=false;return}
  const el=event.target.closest('[data-action]');if(!el)return;
  const action=el.dataset.action;
  if(action==='new-game'){setup={clubId:'C01',site:'city',names:{},colour:null};view='setup';render()}
@@ -304,10 +341,10 @@ root.addEventListener('click',event=>{
  else if(action==='check-update')checkForUpdates();
  else if(action==='load-update'&&availableVersion){const url=new URL(location.href);url.searchParams.set('update',availableVersion);url.searchParams.set('t',Date.now());location.assign(url.href)}
  else if(action==='back-title'||action==='menu'){view='title';render()}
- else if(action==='choose-club'){setup.clubId=el.dataset.id;setup.colour=null;render()}
+ else if(action==='choose-club'){setup.clubId=el.dataset.id;setup.colour=null;if(!availableSites(club(setup.clubId)).some(x=>x[0]===setup.site))setup.site='city';render()}
  else if(action==='rename-all'){setup.showNames=!setup.showNames;render()}
  else if(action==='colour'){setup.colour=el.dataset.colour;render()}
- else if(action==='site'){setup.site=el.dataset.site;render()}
+ else if(action==='site'){if(availableSites(club(setup.clubId)).some(x=>x[0]===el.dataset.site))setup.site=el.dataset.site;render()}
  else if(action==='start-season')newCareer();
  else if(action==='section'){section=el.dataset.section;sub=section==='organiser'?'table':'lineup';render()}
  else if(action==='sub'){sub=el.dataset.sub;render()}
@@ -318,7 +355,7 @@ root.addEventListener('click',event=>{
  else if(['accept-offer','counter-offer','reject-offer'].includes(action)){const id=el.dataset.id,clubId=el.dataset.club,o=career.offers.find(x=>x.id===id&&x.clubId===clubId&&(x.status==='new'||x.status==='counter'));if(!o)return;if(action==='reject-offer'){o.status='rejected';save();render();return}if(action==='counter-offer'){if(o.incoming){toast('The selling club is waiting on your decision.');return}o.fee=Math.round(o.fee*1.2/10000)*10000;o.status='pending';save();render();toast(`Counter proposal sent: ${fmtMoney(o.fee)}.`);return}if(o.incoming){if(career.balance<o.fee){toast('Your club cannot afford that fee.');return}resolveTransfer(id,career.clubId,o.fee)}else{if(squadPlayers(career.clubId).length<=18){toast('Keep at least 18 players in your squad.');return}resolveTransfer(id,clubId,o.fee)}}
  else if(action==='advance')advance();
  else if(action==='auto-lineup'){const picks=bestLineup(career.clubId,career.formation);career.lineup=picks.lineup;career.bench=picks.bench;save();render()}
- else if(action==='formation'){career.formation=el.dataset.value;save();render()}
+ else if(action==='formation'){setFormation(el.dataset.value)}
  else if(action==='style'){career.style=el.dataset.value;save();render()}
  else if(action==='order'){career.order=el.dataset.value;save();render()}
  else if(action==='select-player'){const id=el.dataset.player;if(selectedSlot!==null)swapLineup(selectedSlot,id);else{selectedPlayer=id;render()}}
@@ -327,10 +364,12 @@ root.addEventListener('click',event=>{
  else if(action==='choice-back'){match.phase='choice';save();render()}
  else if(action==='watch-match')beginMatch('watch');
  else if(action==='simulate-match')beginMatch('simulate');
- else if(action==='confirm-lineup'){if(!validLineup()){toast('Complete your XI and bench, including a fit goalkeeper.');return}match.lineup=[...career.lineup];match.bench=[...career.bench];match.participants=Object.fromEntries(match.lineup.map(id=>[id,{start:0,end:null}]));match.phase='live';career.time='15:00';match.events.push({minute:0,type:'info',text:'Kick-off! The match is underway.'});save();render()}
+ else if(action==='confirm-lineup'){if(!validLineup()){toast('Complete your XI and bench, including a fit goalkeeper.');return}match.lineup=[...career.lineup];match.bench=[...career.bench];match.participants=Object.fromEntries(match.lineup.map(id=>[id,{start:0,end:null}]));match.phase='live';career.time=match.kickoff||'15:00';match.events.push({minute:0,type:'info',text:'Kick-off! The match is underway.'});save();render()}
  else if(action==='speed'){match.speed=Number(el.dataset.speed);save();render()}
- else if(action==='pause-match'){match.paused=true;match.pauseReason='manual';save();render()}
- else if(action==='resume-match'){match.paused=false;match.flash=null;save();render()}
+ else if(action==='sim-next')skipMatch('next');
+ else if(action==='sim-half')skipMatch('half');
+ else if(action==='pause-match'){clearTimeout(autoResumeTimer);match.paused=true;match.pauseReason='manual';save();render()}
+ else if(action==='resume-match'){clearTimeout(autoResumeTimer);match.paused=false;match.flash=null;save();render()}
  else if(action==='finish-sim'){match.paused=false;while(match&&match.phase==='live'&&match.minute<96)tickMatch(true);if(match?.phase!=='report')finishMatch();save();render()}
  else if(action==='match-bench'){selectedPlayer=el.dataset.player;render()}
  else if(action==='match-replace')substitute(Number(el.dataset.index));
@@ -338,13 +377,34 @@ root.addEventListener('click',event=>{
 });
 root.addEventListener('change',event=>{
  const el=event.target;
- if(el.id==='clubRename'){setup.names[setup.clubId]=el.value.trim().slice(0,32)||club(setup.clubId).name;render()}
+ if(el.dataset.squadFormation!==undefined){setFormation(el.value)}
+ else if(el.id==='clubRename'){setup.names[setup.clubId]=el.value.trim().slice(0,32)||club(setup.clubId).name;render()}
  else if(el.dataset.rename){setup.names[el.dataset.rename]=el.value.trim().slice(0,32)||club(el.dataset.rename).name;render()}
  else if(el.id==='customColour'){setup.colour=el.value;render()}
- else if(el.dataset.matchSetting){career[el.dataset.matchSetting]=el.value;if(el.dataset.matchSetting==='formation'&&match?.phase==='confirm'){/* preserve selection by slot */}save();render()}
+ else if(el.dataset.matchSetting){if(el.dataset.matchSetting==='formation'){if(match?.phase==='live'){career.formation=el.value;save();render()}else setFormation(el.value);return}career[el.dataset.matchSetting]=el.value;save();render()}
 });
-root.addEventListener('dragstart',event=>{const card=event.target.closest('[data-player]');if(card?.draggable)event.dataTransfer.setData('text/plain',card.dataset.player)});
-root.addEventListener('dragover',event=>{if(event.target.closest('[data-drop-slot]'))event.preventDefault()});
-root.addEventListener('drop',event=>{const slot=event.target.closest('[data-drop-slot]');if(!slot)return;event.preventDefault();swapLineup(Number(slot.dataset.dropSlot),event.dataTransfer.getData('text/plain'))});
+root.addEventListener('dragstart',event=>{const card=event.target.closest('[data-player]');if(!card?.draggable)return;event.dataTransfer.setData('text/plain',card.dataset.player);const ghost=card.querySelector('.shirt')?.cloneNode(true);if(ghost){ghost.classList.add('drag-preview');document.body.appendChild(ghost);event.dataTransfer.setDragImage(ghost,20,20);setTimeout(()=>ghost.remove(),0)}});
+root.addEventListener('dragover',event=>{const slot=event.target.closest('[data-drop-slot]');if(slot)event.preventDefault();if(dragTarget!==slot){dragTarget?.classList.remove('drop-highlight');dragTarget=slot;dragTarget?.classList.add('drop-highlight')}});
+root.addEventListener('dragleave',event=>{if(!event.relatedTarget?.closest?.('[data-drop-slot]')){dragTarget?.classList.remove('drop-highlight');dragTarget=null}});
+root.addEventListener('dragend',()=>{dragTarget?.classList.remove('drop-highlight');dragTarget=null});
+root.addEventListener('drop',event=>{const slot=event.target.closest('[data-drop-slot]');dragTarget?.classList.remove('drop-highlight');dragTarget=null;if(!slot)return;event.preventDefault();swapLineup(Number(slot.dataset.dropSlot),event.dataTransfer.getData('text/plain'))});
+root.addEventListener('pointerdown',event=>{const card=event.target.closest('.player-card[data-player],.shirt-slot[data-player]');if(!card?.dataset.player)return;activeDrag={id:card.dataset.player,x:event.clientX,y:event.clientY,moved:false}});
+document.addEventListener('pointermove',event=>{
+ if(!activeDrag)return;
+ if(!activeDrag.moved&&Math.hypot(event.clientX-activeDrag.x,event.clientY-activeDrag.y)<9)return;
+ if(!activeDrag.moved&&Math.abs(event.clientY-activeDrag.y)>Math.abs(event.clientX-activeDrag.x)*1.5){activeDrag=null;return}
+ event.preventDefault();
+ activeDrag.moved=true;
+ if(!dragGhost){dragGhost=document.createElement('div');dragGhost.className='touch-drag-ghost';dragGhost.innerHTML=shirt(player(activeDrag.id));document.body.appendChild(dragGhost)}
+ dragGhost.style.left=`${event.clientX}px`;dragGhost.style.top=`${event.clientY}px`;
+ const slot=document.elementFromPoint(event.clientX,event.clientY)?.closest('[data-drop-slot]');
+ if(slot!==dragTarget){dragTarget?.classList.remove('drop-highlight');dragTarget=slot;dragTarget?.classList.add('drop-highlight')}
+});
+document.addEventListener('pointerup',()=>{
+ if(!activeDrag)return;
+ const slot=dragTarget,id=activeDrag.id,moved=activeDrag.moved;
+ dragGhost?.remove();dragGhost=null;dragTarget?.classList.remove('drop-highlight');dragTarget=null;activeDrag=null;
+ if(moved){suppressDragClick=true;setTimeout(()=>suppressDragClick=false,80);if(slot)swapLineup(Number(slot.dataset.dropSlot),id)}
+});
 
 render();

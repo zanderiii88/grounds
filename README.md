@@ -1,4 +1,4 @@
-# Clubline — Release 1.3
+# Clubline — Release 1.4
 
 An independent, mobile-first football club career prototype. It does not read or overwrite GROUNDS saves.
 
@@ -10,13 +10,13 @@ The title screen has **Check for updates**. It compares the running build with `
 
 Choose one of 12 fictional clubs in the Premier Division, optionally rename any team, pick a large-district location and lock a primary colour. Club selection includes facilities and youth programme stars. The colour appears on the ground's seats. Your team plays 22 fixtures, home and away against each other club.
 
-Select numbered player shirts by tapping a name then an XI or bench slot. Each shirt shows the surname, position, overall rating and condition. Drag and drop also works. Use the Formation, Play style and Orders tabs for your match plan. Advance through dates with the button at the bottom left. On matchday you can simulate instantly or confirm your lineup and watch the text match at three speeds. Goals, cards, injuries and half-time pause play. Full-time reports include player ratings, minutes, condition and home match revenue.
+Select numbered player shirts by tapping a name then an XI or bench slot. Each shirt shows the surname, position, overall rating and condition. Dragging a shirt shows a ghost jersey and highlights the slot to be swapped; tapping works too. Choose among nine formations directly above the pitch, with Play style and Orders alongside. Advance through dates with the button at the bottom left. On matchday you can simulate instantly or confirm your lineup and watch at 4, 2 or 1 minute per half. Skip to the next event or the end of the half. Goals, cards and injuries pause briefly then resume; half-time waits for you. Full-time reports include player ratings, minutes, condition and home match revenue.
 
 The Transfers tab lets you list players, inquire about valuations, bid for players in the division and respond to proposals. Incoming offers appear as a shortcut when the day advances. Training injuries occasionally appear in the league news. A sale or purchase updates both squads and refreshes your lineup.
 
 ## Scope of this release
 
-The 12 club grounds have individual schematic stand and roof profiles, scaled by capacity, with the chosen location and primary seat colour. Home match overlays show the ground with a crowd; away match overlays focus on text and result. Construction, full kit editing, pricing and venue operations are scheduled for later releases. The single season can be restarted with New career; there is no GROUNDS save migration.
+The 12 club grounds have distinct schematic stand, corner and roof profiles, scaled by capacity and coloured for the selected club. They sit over five day and night locations brought from GROUNDS, with the two smaller plots offered only to clubs below 45,000 seats. Home match overlays crop into the ground around the centre circle and use the night map for 17:30 and 19:45 kick-offs. Away match overlays focus on text and result. The locations are detailed original art, while the stadiums remain procedural vector illustrations; further art refinement and precise site fitting are still needed. Construction, full kit editing, pricing and venue operations are scheduled for later releases. The single season can be restarted with New career; there is no GROUNDS save migration.
 
 The finances are provisional: opening cash derives from the club's pilot budget, weekly wages are deducted on Mondays, and home matchday income is estimated automatically. Opponent match results use club attack and defence ratings. The user's watched and quick-simulated matches use the same event engine, with live tactical choices affecting later chances.
 
@@ -25,5 +25,6 @@ The finances are provisional: opening cash derives from the club's pilot budget,
 - `index.html`, `style.css`, `app.js`, `scene.js`: the standalone game.
 - `data/league.json`: 12 clubs and 288 player records with recalibrated positional ratings.
 - `assets/clubline-logo.svg`: the approved chrome Clubline wordmark and metallic red arrow.
+- `assets/sites/`: day and night GROUNDS location art.
 - `assets/icon.svg` and `assets/icon-192.png`, `icon-512.png`, `icon-180.png`: the angular C and trend arrow app icon.
 - `manifest.webmanifest`, `version.json`: install branding and update checking.
