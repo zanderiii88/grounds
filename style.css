@@ -44,3 +44,20 @@
 /* GROUNDS-section stadium designer */
 .designer-preview{position:relative;height:clamp(190px,31vh,320px);background:#172c34;overflow:hidden;border:1px solid #ffffff48;margin:15px 0}.designer-preview svg{width:100%;height:100%}.designer-preview>span{position:absolute;bottom:0;left:0;padding:7px 11px;background:#0b1b25e8;font-size:.76rem;font-weight:800}.designer-preview.compact{height:220px}.designer-section-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0 17px}.designer-section-list>div{padding:9px;background:#ffffff0d;border:1px solid #ffffff23}.designer-section-list strong{display:block;font-size:.75rem;margin-bottom:8px}.designer-buttons{display:flex;gap:4px;flex-wrap:wrap}.designer-buttons .btn{min-width:38px;min-height:32px;padding:5px}.designer-buttons .vacant{border-style:dashed;color:#9caeb2}.designer-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px}.designer-fields .field{margin:5px 0}.designer-quote{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:15px 0}.designer-quote span{padding:9px;background:#ffffff12;font-size:.75rem}.designer-quote b{display:block;font-size:.95rem;margin-top:3px}.designer-actions{display:flex;flex-wrap:wrap;gap:8px}.title-screen .scene svg{width:100%;transform:none}.title-screen .scene:after{background:linear-gradient(90deg,#091219e9 0%,#091219a0 38%,#09121926 80%),linear-gradient(0deg,#091219ad,transparent 40%)}
 @media(max-width:540px){.designer-fields{grid-template-columns:1fr}.designer-section-list{gap:6px}.designer-section-list>div{padding:6px}.designer-buttons .btn{min-width:32px;padding:3px}.title-screen .scene svg{width:100%;transform:none}}
+/* A 12-second scene holds each ground long enough to read before the next club. */
+.title-screen .menu-scene svg{width:104%;max-width:none;transform-origin:50% 50%;animation:menu-pan 12s ease-in-out both}
+@keyframes menu-pan{from{transform:translate(-1.5%,.5%) scale(1.01)}to{transform:translate(-3.5%,-.5%) scale(1.045)}}
+@media(max-width:850px){.title-screen .menu-scene svg{width:166%;max-width:none;animation:menu-pan-mobile 12s ease-in-out both}@keyframes menu-pan-mobile{from{transform:translate(-18%,1%) scale(1.01)}to{transform:translate(-20%,0) scale(1.045)}}}
+@media(max-width:540px){.title-screen .menu-scene svg{width:170%;max-width:none}}
+@media(prefers-reduced-motion:reduce){.title-screen .menu-scene svg{animation:none;transform:translate(-2%,0)}@media(max-width:850px){.title-screen .menu-scene svg{transform:translate(-19%,0)}}}
+.title-screen .menu-scene{animation:scene-enter .8s ease-out both}
+@keyframes scene-enter{from{opacity:.55}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.title-screen .menu-scene{animation:none}}
+.title-screen .menu-scene .mobile-scene{display:none}
+@media(max-width:850px){.title-screen .menu-scene .desktop-scene{display:none}.title-screen .menu-scene .mobile-scene{display:block;width:100%;height:100%;animation:menu-pan-mobile 12s ease-in-out both}@keyframes menu-pan-mobile{from{transform:translate(-1%,1%) scale(1.01)}to{transform:translate(1%,0) scale(1.045)}}}
+@media(prefers-reduced-motion:reduce){.title-screen .menu-scene .mobile-scene{animation:none;transform:none}}
+
+/* Keep the ground inside the right-hand frame throughout the subtle pan. */
+@keyframes menu-pan{from{transform:translate(-.4%,0) scale(1.005)}to{transform:translate(.4%,0) scale(1.012)}}
+.title-screen .menu-scene-label{position:absolute;right:clamp(16px,3vw,34px);bottom:20px;z-index:2;max-width:calc(100% - 32px);padding:8px 12px;background:#101e27d6;color:#d9e6e9;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-left:3px solid var(--red);box-shadow:0 4px 18px #0007}
+@media(max-width:540px){.title-screen .menu-scene-label{right:14px;bottom:18px;font-size:.61rem}}

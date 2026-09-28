@@ -1,4 +1,4 @@
-# Clubline — Release 1.5.0
+# Clubline — Release 1.6.0
 
 An independent, mobile-first football club career prototype. It does not read or overwrite GROUNDS saves.
 
@@ -16,11 +16,11 @@ The Transfers tab lets you list players, inquire about valuations, bid for playe
 
 ## Scope of this release
 
-Twelve distinctive starting grounds now use a common, editable 32-section model adapted from the GROUNDS stand catalogue. In **Facilities → Design stadium**, select any side section or corner and change its stand family, tier structure, roof, rear building or exterior. The preview shows the updated stadium, capacity change and cost; confirm to pay for and save the work. The club's primary colour automatically appears on its seats. The saved layout appears on the career background and during home matches, and persists in an existing `clubline-career-r1` save. Existing 1.4.1 careers load with a starting layout. Stadium income/attendance uses the updated capacity. Construction is limited to 10,000–75,000 places and available cash.
+Twelve distinctive starting grounds use one editable 32-section model adapted from the GROUNDS stand catalogue. In **Facilities → Design stadium**, choose sections and change stand family, tiers, roof, rear building or exterior. The preview shows capacity and cost before changes are saved. The club's primary colour appears on the seats. Existing `clubline-career-r1` saves continue and retain stadium edits; matchday attendance reflects the edited capacity.
 
-The start menu chooses a random club and compatible location on each launch, frames the whole stadium and shows a matchday crowd under evening lights. Club selection previews the selected team's own starting ground. Five large and mid GROUNDS locations have day and night views; the two smaller available sites remain limited to clubs below 45,000 seats at setup. Home match overlays use night art for 17:30 and 19:45 kick-offs; away results remain text-led.
+Release 1.6 focuses on the visuals. The approved angular Option A wordmark is in the game. The stadium renderer now closes exterior and exposed end walls, draws supported tier separation and concourse bands, and paints near/far sides in an order that keeps the seating and roof structure legible. Grounds are visually enlarged on their existing plots. The menu frames the stadium closer, rotates through all 12 clubs and five compatible GROUNDS maps at day and night, and pans gently over each 12-second scene. Mobile uses its own crop to keep the stadium inside a portrait frame. Day/night art continues to follow home fixture kick-off times; away results remain text-led.
 
-This is the first Clubline modular designer. The GROUNDS section families and pitch/grid alignment are present, but its original full canvas editor, site decorations, move/rotate controls and Sandbox mode are not yet in Clubline. The SVG art and roof occlusion still need refinement. Full kit editing, pricing and venue operations remain later work. The game does not import GROUNDS careers.
+The modular SVG renderer is still a Clubline adaptation, not a copy of GROUNDS' full canvas renderer. The original Sandbox decoration, move and rotate tools have not been ported. Some large roof structures and site-to-stadium detail can benefit from further art passes. The title preview is a background scene, while the player can edit the career ground under Facilities. The game does not import GROUNDS careers.
 
 Open `stadium-gallery.html` after extracting the ZIP to compare all twelve grounds in day and evening views without starting careers.
 

@@ -1,12 +1,12 @@
-import {sceneSvg,stadiumProfile} from './scene.js?v=1.5.0';
-import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.5.0';
+import {sceneSvg,stadiumProfile} from './scene.js?v=1.6.0';
+import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.6.0';
 
-const APP_VERSION='1.5.0';
+const APP_VERSION='1.6.0';
 const SAVE_KEY='clubline-career-r1';
 const SITES=[['city','City Waterfront'],['gardens','Civic Gardens'],['rail','Rail District'],['university','University Quarter'],['oldtown','Old Town']];
 const availableSites=c=>c.capacity>=45000?SITES.slice(0,3):SITES;
-const menuClubId='C'+String(1+Math.floor(Math.random()*12)).padStart(2,'0');
-const menuSite=['city','gardens','rail','university','oldtown'][Math.floor(Math.random()*5)];
+const firstMenuScene=Math.floor(Math.random()*12);
+let titleSceneIndex=firstMenuScene,titleSceneTimer=null;
 const COLOURS=['#862e43','#de414b','#e17837','#e7bd63','#257b5e','#1b8189','#3a6cbc','#633d8d','#edf0e9','#252c38'];
 const FORMATIONS={
  '4-3-3':[['LW','ST','RW'],['CM','DM','CM'],['LB','CB','CB','RB'],['GK']],
@@ -34,6 +34,7 @@ const root=document.getElementById('app');
 
 try {source=await (await fetch('./data/league.json',{cache:'no-store'})).json();}
 catch(error){root.innerHTML='<main class="app-shell"><div class="shell-content"><h1>Clubline</h1><p>Could not load the league data. Open the game through a web server or GitHub Pages.</p></div></main>';throw error;}
+const menuScenes=source.clubs.map((c,i)=>({club:c,site:availableSites(c)[(i+Math.floor(i/3))%availableSites(c).length][0],evening:i%2===1}));
 const club=id=>source.clubs.find(c=>c.id===id);
 const player=id=>source.players.find(p=>p.id===id);
 const owner=id=>career?.owners?.[id]||player(id)?.clubId;
@@ -91,9 +92,9 @@ function standings(){
  return Object.values(table).sort((a,b)=>b.Pts-a.Pts||(b.GF-b.GA)-(a.GF-a.GA)||b.GF-a.GF||clubName(a.id).localeCompare(clubName(b.id)));
 }
 function toast(message){notice=message;document.querySelector('.toast')?.remove();const div=document.createElement('div');div.className='toast';div.textContent=message;document.body.appendChild(div);setTimeout(()=>div.remove(),3500)}
-function scene(current,site,open=false,crowd=false,evening=false,wide=false){return `<div class="scene ${open?'open':''}">${sceneSvg(current,site,crowd,evening,wide?'menu':open,career?.clubId===current.id?career.stadium:null)}</div>`}
+function scene(current,site,open=false,crowd=false,evening=false,wide=false){const layout=career?.clubId===current.id?career.stadium:null;return `<div class="scene ${open?'open':''} ${wide?'menu-scene':''}">${sceneSvg(current,site,crowd,evening,wide?'menu':open,layout)}${wide?sceneSvg(current,site,crowd,evening,'menu-mobile',layout):''}</div>`}
 function logo(small=false){return `<img class="logo ${small?'small':''}" src="assets/clubline-logo.svg?v=${APP_VERSION}" alt="Clubline">`}
-function titleView(){const c=career?myClub():club(menuClubId);return `<div class="app-shell title-screen" style="--club:${c.colour}">${scene(c,availableSites(c).some(x=>x[0]===menuSite)?menuSite:'city',true,true,true,true)}<div class="shell-content"><div class="menu-hero"><div class="hero-copy glass">${logo()}<p class="title-tagline">Your club. Your call.</p><div class="hero-actions"><button class="btn primary arrow wide" data-action="new-game">New career</button>${hasSave()?'<button class="btn wide" data-action="continue">Continue</button>':''}</div><small>12 clubs · Premier Division · 22 fixtures</small><div class="update-area"><button class="btn ghost slim" data-action="check-update" ${checkingUpdate?'disabled':''}>${checkingUpdate?'Checking…':'↻ Check for updates'}</button><span class="build-label">v${APP_VERSION}</span>${availableVersion?'<button class="btn slim primary" data-action="load-update">Load update</button>':''}${updateMessage?`<p role="status">${html(updateMessage)}</p>`:''}</div></div></div></div></div>`}
+function titleView(){const shot=menuScenes[titleSceneIndex],c=shot.club,paint=career?.clubId===c.id?career.colour:c.colour;return `<div class="app-shell title-screen" style="--club:${paint}">${scene({...c,colour:paint},shot.site,true,true,shot.evening,true)}<div class="menu-scene-label">${html(c.name)} · ${html(c.ground)} · ${html(SITES.find(x=>x[0]===shot.site)?.[1])} · ${shot.evening?'Evening':'Day'}</div><div class="shell-content"><div class="menu-hero"><div class="hero-copy glass">${logo()}<p class="title-tagline">Your club. Your call.</p><div class="hero-actions"><button class="btn primary arrow wide" data-action="new-game">New career</button>${hasSave()?'<button class="btn wide" data-action="continue">Continue</button>':''}</div><small>12 clubs · Premier Division · 22 fixtures</small><div class="update-area"><button class="btn ghost slim" data-action="check-update" ${checkingUpdate?'disabled':''}>${checkingUpdate?'Checking…':'↻ Check for updates'}</button><span class="build-label">v${APP_VERSION}</span>${availableVersion?'<button class="btn slim primary" data-action="load-update">Load update</button>':''}${updateMessage?`<p role="status">${html(updateMessage)}</p>`:''}</div></div></div></div></div>`}
 async function checkForUpdates(){
  if(checkingUpdate)return;
  checkingUpdate=true;updateMessage='';availableVersion=null;render();
@@ -157,7 +158,7 @@ function organiserSection(){
  return `<span class="eyebrow">Season / Organiser</span><h2>Premier Division</h2>${tabBar([['table','Table'],['calendar','Calendar'],['news','League news']])}${sub==='calendar'?`<div class="list">${fixtureLines.map(f=>`<div class="row"><span>${fmtDate(f.date)}<br><small>${f.home===career.clubId?'Home':'Away'} · ${html(clubName(opposition(f,career.clubId)))}</small></span><b>${f.kickoff||'15:00'}</b></div>`).join('')||'<div class="empty-note">All league fixtures have been played.</div>'}</div>`:sub==='news'?`<div class="list">${career.news.slice(-12).reverse().map(n=>`<div class="row"><span>${html(n.text)}</span><small>${fmtDate(n.date)}</small></div>`).join('')||'<div class="empty-note">The season is just beginning. Results and injuries will appear here.</div>'}</div>`:`<div class="table-wrap"><table class="league-table"><thead><tr><th>#</th><th>Club</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead><tbody>${table.map((t,i)=>`<tr class="${t.id===career.clubId?'mine':''}"><td>${i+1}</td><td>${html(clubName(t.id))}</td><td>${t.P}</td><td>${t.W}</td><td>${t.D}</td><td>${t.L}</td><td>${t.GF-t.GA}</td><td><b>${t.Pts}</b></td></tr>`).join('')}</tbody></table></div><p style="margin-top:14px">${next?'Next round '+fmtDate(next.date):'Season complete'}</p>`}`;
 }
 
-function render(){clearInterval(timer);timer=null;root.innerHTML=view==='title'?titleView():view==='setup'?setupView():dashboard();if(match?.phase==='live'&&!match.paused)startClock()}
+function render(){clearInterval(timer);timer=null;clearTimeout(titleSceneTimer);titleSceneTimer=null;root.innerHTML=view==='title'?titleView():view==='setup'?setupView():dashboard();if(view==='title')titleSceneTimer=setTimeout(()=>{if(view==='title'){titleSceneIndex=(titleSceneIndex+1)%menuScenes.length;render()}},12000);titleSceneTimer?.unref?.();if(match?.phase==='live'&&!match.paused)startClock()}
 
 function validLineup(){const ids=[...career.lineup,...career.bench];return career.lineup.length===11&&career.bench.length===7&&ids.every(Boolean)&&new Set(ids).size===18&&career.lineup.some((id,i)=>slotsFor(career.formation)[i]==='GK'&&player(id).primary==='GK')&&career.lineup.every(id=>!(career.players[id]?.injuryDays>0))}
 function advance(){
