@@ -1,22 +1,15 @@
-# Clubline — Release 1.9.0
+# Clubline — Release 1.10.0
 
-Copy **all** ZIP contents to the root of your GitHub Pages repository, including `sw.js`. Existing Clubline 1.x careers retain their save key.
+Copy **all** ZIP contents to the root of your GitHub Pages repository, including `sw.js`. Use **Check for updates** in the installed app if it still shows the previous release. Existing Clubline careers retain their save key.
 
-## Squad and statistics
+## This release
 
-- The XI has names below shirts and mood at the top right. The seven substitutes appear as a list. The lower reserve list contains only players outside the XI and bench. Incoming transfers are limited to a 26-player first-team squad.
-- Random training injuries are less frequent and simultaneous injuries are capped. Match injuries are rarer.
-- The Statistics page's Match OVR is the average rating earned in matches, not a player's underlying ability. It shows a dash before the player appears.
+- Advancing the calendar flashes the date and time, including on the matchday prompt.
+- Injured players show a medical cross and an estimated duration beside their mood. Their card names the injury; the Starting XI warns when a player cannot play and offers Auto pick. Training and match injuries have several severities; severe injuries are uncommon, and a club has at most two current injuries. Recovery news arrives as players become available.
+- Finances offers three levels each of injury prevention and recovery investment. The price and effect are shown before purchase. Prevention cuts injury frequency; recovery reduces duration.
+- The keeper shirt has a separate gold colour. Squad cards are lighter, and substitutes and reserves can be collapsed independently.
+- Transfer proposals show ability, squad role, starts and appearances, recent form, mood and reason, contract length, wages and the fee before a decision.
+- The match report separates gross home revenue, operational costs and net income. After the report, the league table shows played, won, drawn, lost, goals for, goals against and points, with movement arrows. Continue to the new club and league news hub.
+- The yellow ticker reveals today's news and scores one item at a time. Organiser retains the full table, fixtures, past reports and league news.
 
-## Matchday
-
-- Watched home matches show animated team markers on the isometric pitch and small spectator reactions in the stands. A club goal briefly sends players towards a corner, brightens the crowd and flashes stadium lights. Watched away matches use a neutral animated pitch.
-- Ordinary minutes update the clock, score and commentary in place without rebuilding the screen. The live display fits within a mobile viewport; only commentary history scrolls while paused. Tactics and substitutions are available through Touchline decisions.
-- Injuries and red cards keep play paused for a decision. An injured player leaves the pitch until replaced. Goals and yellow cards still pause briefly and resume automatically.
-
-## Season
-
-- The top bar shows league position. Its fixture button steps through past, current and future games; completed games open their report cards. Every league fixture appears in Organiser's calendar with report links for played games.
-- After a full round of results, a yellow scrolling results ticker appears above mobile navigation until the next day.
-
-The animation is a first stylised pass. Player movement and crowd choreography can be refined in later builds.
+The match player and crowd animation remains a stylised first pass; the larger movement and stadium surroundings revision is planned separately.
