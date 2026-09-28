@@ -9,7 +9,7 @@ const SITE={
 const at=(x,y,z=0)=>({x,y,z}),mix=(a,b,t)=>at(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t,a.z+(b.z-a.z)*t);
 const safe=s=>String(s??'').replace(/[&<>"']/g,'');
 export const stadiumProfile=club=>({name:defaultLayout(club).name});
-export function sceneSvg(club,site='city',crowd=false,evening=false,close=false,layout=null,selection=null){
+export function sceneSvg(club,site='city',crowd=false,evening=false,close=false,layout=null,selection=null,motion=null){
  const map=SITE[site]||SITE.city,model=normaliseLayout(layout,club),colour=/^#[0-9a-f]{6}$/i.test(club?.colour||'')?club.colour:'#a03948';
  const px=1100/1774,py=550/887,zStep=7.5*map.tile[0]/24*px;
  // A uniform stadium-only visual scale uses the spare apron in the site art.
@@ -103,7 +103,7 @@ export function sceneSvg(club,site='city',crowd=false,evening=false,close=false,
     panel(bowl,[[0,v,z],[L,v,z],[L,v1,z],[0,v1,z]],seat,`stroke="#8fa6a3" stroke-width=".2"`);
     if(!corner&&i%2===0)for(const u of [L/3,2*L/3])
      bowl.push(localFace([[u-.07,v,z+.02],[u+.07,v,z+.02],[u+.07,Math.min(v1,v+t.tread),z+.02],[u-.07,Math.min(v1,v+t.tread),z+.02]],'#bbc4c0'));
-    if(crowd&&i%2===0)for(let u=.35;u<L;u+=.7){const q=project(point(u,v+.06,z+.16));bowl.push(`<circle cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r=".43" fill="${(i+Math.floor(u*2))%3===0?'#e6c3a9':'#dce4dc'}"/>`)}
+    if(crowd&&i%2===0)for(let u=.35;u<L;u+=.7){const q=project(point(u,v+.06,z+.16));bowl.push(`<circle class="spectator ${(i+Math.round(u*10))%9===0?'spectator-active':''}" style="--delay:${((i+Math.round(u*10))%12)*-.15}s" cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r=".43" fill="${(i+Math.floor(u*2))%3===0?'#e6c3a9':'#dce4dc'}"/>`)}
    }
    const d=spec.decks[ti];
    if(d){
@@ -189,7 +189,9 @@ export function sceneSvg(club,site='city',crowd=false,evening=false,close=false,
  const lights=[[16,15],[56,15],[56,45],[16,45]].map(([x,y],i)=>{const p=project(at(x,y,15)),q=project(at(x,y));return `<path d="M${q.x},${q.y}L${p.x},${p.y}" stroke="#77878b" stroke-width="1.1"/><rect x="${p.x-3.2}" y="${p.y-1.5}" width="6.4" height="2.8" fill="${evening?'#fff3ad':'#aab7b5'}"/>`}).join('');
  const hull=points=>{const sorted=points.sort((a,b)=>a.x-b.x||a.y-b.y),cross=(a,b,c)=>(b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x),lo=[],hi=[];for(const p of sorted){while(lo.length>1&&cross(lo.at(-2),lo.at(-1),p)<=0)lo.pop();lo.push(p)}for(const p of [...sorted].reverse()){while(hi.length>1&&cross(hi.at(-2),hi.at(-1),p)<=0)hi.pop();hi.push(p)}return lo.slice(0,-1).concat(hi.slice(0,-1))};
  const targets=selection===null?'':SECTIONS.map(s=>{const cfg=model.sections[s.id],spec=groundsStand(cfg.stand),d=spec?.depth||2.3,h=spec?.wallH||1.8,points=[];for(const u of [0,s.bays])for(const v of [0,d])for(const z of [0,h])points.push(project(world(s,u,v,z)));const outline=hull(points).map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');return `<polygon class="designer-hit ${selection.has(s.id)?'is-selected':''}" data-action="toggle-stand" data-id="${s.id}" role="button" tabindex="0" aria-label="${s.id}: ${safe(STANDS[cfg.stand].label)}" aria-pressed="${selection.has(s.id)}" points="${outline}"/>`}).join('');
+ const athletes=motion?`<g class="match-athletes ${motion.celebrate?'celebrating':''}">${[0,1].map(team=>Array.from({length:11},(_,i)=>{const row=Math.floor(i/4),col=i%4,q=project(at(team?48-row*3.1:24+row*3.1,23+col*4.25+(row%2)*1.2,.28));return `<g class="match-athlete ${team?'away':'home'}" style="--delay:${((i*7+team*3)%11)*-.21}s" transform="translate(${q.x.toFixed(1)} ${q.y.toFixed(1)})"><ellipse cy="4.1" rx="2.5" ry=".7" fill="#10252a99"/><path d="M-2 -1L-3 .5L-2 1.2L-1.5 .7L-1.4 2.3H1.4L1.5 .7L2 1.2L3 .5L2 -1Z" fill="${team?'#f4e9dc':colour}" stroke="#10242b" stroke-width=".45"/><path d="M-1.1 2.2L-1.4 3.8M1.1 2.2L1.4 3.8" stroke="#172532" stroke-width=".85"/><circle cy="-2" r="1.15" fill="#e7c4a4" stroke="#172532" stroke-width=".3"/></g>`}).join('')).join('')}<circle class="match-ball" cx="${centre.x.toFixed(1)}" cy="${centre.y.toFixed(1)}" r="1.2" fill="white"/></g>`:'';
+ const crowdMotion='';
  const art=`assets/sites/${map.art}-${evening?'night':'day'}.webp`,cx=map.origin[0]*px,cy=map.origin[1]*py;
  const viewBox=close==='menu'?`${(cx-381).toFixed(1)} ${(cy-154).toFixed(1)} 550 308`:close==='menu-mobile'?`${(cx-215).toFixed(1)} ${(cy-395).toFixed(1)} 430 560`:close?`${(cx-182).toFixed(1)} ${(cy-118).toFixed(1)} 364 236`:'0 0 1100 550';
- return `<svg xmlns="http://www.w3.org/2000/svg" class="${close==='menu'?'desktop-scene':close==='menu-mobile'?'mobile-scene':''}" viewBox="${viewBox}" preserveAspectRatio="xMidYMid ${close==='menu'?'slice':'meet'}" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}"><image href="${art}" x="0" y="0" width="1100" height="550" preserveAspectRatio="none"/>${far}${field.join('')}${near}${lights}${targets}</svg>`;
+ return `<svg xmlns="http://www.w3.org/2000/svg" class="${close==='menu'?'desktop-scene':close==='menu-mobile'?'mobile-scene':''} ${motion?.celebrate?'goal-scene':''} ${motion?'crowd-motion':''}" viewBox="${viewBox}" preserveAspectRatio="xMidYMid ${close==='menu'?'slice':'meet'}" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}"><image href="${art}" x="0" y="0" width="1100" height="550" preserveAspectRatio="none"/>${far}${field.join('')}${athletes}${near}${lights}${crowdMotion}${targets}</svg>`;
 }
