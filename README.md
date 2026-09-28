@@ -1,4 +1,4 @@
-# Clubline — Release 1.4
+# Clubline — Release 1.4.1
 
 An independent, mobile-first football club career prototype. It does not read or overwrite GROUNDS saves.
 
@@ -16,7 +16,9 @@ The Transfers tab lets you list players, inquire about valuations, bid for playe
 
 ## Scope of this release
 
-The 12 club grounds have distinct schematic stand, corner and roof profiles, scaled by capacity and coloured for the selected club. They sit over five day and night locations brought from GROUNDS, with the two smaller plots offered only to clubs below 45,000 seats. Home match overlays crop into the ground around the centre circle and use the night map for 17:30 and 19:45 kick-offs. Away match overlays focus on text and result. The locations are detailed original art, while the stadiums remain procedural vector illustrations; further art refinement and precise site fitting are still needed. Construction, full kit editing, pricing and venue operations are scheduled for later releases. The single season can be restarted with New career; there is no GROUNDS save migration.
+The 12 club grounds use pitch and stand placement registered to the GROUNDS world grid and map coordinates. Their stand height, tiers, corners, roof and facade vary by capacity and club identity; see STADIUM-DESIGNS.md for the full direction. They sit over five day and night locations brought from GROUNDS, with the two smaller plots offered only to clubs below 45,000 seats. Home match overlays crop into the ground around the centre circle and use the night map for 17:30 and 19:45 kick-offs. Away match overlays focus on text and result. The pitch is flat on the illustrated plot, with stands outside its apron. The locations are detailed original art, while the stadiums remain procedural vector illustrations; the specific architectural character needs further art refinement. Construction, full kit editing, pricing and venue operations are scheduled for later releases. The single season can be restarted with New career; there is no GROUNDS save migration.
+
+Open `stadium-gallery.html` after extracting the ZIP to compare all twelve grounds in day and evening views without starting careers.
 
 The finances are provisional: opening cash derives from the club's pilot budget, weekly wages are deducted on Mondays, and home matchday income is estimated automatically. Opponent match results use club attack and defence ratings. The user's watched and quick-simulated matches use the same event engine, with live tactical choices affecting later chances.
 
