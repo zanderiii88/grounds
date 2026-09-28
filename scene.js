@@ -1,34 +1,15 @@
-// Clubline stadium renderer. The pitch and site registration follow the GROUNDS
-// 28 x 18 world-grid layout, so each ground stays on its illustrated plot.
+import {SECTIONS,STANDS,normaliseLayout,defaultLayout} from './stadium-model.js';
+// GROUNDS' registered district images and 28 × 18 pitch datum are shared by all views.
 const SITE={
- city:{art:'top-city-redevelopment',origin:[867,482],tile:[6.162,3.382]},
- harbour:{art:'top-city-redevelopment',origin:[867,482],tile:[6.162,3.382]},
- gardens:{art:'top-civic-gardens',origin:[862,484],tile:[6.265,3.412]},
- rail:{art:'top-rail-district',origin:[868,482],tile:[6.176,3.382]},
- university:{art:'mid-university-district',origin:[904,452],tile:[6.37,3.667]},
- oldtown:{art:'mid-market-town-aligned',origin:[898,454],tile:[6.296,3.444]}
+ city:{art:'top-city-redevelopment',origin:[867,482],tile:[6.162,3.382]},harbour:{art:'top-city-redevelopment',origin:[867,482],tile:[6.162,3.382]},
+ gardens:{art:'top-civic-gardens',origin:[862,484],tile:[6.265,3.412]},rail:{art:'top-rail-district',origin:[868,482],tile:[6.176,3.382]},
+ university:{art:'mid-university-district',origin:[904,452],tile:[6.37,3.667]},oldtown:{art:'mid-market-town-aligned',origin:[898,454],tile:[6.296,3.444]}
 };
-const PROFILES=[
- {name:'Grand Main Stand',inspiration:'Anfield',h:[8,6,5.3,6],tiers:[2,2,1,2],roof:[1,1,1,1],corners:1,finish:'brick',roofType:'truss'},
- {name:'High City Side',inspiration:"St James' Park",h:[8.4,4.4,4.2,7.8],tiers:[2,1,1,2],roof:[1,1,1,1],corners:0,finish:'glass',roofType:'cantilever'},
- {name:'Wall of Sound',inspiration:'Tottenham Hotspur Stadium',h:[6.5,5.7,7.8,5.7],tiers:[2,2,1,2],roof:[1,1,1,1],corners:1,finish:'steel',roofType:'continuous'},
- {name:'Foundry Four',inspiration:'Ibrox',h:[7,4.9,4.6,4.6],tiers:[2,1,1,1],roof:[1,1,1,1],corners:0,finish:'brick',roofType:'truss'},
- {name:'Three High Sides',inspiration:'Celtic Park',h:[6.6,6.3,4.2,6.2],tiers:[2,2,1,2],roof:[1,1,1,1],corners:1,finish:'steel',roofType:'truss'},
- {name:'Celyn Canopy',inspiration:'Principality Stadium',h:[5.8,5.8,5.8,5.8],tiers:[2,2,2,2],roof:[1,1,1,1],corners:1,finish:'glass',roofType:'continuous'},
- {name:'Heritage End',inspiration:'Villa Park',h:[5.3,4.6,6.2,4.4],tiers:[2,1,1,1],roof:[1,1,1,1],corners:0,finish:'brick',roofType:'truss'},
- {name:'Harbour Four',inspiration:'Brentford Community Stadium',h:[4.8,4.6,4.1,4.4],tiers:[1,1,1,1],roof:[1,1,1,1],corners:0,finish:'steel',roofType:'cantilever'},
- {name:'Close Quarters',inspiration:'Tynecastle Park',h:[5.3,5.2,5.2,5.2],tiers:[1,1,1,1],roof:[1,1,1,1],corners:0,finish:'brick',roofType:'truss'},
- {name:'Valley Bowl',inspiration:'Swansea.com Stadium',h:[4.4,4.3,4.3,4.3],tiers:[1,1,1,1],roof:[1,1,1,1],corners:1,finish:'steel',roofType:'continuous'},
- {name:'Rath Mix',inspiration:'Windsor Park',h:[4,4.3,3.1,4.2],tiers:[1,1,1,1],roof:[1,1,1,1],corners:0,finish:'glass',roofType:'cantilever'},
- {name:'Four Open Stands',inspiration:'traditional Scottish grounds',h:[3.8,3.6,3.3,3.5],tiers:[1,1,1,1],roof:[1,1,0,1],corners:0,finish:'brick',roofType:'truss'}
-];
-const PITCH={x:22,y:21,w:28,h:18};
+const at=(x,y,z=0)=>({x,y,z}),mix=(a,b,t)=>at(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t,a.z+(b.z-a.z)*t);
 const safe=s=>String(s??'').replace(/[&<>"']/g,'');
-const mix=(a,b,t)=>({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t,z:(a.z||0)+((b.z||0)-(a.z||0))*t});
-const at=(x,y,z=0)=>({x,y,z});
-export const stadiumProfile=club=>PROFILES[Math.max(0,Math.min(11,(Number(String(club?.id||'C01').slice(1))||1)-1))];
-export function sceneSvg(club,site='city',crowd=false,evening=false,close=false){
- const map=SITE[site]||SITE.city,profile=stadiumProfile(club),colour=/^#[0-9a-f]{6}$/i.test(club?.colour||'')?club.colour:'#a03948';
+export const stadiumProfile=club=>({name:defaultLayout(club).name});
+export function sceneSvg(club,site='city',crowd=false,evening=false,close=false,layout=null){
+ const map=SITE[site]||SITE.city,model=normaliseLayout(layout,club),colour=/^#[0-9a-f]{6}$/i.test(club?.colour||'')?club.colour:'#a03948';
  const px=1100/1774,py=550/887,zStep=7.5*map.tile[0]/24*px;
  const project=p=>({x:(map.origin[0]+((p.x-p.y)-6)*map.tile[0])*px,y:(map.origin[1]+((p.x+p.y)-66)*map.tile[1])*py-(p.z||0)*zStep});
  const coord=p=>{const q=project(p);return `${q.x.toFixed(2)},${q.y.toFixed(2)}`};
@@ -37,7 +18,7 @@ export function sceneSvg(club,site='city',crowd=false,evening=false,close=false)
  const rect=(x1,y1,x2,y2,z,fill,extra='')=>poly([at(x1,y1,z),at(x2,y1,z),at(x2,y2,z),at(x1,y2,z)],fill,extra);
  const field=[];
  field.push(rect(20,19,52,41,.015,'#4e8149'));
- for(let i=0;i<PITCH.w;i+=3)field.push(rect(22+i,21,Math.min(50,22+i+3),39,.04,(i/3)%2?'#368c53':'#40965b'));
+ for(let i=0;i<28;i+=3)field.push(rect(22+i,21,Math.min(50,22+i+3),39,.04,(i/3)%2?'#368c53':'#40965b'));
  const white='#edf4e6',lw=1.12;
  field.push(path([at(22,21,.09),at(50,21,.09),at(50,39,.09),at(22,39,.09),at(22,21,.09)],white,lw));
  field.push(path([at(36,21,.09),at(36,39,.09)],white,lw));
@@ -49,42 +30,66 @@ export function sceneSvg(club,site='city',crowd=false,evening=false,close=false)
  }
  const circle=Array.from({length:65},(_,i)=>at(36+Math.cos(i/64*Math.PI*2)*2.45,30+Math.sin(i/64*Math.PI*2)*2.45,.1));field.push(path(circle,white,lw));
  const centre=project(at(36,30,.1));field.push(`<circle cx="${centre.x.toFixed(2)}" cy="${centre.y.toFixed(2)}" r=".8" fill="${white}"/>`);
- const surfaces={brick:['#544e49','#756e63'],glass:['#344b55','#607780'],steel:['#37474c','#5c6d72']}[profile.finish];
- const sideGeometry=[
-  {label:'North',front:[at(20.5,20),at(51.5,20)],back:[at(20.5,15.5),at(51.5,15.5)]},
-  {label:'East',front:[at(51,20.5),at(51,39.5)],back:[at(55.5,20.5),at(55.5,39.5)]},
-  {label:'South',front:[at(20.5,40),at(51.5,40)],back:[at(20.5,44.5),at(51.5,44.5)]},
-  {label:'West',front:[at(21,20.5),at(21,39.5)],back:[at(16.5,20.5),at(16.5,39.5)]}
- ];
- const parts=sideGeometry.map((s,i)=>{
-  const h=profile.h[i],front=s.front.map(p=>({...p,z:.8})),back=s.back.map(p=>({...p,z:h}));
-  const face=poly([s.back[0],s.back[1],back[1],back[0]],surfaces[0],`stroke="#27383c" stroke-width=".7"`);
-  const facade=Array.from({length:profile.finish==='brick'?8:12},(_,j)=>{
-   const count=profile.finish==='brick'?8:12,t=(j+.5)/count,p=mix(s.back[0],s.back[1],t),a={...p,z:h*.24},b={...p,z:h*.58};
-   return path([a,b],profile.finish==='glass'?'#a2bdc2':profile.finish==='brick'?'#aa9785':'#84999b',profile.finish==='glass'?1.25:.65,'opacity=".7"');
-  }).join('');
-  const double=profile.tiers[i]===2;
-  const deck=poly([front[0],front[1],back[1],back[0]],colour,`stroke="#243639" stroke-width=".65"`);
-  const upperDeck=double?poly([mix(front[0],back[0],.58),mix(front[1],back[1],.58),back[1],back[0]],colour,`stroke="#9caaa5" stroke-width=".8" opacity=".86"`):'';
-  const rows=Array.from({length:double?10:7},(_,j)=>{
-   const t=double?(j<5?(j+1)/12:.59+(j-4)*.07):(j+1)/8,a=mix(front[0],back[0],t),b=mix(front[1],back[1],t);
-   return path([a,b],j%3===0?'#e7ddd5':'#9eafb1',j%3===0?.78:.5,`opacity="${j%3===0?'.8':'.62'}"`);
-  }).join('');
-  const aisle=[.22,.5,.78].map(t=>path([mix(front[0],front[1],t),mix(back[0],back[1],t)],'#dfded1',.72,'opacity=".87"')).join('');
-  const concourse=double?(()=>{const a=mix(front[0],back[0],.49),b=mix(front[1],back[1],.49),c=mix(front[0],back[0],.57),d=mix(front[1],back[1],.57);return poly([a,b,d,c],'#26383d')+path([c,d],'#c8c5b8',.7)})():'';
-  const crowdMarks=crowd?Array.from({length:23},(_,j)=>{const q=(j+.5)/23,t=.18+((j*7)%9)/12,p=mix(mix(front[0],front[1],q),mix(back[0],back[1],q),t),v=project(p);return `<circle cx="${v.x.toFixed(1)}" cy="${v.y.toFixed(1)}" r=".75" fill="${j%4===0?'#f4e6c6':j%3===0?'#f0caca':'#d9e2d9'}"/>`}).join(''):'';
-  const roof=profile.roof[i]?(()=>{const t=profile.roofType==='cantilever'?.43:.63,lip=front.map((p,k)=>mix(p,back[k],t)),rear=back.map(p=>({...p,z:p.z+1.4})),lipHigh=lip.map(p=>({...p,z:h+1.05}));const braces=[.14,.38,.62,.86].map(q=>path([mix(lipHigh[0],lipHigh[1],q),mix(rear[0],rear[1],q)],profile.roofType==='truss'?'#d2d7d0':'#9eaaab',profile.roofType==='truss'?.85:.55,'opacity=".74"')).join('');return poly([lipHigh[0],lipHigh[1],rear[1],rear[0]],profile.roofType==='continuous'?'#566f71':profile.finish==='glass'?'#647f83':'#47595c',`stroke="#a5b7b6" stroke-width=".8" opacity=".92"`)+braces+(profile.roofType==='truss'?path([lipHigh[0],rear[1]],'#acb5b3',.5,'opacity=".62"'):'')})():'';
-  const supports=[.08,.34,.66,.92].map(t=>{const p=mix(s.back[0],s.back[1],t),q={...p,z:h};return path([p,q],surfaces[1],1)}).join('');
-  return {depth:(s.front[0].x+s.front[0].y+s.front[1].x+s.front[1].y)/2,svg:`<g aria-label="${s.label} stand">${face}${facade}${supports}${deck}${upperDeck}${rows}${aisle}${concourse}${crowdMarks}${roof}</g>`};
- }).sort((a,b)=>a.depth-b.depth).map(x=>x.svg).join('');
- const corners=profile.corners?[[18.5,17.7],[53.5,17.7],[53.5,42.3],[18.5,42.3]].map(([a,b],i)=>{
-  const h=Math.min(profile.h[i],profile.h[(i+3)%4])*.64;
-  return poly([at(a-1,b-1,h),at(a+1,b-1,h),at(a+1,b+1,h),at(a-1,b+1,h)],colour,'stroke="#8a9894" stroke-width=".6"');
- }).join(''):'';
- const lights=[[17.2,16.1],[54.8,16.1],[54.8,43.9],[17.2,43.9]].map(([a,b])=>{
-  const top=project(at(a,b,evening?13:11)),base=project(at(a,b));return `<path d="M${base.x.toFixed(1)},${base.y.toFixed(1)}L${top.x.toFixed(1)},${top.y.toFixed(1)}" stroke="#53666a" stroke-width="1.6"/><rect x="${(top.x-4).toFixed(1)}" y="${(top.y-2).toFixed(1)}" width="8" height="3.4" fill="${evening?'#fff4ba':'#aab5ae'}"/>`;
- }).join('');
+ function world(s,u,v,z){
+  if(s.corner){const a=u/4*Math.PI/2,orig={NW:[20,20,-1,-1],NE:[52,20,1,-1],SW:[20,40,-1,1],SE:[52,40,1,1]}[s.id];return at(orig[0]+orig[2]*v*Math.cos(a),orig[1]+orig[3]*v*Math.sin(a),z)}
+  const U=s.i*s.bays+u;
+  if(s.side==='N')return at(20+U,20-v,z);
+  if(s.side==='S')return at(20+U,40+v,z);
+  if(s.side==='W')return at(20-v,20+U,z);
+  return at(52+v,20+U,z);
+ }
+ const face=(s,points,fill,extra='')=>poly(points.map(v=>world(s,...v)),fill,extra);
+ const edge=(s,points,stroke,width=1,extra='')=>path(points.map(v=>world(s,...v)),stroke,width,extra);
+ function sectionSvg(s){
+  const cfg=model.sections[s.id],spec=STANDS[cfg.stand];if(cfg.stand==='empty')return '';
+  const endZ=Math.max(...spec.tiers.map(t=>t[1]+(t[0]-1)*t[2])),d=spec.depth,rear=cfg.rear==='compact'?0:cfg.rear==='concourse'?1.1:cfg.rear==='amenities'?1.8:2.2;
+  const wall=endZ+(spec.depth<4?.3:1.1),roofZ=wall+2.2,sl=cfg.finish==='brick'?['#504843','#847061','#ba9c7b']:cfg.finish==='dark'?['#243640','#435561','#718790']:['#394a50','#687c82','#a0b8bd'];
+  const small=['grass','terrace3','terrace5','bleacher3','bleacher5'].includes(cfg.stand);
+  const seat=cfg.stand==='grass'?['#608a4c','#d4e3df','#23343b']:cfg.stand.startsWith('terrace')?['#a7b1a9','#d4e3df','#23343b']:[colour,'#d4e3df','#23343b'],parts=[],L=s.bays,steps=s.corner?12:1;
+  // Solid shell, backing building and windows follow the GROUNDS modular footprint.
+  for(let k=0;k<steps;k++){
+   const a=k*L/steps,b=(k+1)*L/steps;
+   parts.push(face(s,[[a,d,0],[b,d,0],[b,d,wall],[a,d,wall]],sl[0],`stroke="#24333a" stroke-width=".38"`));
+   if(rear){parts.push(face(s,[[a,d+rear,0],[b,d+rear,0],[b,d+rear,wall+1.3],[a,d+rear,wall+1.3]],sl[0]));parts.push(face(s,[[a,d,wall],[b,d,wall],[b,d+rear,wall+1.3],[a,d+rear,wall+1.3]],sl[1]));}
+   if(!s.corner&&k===0)for(let u=a+.45;u+.6<b;u+=1.18)for(let z=2.5;z<wall-1;z+=3.8)parts.push(face(s,[[u,d+rear+.025,z],[u+.62,d+rear+.025,z],[u+.62,d+rear+.025,z+1.2],[u,d+rear+.025,z+1.2]],evening?'#e6bd7a':sl[2],`opacity=".85"`));
+  }
+  // Each stand family keeps the actual number of GROUNDS rows and tier separations.
+  spec.tiers.forEach((t,ti)=>{
+   const startV=ti===0?.42:ti===1?(spec.deck==='overhang'?1.7:3.15):spec.deck==='triple'?4.8:4.0;
+   const rowPitch=Math.max(.24,(d-startV-.24)/t[0]);
+   for(let j=0;j<t[0];j++){
+    const v=startV+j*rowPitch,z=t[1]+j*t[2],next=Math.min(d-.06,v+rowPitch);
+    for(let k=0;k<steps;k++){
+     const a=k*L/steps,b=(k+1)*L/steps;
+     parts.push(face(s,[[a,v,z-.54],[b,v,z-.54],[b,v,z],[a,v,z]],seat[0],`stroke="#26343b" stroke-width=".24"`));
+     parts.push(face(s,[[a,v,z],[b,v,z],[b,next,z],[a,next,z]],j%4===0?seat[0]:colour,`stroke="#22333a" stroke-width=".22"`));
+    }
+    if(!s.corner){for(let u=1;u<L;u+=Math.max(1,Math.floor(L/3)))parts.push(face(s,[[u-.08,v,z+.015],[u+.08,v,z+.015],[u+.08,next,z+.015],[u-.08,next,z+.015]],seat[1]));}
+    if(crowd&&j%2===0){for(let u=.35;u<L;u+=.62){const q=project(world(s,u,v+.09,z+.23));parts.push(`<circle cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r=".45" fill="${u%1<.5?'#f7d5ad':'#d9e6e8'}"/>`);}}
+   }
+   if(ti<spec.tiers.length-1){const dz=spec.tiers[ti+1][1]-.6,v=spec.deck==='overhang'?1.6:Math.min(d-.6,startV+t[0]*rowPitch+.14);parts.push(face(s,[[0,v,dz-.8],[L,v,dz-.8],[L,v,dz],[0,v,dz]],'#b9c2c4'));parts.push(face(s,[[0,v,dz],[L,v,dz],[L,Math.min(d,v+.7),dz],[0,Math.min(d,v+.7),dz]],'#46575d'));}
+  });
+  // End cheeks close the section and reveal the tier profile from outside.
+  if(!s.corner)for(const u of [0,L])parts.push(face(s,[[u,.18,0],[u,d,0],[u,d,wall],[u,.18,1.2]],sl[1],`opacity=".95" stroke="#24343b" stroke-width=".35"`));
+  if(cfg.roof!=='none'){
+   const front=cfg.roof==='cantilever'?.5:cfg.roof==='full'?1.45:.25,back=d+rear+.1;
+   const roofFill=cfg.roof==='continuous'?'#63828b':cfg.finish==='brick'?'#687a7d':'#566d78';
+   for(let k=0;k<steps;k++){
+    const a=k*L/steps,b=(k+1)*L/steps;
+    // Near-side canopies retain a visible opening onto the pitch.
+    parts.push(face(s,[[a,front,roofZ],[b,front,roofZ],[b,back,roofZ+1.1],[a,back,roofZ+1.1]],roofFill,`stroke="#a4b5b3" stroke-width=".44" opacity="${s.side==='S'||s.side==='E'||s.id==='SE'?'.76':'.95'}"`));
+    parts.push(face(s,[[a,front,roofZ-.4],[b,front,roofZ-.4],[b,front,roofZ],[a,front,roofZ]],'#a4b1b0'));
+   }
+   if(cfg.roof==='truss'||cfg.roof==='cantilever')for(let u=.1;u<L;u+=Math.max(1,L/2)){parts.push(edge(s,[[u,front,roofZ+.12],[u,back,roofZ+2]],sl[2],.8));parts.push(edge(s,[[u,front,roofZ+.12],[u,back,roofZ+1.12]],sl[2],.7));}
+   if(cfg.roof==='continuous')parts.push(face(s,[[0,front,roofZ+.02],[L,front,roofZ+.02],[L,front+.65,roofZ+.17],[0,front+.65,roofZ+.17]],'#a3c8d0',`opacity=".75"`));
+   if(evening)parts.push(edge(s,[[.1,front,roofZ-.24],[L-.1,front,roofZ-.24]],'#fff1ba',1.6,'opacity=".78"'));
+  }
+  return `<g data-section="${s.id}" aria-label="${s.id}: ${safe(spec.label)}">${parts.join('')}</g>`;
+ }
+ const ordered=SECTIONS.map(s=>({s,depth:(()=>{const q=world(s,s.bays/2,3,0);return q.x+q.y})()})).sort((a,b)=>a.depth-b.depth);
+ const far=ordered.filter(x=>x.depth<66).map(x=>sectionSvg(x.s)).join(''),near=ordered.filter(x=>x.depth>=66).map(x=>sectionSvg(x.s)).join('');
+ const lights=[[16,15],[56,15],[56,45],[16,45]].map(([x,y],i)=>{const p=project(at(x,y,15)),q=project(at(x,y));return `<path d="M${q.x},${q.y}L${p.x},${p.y}" stroke="#77878b" stroke-width="1.1"/><rect x="${p.x-3.2}" y="${p.y-1.5}" width="6.4" height="2.8" fill="${evening?'#fff3ad':'#aab7b5'}"/>`}).join('');
  const art=`assets/sites/${map.art}-${evening?'night':'day'}.webp`,cx=map.origin[0]*px,cy=map.origin[1]*py;
- const viewBox=close?`${(cx-190).toFixed(1)} ${(cy-128).toFixed(1)} 380 256`:'0 0 1100 550';
- return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(profile.name)}, ${evening?'evening':'day'}"><image href="${art}" x="0" y="0" width="1100" height="550" preserveAspectRatio="none"/>${field.join('')}${corners}${parts}${lights}</svg>`;
+ const viewBox=close==='menu'?`${(cx-330).toFixed(1)} ${(cy-220).toFixed(1)} 660 440`:close?`${(cx-182).toFixed(1)} ${(cy-118).toFixed(1)} 364 236`:'0 0 1100 550';
+ return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}"><image href="${art}" x="0" y="0" width="1100" height="550" preserveAspectRatio="none"/>${far}${field.join('')}${near}${lights}</svg>`;
 }

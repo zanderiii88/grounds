@@ -1,6 +1,6 @@
 # Clubline grounds — design direction
 
-These are fictional grounds. The named real venues are references for stand arrangement and character, not copies of their plans, branding or exact capacities. Clubline capacities remain fixed at 20,000–55,000.
+These are fictional grounds. The named real venues are references for stand arrangement and character, not copies of their plans, branding or exact capacities. Starting club capacities range from 20,000–55,000. Player edits change a career ground’s capacity within 10,000–75,000.
 
 | Club | Ground | Seats | Direction | Architectural cue |
 |---|---|---:|---|---|
@@ -17,7 +17,7 @@ These are fictional grounds. The named real venues are references for stand arra
 | Ballyrath United | Rath Lane | 22,000 | Mixed old and new single-tier stands | Windsor Park’s redevelopment of three stands alongside an older side |
 | Strathford FC | Brae Park | 20,000 | Modest separated stands with open corners and one uncovered end | Traditional smaller Scottish grounds |
 
-The 1.4.1 renderer uses the GROUNDS 28×18 pitch and each map’s own registered origin and tile axes. The pitch is a flat world-plane surface; stands sit outside its apron. Stand heights, tiers, corners, roof treatments and facades vary by club. The design is a first pass: the venue-specific architecture, especially the cantilevers, historic facades and curved rooflines, needs a more detailed art pass.
+Release 1.5 uses the 32 individual GROUNDS section anchors (eight along each touchline, four behind each goal and four curved corners). Its stand catalogue draws from GROUNDS' small terraces and bleachers, standard and steep singles, setback and overhang doubles, and triple tiers. Clubline stores the sections in the career save and draws them over GROUNDS-registered day/night maps. The current SVG rendering is a new adaptation of these parts; it does not yet reproduce every detail, decorative item or control in the old GROUNDS canvas designer. Capacity estimates are scaled to each club's starting ground, so the initial twelve retain the league's intended capacities. Further architectural art and site alignment are still worthwhile.
 
 ## Reference notes
 
