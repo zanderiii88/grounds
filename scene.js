@@ -3,10 +3,25 @@ const poly = (pts, fill, stroke = '#24353d', extra = '') => `<polygon points="${
 const ring = (outer, inner, color) => outer.map((p,i)=>poly([p,outer[(i+1)%4],inner[(i+1)%4],inner[i]],color,'#182d33')).join('');
 const diamond = (cx,cy,rx,ry) => [[cx,cy-ry],[cx+rx,cy],[cx,cy+ry],[cx-rx,cy]];
 
-export function sceneSvg(club, site='city') {
+export function sceneSvg(club, site='city', crowd=false) {
  const colour=safe(club?.colour||'#a23545');
  const capacity=club?.capacity||39000;
  const variant=Number(String(club?.id||'C05').slice(1))||5;
+ const presets=[
+  {name:'Grand bowl',roof:'all',tiers:2,lights:4},
+  {name:'Four covered stands',roof:'all',tiers:2,lights:2},
+  {name:'East end arena',roof:'east',tiers:2,lights:4},
+  {name:'Industrial ground',roof:'north',tiers:2,lights:4},
+  {name:'Thistle Park',roof:'opposite',tiers:2,lights:2},
+  {name:'Civic stadium',roof:'all',tiers:1,lights:4},
+  {name:'Albion terraces',roof:'south',tiers:2,lights:4},
+  {name:'Dockside ground',roof:'west',tiers:1,lights:4},
+  {name:'Crowmere End',roof:'opposite',tiers:1,lights:2},
+  {name:'Valley ground',roof:'north',tiers:1,lights:4},
+  {name:'Rath Park',roof:'east',tiers:1,lights:2},
+  {name:'Compact terraces',roof:'none',tiers:1,lights:4}
+ ];
+ const preset=presets[Math.max(0,Math.min(11,variant-1))];
  const depth=capacity>=47000?1.08:capacity>=33000?1:0.91;
  const outer=diamond(530,340,370*depth,155*depth);
  const upper=diamond(530,340,326*depth,134*depth);
@@ -26,19 +41,24 @@ export function sceneSvg(club, site='city') {
   const rightY=outer[1][1]+(outer[2][1]-outer[1][1])*t;
   return `<path d="M${leftX} ${leftY}l21 12M${rightX} ${rightY}l-21 12" stroke="#ecedf099" stroke-width="2" opacity=".65"/>`;
  }).join('');
- const upperRing=outer.map((p,i)=>poly([p,outer[(i+1)%4],upper[(i+1)%4],upper[i]],i===variant%4?'#42515a':'#293e47','#182d33')).join('');
+ const upperRing=outer.map((p,i)=>poly([p,outer[(i+1)%4],upper[(i+1)%4],upper[i]],preset.tiers===2?i===variant%4?'#53636b':'#34464f':'#273940','#182d33')).join('');
  const lowerRing=upper.map((p,i)=>poly([p,upper[(i+1)%4],lower[(i+1)%4],lower[i]],colour,'#182d33',i===variant%4?'opacity=".76"':'')).join('');
  const innerRing=ring(lower,pitch,'#52616a');
- const northRoof=poly([[530,172],[856,305],[826,318],[530,200]],'#465660','#a8bcc1');
- const southRoof=poly([[200,375],[530,502],[530,480],[234,361]],'#344a53','#9badb3');
- const westRoof=poly([[190,305],[530,172],[530,200],[220,320]],'#3b5058','#92abb2');
- const roofs=(capacity>=47000?northRoof+southRoof:variant%3===0?westRoof:variant%3===1?northRoof:southRoof);
+ const roofSides=outer.map((p,i)=>{
+  const q=outer[(i+1)%4],a=upper[i],b=upper[(i+1)%4];
+  return poly([p,q,b,a],i%2?'#334954':'#4c6069','#aabfc3',`opacity="${preset.roof==='all'?'.88':'.95'}"`);
+ });
+ const roofIndices={all:[0,1,2,3],opposite:[0,2],north:[0],east:[1],south:[2],west:[3],none:[]}[preset.roof];
+ const roofs=roofIndices.map(i=>roofSides[i]).join('');
+ const facade=outer.map((p,i)=>{const q=outer[(i+1)%4];return `<path d="M${p[0]} ${p[1]}L${q[0]} ${q[1]}l0 22L${p[0]} ${p[1]+22}Z" fill="${i%2?'#20323b':'#2e424a'}" stroke="#6c8388" stroke-width="2"/>`}).join('');
+ const masts=[[145,230],[905,225],[145,460],[920,468]].slice(0,preset.lights).map(([x,y])=>`<path d="M${x} ${y}v-92" stroke="#82949a" stroke-width="6"/><path d="M${x-19} ${y-94}h38v-13h-38z" fill="#e7e1c4"/>`).join('');
+ const crowdDots=crowd?Array.from({length:90},(_,i)=>{const side=i%4,t=(Math.floor(i/4)+.5)/23,a=upper[side],b=upper[(side+1)%4],c=lower[side],d=lower[(side+1)%4],x=(a[0]+c[0])/2+((b[0]+d[0]-a[0]-c[0])/2)*t,y=(a[1]+c[1])/2+((b[1]+d[1]-a[1]-c[1])/2)*t;return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.5" fill="${i%5===0?'#fff1d0':i%3===0?'#a9c8d4':'#e3aeb3'}"/>`}).join(''):'';
  return `<svg viewBox="0 0 1100 650" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Isometric view of ${safe(club?.ground||'a football stadium')}">
  <defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="${theme[0]}"/><stop offset="1" stop-color="#12242b"/></linearGradient><linearGradient id="grass" x2="0" y2="1"><stop stop-color="#479068"/><stop offset="1" stop-color="#225a46"/></linearGradient><filter id="shadow"><feGaussianBlur stdDeviation="20"/></filter></defs>
  <rect width="1100" height="650" fill="url(#sky)"/><path d="M0 215L530 65 1100 214v435H0z" fill="${theme[1]}"/><path d="M0 331L536 146 1100 316v91L532 223 0 415Z" fill="${theme[2]}" opacity=".43"/><path d="M0 340L539 158 1100 329M0 396L538 214 1100 385" fill="none" stroke="#d9d7c6" stroke-width="2" stroke-dasharray="21 17" opacity=".47"/>
  ${buildings}<path d="M-40 536L470 357 1110 540v110H-40z" fill="#364644"/><path d="M0 551L470 386 1080 558" fill="none" stroke="#b8aa89" stroke-width="8" opacity=".54"/>
  <ellipse cx="530" cy="386" rx="395" ry="140" fill="#03090d" opacity=".5" filter="url(#shadow)"/>
- ${poly(outer,'#1b2c34','#0b1a20')}${upperRing}${lowerRing}${innerRing}${poly(pitch,'url(#grass)','#dbebd8')}
+ ${masts}${facade}${poly(outer,'#1b2c34','#0b1a20')}${upperRing}${lowerRing}${innerRing}${crowdDots}${poly(pitch,'url(#grass)','#dbebd8')}
  <path d="M530 252L530 428M350 340L710 340" stroke="#e5f3da" stroke-width="2" opacity=".73" transform="scale(1 ${88*depth/(115*depth)}) translate(0 120)"/>
  <ellipse cx="530" cy="340" rx="45" ry="15" fill="none" stroke="#e5f3da" stroke-width="2" opacity=".7"/>
  ${ribs}${roofs}

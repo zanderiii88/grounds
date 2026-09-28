@@ -1,12 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
-<title id="title">Clubline C and rising arrow</title>
+<title id="title">Clubline chrome C and rising metallic red line</title>
 <defs>
-  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#23333d"/><stop offset=".58" stop-color="#111d25"/><stop offset="1" stop-color="#0b151c"/></linearGradient>
-  <linearGradient id="silver" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset=".55" stop-color="#ecf2f3"/><stop offset="1" stop-color="#b8c8ce"/></linearGradient>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#314650"/><stop offset=".52" stop-color="#14232c"/><stop offset="1" stop-color="#081219"/></linearGradient>
+<linearGradient id="steel" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#586d77"/><stop offset=".24" stop-color="#dce8ea"/><stop offset=".45" stop-color="#fff"/><stop offset=".67" stop-color="#788c95"/><stop offset="1" stop-color="#e8f3f5"/></linearGradient>
+<linearGradient id="red" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#971b2e"/><stop offset=".38" stop-color="#d53148"/><stop offset=".68" stop-color="#ff6472"/><stop offset="1" stop-color="#b91f3c"/></linearGradient>
+<filter id="shadow"><feDropShadow dx="4" dy="8" stdDeviation="6" flood-opacity=".55"/></filter>
 </defs>
-<rect width="512" height="512" rx="106" fill="url(#bg)"/>
-<path d="M392 127H192L116 202V319L192 390H392V331H222L177 294V226L222 186H392Z" fill="#40525d" transform="translate(6 8)"/>
-<path d="M392 127H192L116 202V319L192 390H392V331H222L177 294V226L222 186H392Z" fill="url(#silver)"/>
-<path d="M99 360H268L294 298L327 309L413 137" fill="none" stroke="#ee4b55" stroke-width="19" stroke-linecap="square" stroke-linejoin="miter"/>
-<path d="M371 151L424 112L427 181" fill="none" stroke="#ee4b55" stroke-width="19" stroke-linecap="square" stroke-linejoin="miter"/>
+<rect width="512" height="512" rx="98" fill="url(#bg)"/>
+<path d="M396 111H196L90 213V323L191 408H332L356 344H220L158 290V238L226 174H375Z" fill="url(#steel)" stroke="#ecf9fa" stroke-width="3" filter="url(#shadow)"/>
+<path d="M72 386H308L346 317L381 335L444 218" fill="none" stroke="#60131f" stroke-width="28" stroke-linejoin="miter"/>
+<path d="M72 382H306L344 313L380 331L445 208" fill="none" stroke="url(#red)" stroke-width="18" stroke-linejoin="miter"/>
+<path d="M406 220L459 173L463 243L446 215Z" fill="url(#red)" stroke="#ff8490" stroke-width="2"/>
+<path d="M83 377H305L344 308L380 326" fill="none" stroke="#ff9ca5" stroke-width="3" opacity=".55"/>
 </svg>
