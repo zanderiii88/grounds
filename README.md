@@ -1,4 +1,4 @@
-# Clubline — Release 1
+# Clubline — Release 1.1
 
 An independent, mobile-first football club career prototype. It does not read or overwrite GROUNDS saves.
 
@@ -6,9 +6,9 @@ An independent, mobile-first football club career prototype. It does not read or
 
 Upload the contents of this ZIP to the root of a GitHub Pages repository, or serve this folder locally with a web server. Open `index.html` through the resulting URL. The game stores the career in this browser using the `clubline-career-r1` key.
 
-Choose one of 12 fictional clubs, optionally rename any team, pick a large-district location and lock a primary colour. The colour appears on the ground's seats. Your team plays 22 fixtures, home and away against each other club.
+Choose one of 12 fictional clubs in the Premier Division, optionally rename any team, pick a large-district location and lock a primary colour. Club selection includes facilities and youth programme stars. The colour appears on the ground's seats. Your team plays 22 fixtures, home and away against each other club.
 
-Select players by tapping a name then an XI or bench slot. Drag and drop also works. Use the Formation, Play style and Orders tabs for your match plan. Advance through dates with the button at the bottom left. On matchday you can simulate instantly or confirm your lineup and watch the text match at three speeds. Goals, cards, injuries and half-time pause play. Full-time reports include player ratings, minutes, condition and home match revenue.
+Select numbered player shirts by tapping a name then an XI or bench slot. Each shirt shows the surname, position, overall rating and condition. Drag and drop also works. Use the Formation, Play style and Orders tabs for your match plan. Advance through dates with the button at the bottom left. On matchday you can simulate instantly or confirm your lineup and watch the text match at three speeds. Goals, cards, injuries and half-time pause play. Full-time reports include player ratings, minutes, condition and home match revenue.
 
 ## Scope of this release
 
@@ -20,4 +20,5 @@ The finances are provisional: opening cash derives from the club's pilot budget,
 
 - `index.html`, `style.css`, `app.js`, `scene.js`: the standalone game.
 - `data/league.json`: 12 clubs and 288 player records with recalibrated positional ratings.
+- `assets/clubline-logo.svg`: the new Clubline wordmark and rising red arrow.
 - `assets/icon.svg`, `manifest.webmanifest`: branding metadata.

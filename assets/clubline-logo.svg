@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 490 118" role="img" aria-labelledby="title">
+<title id="title">Clubline</title>
+<defs>
+<linearGradient id="metal" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff"/><stop offset=".55" stop-color="#e8eff1"/><stop offset="1" stop-color="#bccbd0"/></linearGradient>
+<g id="letters"><path d="M646 483C647 499 647 510 647 519C647 650 563 737 438 737C345 737 262 693 199 609C131 519 88 377 88 241C88 158 113 80 152 39C187 2 242 -19 303 -19C381 -19 453 13 508 74C549 119 573 161 604 246H481C465 205 456 188 439 167C409 130 371 111 327 111C256 111 216 166 216 266C216 359 243 464 283 524C319 579 365 607 418 607C459 607 491 589 506 559C517 538 520 522 522 483Z" transform="translate(8.00 82) scale(0.102 -0.102)"/>
+<path d="M310 718H187L62 0H478L501 130H208Z" transform="translate(67.28 82) scale(0.102 -0.102)"/>
+<path d="M659 718H534L451 245C436 155 388 108 314 108C255 108 225 142 225 208C225 220 227 237 229 252L310 718H185L102 242C98 218 96 193 96 169C96 48 167 -19 293 -19C448 -19 547 75 578 251Z" transform="translate(117.29 82) scale(0.102 -0.102)"/>
+<path d="M62 0H311C419 0 468 18 520 77C565 127 591 196 591 266C591 327 573 359 525 387C555 404 570 416 586 438C611 473 626 525 626 574C626 666 571 718 474 718H187ZM235 316H392C439 316 467 291 467 249C467 174 421 124 353 124H202ZM284 594H425C479 594 504 576 504 538C504 476 464 437 401 437H256Z" transform="translate(176.57 82) scale(0.102 -0.102)"/>
+<path d="M310 718H187L62 0H478L501 130H208Z" transform="translate(235.85 82) scale(0.102 -0.102)"/>
+<path d="M301 718H178L52 0H175Z" transform="translate(285.86 82) scale(0.102 -0.102)"/>
+<path d="M459 214 311 718H182L57 0H172L261 515L413 0H536L661 718H546Z" transform="translate(308.01 82) scale(0.102 -0.102)"/>
+<path d="M620 718H187L62 0H509L531 127H205L237 313H524L546 440H259L285 591H598Z" transform="translate(367.30 82) scale(0.102 -0.102)"/></g>
+</defs>
+<use xlink:href="#letters" transform="translate(3 4)" fill="#384850" stroke="#384850" stroke-width="3" stroke-linejoin="round"/>
+<use xlink:href="#letters" fill="url(#metal)" stroke="#f3f7f8" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M7 106 H414 L429 67 L449 73 L470 28" fill="none" stroke="#eb4854" stroke-width="8" stroke-linecap="round" stroke-linejoin="miter"/>
+<path d="M457 31 L472 22 L472 40" fill="none" stroke="#eb4854" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
