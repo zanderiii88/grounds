@@ -1,7 +1,7 @@
-import {sceneSvg,stadiumProfile} from './scene.js?v=1.6.1';
-import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.6.1';
+import {sceneSvg,stadiumProfile} from './scene.js?v=1.7.0';
+import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.7.0';
 
-const APP_VERSION='1.6.1';
+const APP_VERSION='1.7.0';
 const SAVE_KEY='clubline-career-r1';
 const SITES=[['city','City Waterfront'],['gardens','Civic Gardens'],['rail','Rail District'],['university','University Quarter'],['oldtown','Old Town']];
 const availableSites=c=>c.capacity>=45000?SITES.slice(0,3):SITES;
@@ -21,6 +21,8 @@ const FORMATIONS={
 };
 const STYLES=['Balanced','High press','Possession','Direct','Counter'];
 const ORDERS=['Standard','Attack','Protect lead'];
+const PLAYER_ORDERS=['Standard','Get forward','Hold position','Press more','Stay wide','Cut inside'];
+const MOODS=[['😠','Very unhappy'],['🙁','Unhappy'],['😐','Okay'],['🙂','Happy'],['😄','Very happy']];
 const html=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const stars=(n,label)=>`<span class="stars" aria-label="${label}: ${n} of 5 stars">${'★'.repeat(n)}<span>${'☆'.repeat(5-n)}</span></span>`;
 const fmtMoney=n=>'£'+Math.round(n||0).toLocaleString('en-GB');
@@ -29,11 +31,12 @@ const addDays=(s,n)=>new Date(Date.parse(s+'T12:00:00Z')+86400000*n).toISOString
 const rand=(arr)=>arr[Math.floor(Math.random()*arr.length)];
 let dragGhost=null,dragTarget=null,activeDrag=null,suppressDragClick=false,autoResumeTimer=null;
 let editing=null,selectedStand='N4';
-let source,career=null,view='title',section='squad',sub='lineup',setup={clubId:'C01',site:'city',names:{},colour:null},selectedPlayer=null,selectedSlot=null,match=null,timer=null,notice='',updateMessage='',availableVersion=null,checkingUpdate=false;
+let source,career=null,view='title',section='squad',sub='lineup',setup={clubId:'C01',site:'city',names:{},colour:null},selectedPlayer=null,selectedSlot=null,instructionPlayer=null,statsScope='club',statsSort='goals',statsDescending=true,match=null,timer=null,notice='',updateMessage='',availableVersion=null,checkingUpdate=false;
 const root=document.getElementById('app');
 
 try {source=await (await fetch('./data/league.json',{cache:'no-store'})).json();}
 catch(error){root.innerHTML='<main class="app-shell"><div class="shell-content"><h1>Clubline</h1><p>Could not load the league data. Open the game through a web server or GitHub Pages.</p></div></main>';throw error;}
+const ambitiousIds=new Set(source.clubs.map(c=>source.players.filter(p=>p.clubId===c.id).sort((a,b)=>a.overall-b.overall).slice(0,6).sort((a,b)=>b.potential-a.potential)[0]?.id));
 const menuScenes=source.clubs.map((c,i)=>({club:c,site:availableSites(c)[(i+Math.floor(i/3))%availableSites(c).length][0],evening:i%2===1}));
 const club=id=>source.clubs.find(c=>c.id===id);
 const player=id=>source.players.find(p=>p.id===id);
@@ -44,6 +47,11 @@ const myClub=()=>club(career?.clubId||setup.clubId);
 const clubName=id=>career?.names?.[id]||setup.names?.[id]||club(id)?.name||id;
 const myColour=()=>career?.colour||setup.colour||myClub()?.colour||'#e5484f';
 const playerFitness=id=>career?.players?.[id]?.fitness??player(id)?.fitness??80;
+const ratingRole=p=>{const peers=squadPlayers(owner(p.id)).filter(x=>x.primary===p.primary||x.secondary===p.primary).sort((a,b)=>b.overall-a.overall);const index=peers.findIndex(x=>x.id===p.id);return index===0?'Starter':index<=2?'Rotation':'Fringe'};
+const playerState=id=>career?.players?.[id]||{};
+const moodLevel=id=>Math.max(0,Math.min(4,Math.floor((playerState(id).happiness??67)/20)));
+const moodButton=(id)=>{if(!id)return '';const [face,label]=MOODS[moodLevel(id)];return `<button type="button" class="slot-tool mood mood-${moodLevel(id)}" data-action="player-happiness" data-player="${id}" title="${label}" aria-label="${html(player(id).name)}: ${label}">${face}</button>`};
+const instructionButton=id=>id?`<button type="button" class="slot-tool instructions" data-action="player-instructions" data-player="${id}" title="Individual instructions" aria-label="Instructions for ${html(player(id).name)}">↗</button>`:'';
 const slotsFor=f=>FORMATIONS[f||'4-3-3'].flat();
 const opposition=(fixture,me)=>fixture.home===me?fixture.away:fixture.home;
 
@@ -75,11 +83,11 @@ function scheduleSeason(){
 }
 function newCareer(){
  const c=club(setup.clubId),choice=bestLineup(c.id,c.formation);
- career={version:1,clubId:c.id,names:{...setup.names},colour:setup.colour||c.colour,site:setup.site,date:'2026-08-13',time:'09:00',balance:c.budget*5,formation:c.formation,style:c.style,order:'Standard',lineup:choice.lineup,bench:choice.bench,players:Object.fromEntries(source.players.map(p=>[p.id,{fitness:p.fitness,form:[]}])),owners:{},transferList:[],offers:[],stadium:defaultLayout(c),schedule:scheduleSeason(),reports:[],news:[],kit:{home:'solid',away:'stripes'}};
+ career={version:1,clubId:c.id,names:{...setup.names},colour:setup.colour||c.colour,site:setup.site,date:'2026-08-13',time:'09:00',balance:c.budget*5,formation:c.formation,style:c.style,order:'Standard',lineup:choice.lineup,bench:choice.bench,players:Object.fromEntries(source.players.map(p=>[p.id,{fitness:p.fitness,form:[],happiness:64+(p.number*7)%25,ambitious:ambitiousIds.has(p.id),instruction:'Standard',reason:'Content with their squad role.'}])),stats:{},loans:{},owners:{},transferList:[],offers:[],stadium:defaultLayout(c),schedule:scheduleSeason(),reports:[],news:[],kit:{home:'solid',away:'stripes'}};
  view='career';section='squad';sub='lineup';save();render();
 }
 function save(){if(career)localStorage.setItem(SAVE_KEY,JSON.stringify({career,match}));}
-function load(){try{const saved=JSON.parse(localStorage.getItem(SAVE_KEY));if(saved?.career?.version===1){career=saved.career;career.owners??={};career.transferList??=[];career.offers??=[];career.stadium=normaliseLayout(career.stadium,club(career.clubId));if(career.site==='harbour')career.site='city';match=saved.match||null;if(match)match.kickoff??='15:00';return true}}catch{}return false}
+function load(){try{const saved=JSON.parse(localStorage.getItem(SAVE_KEY));if(saved?.career?.version===1){career=saved.career;career.owners??={};career.transferList??=[];career.offers??=[];career.stats??={};career.loans??={};for(const p of source.players){const state=career.players[p.id]??(career.players[p.id]={fitness:p.fitness,form:[]});state.happiness??=70;state.ambitious??=ambitiousIds.has(p.id);state.instruction??='Standard';state.reason??='Content with their squad role.'}career.stadium=normaliseLayout(career.stadium,club(career.clubId));if(career.site==='harbour')career.site='city';match=saved.match||null;if(match)match.kickoff??='15:00';return true}}catch{}return false}
 const hasSave=()=>{try{return JSON.parse(localStorage.getItem(SAVE_KEY))?.career?.version===1}catch{return false}};
 function nextFixture(){if(!career)return null;for(const round of career.schedule){const f=round.fixtures.find(x=>(x.home===career.clubId||x.away===career.clubId)&&x.homeGoals===null);if(f)return {...f,date:round.date,round}}return null}
 function allResults(){return career.schedule.flatMap(r=>r.fixtures.filter(f=>f.homeGoals!==null).map(f=>({...f,date:r.date})))}
@@ -91,6 +99,39 @@ function standings(){
  }
  return Object.values(table).sort((a,b)=>b.Pts-a.Pts||(b.GF-b.GA)-(a.GF-a.GA)||b.GF-a.GF||clubName(a.id).localeCompare(clubName(b.id)));
 }
+function recordStats(id,{start=false,minutes=0,goals=0,assists=0,conceded=0,cleanSheet=false,rating=null}={}){
+ if(!id||minutes<=0)return;
+ const s=career.stats[id]??(career.stats[id]={appearances:0,starts:0,minutes:0,goals:0,assists:0,conceded:0,cleanSheets:0,ratingTotal:0,ratedMinutes:0});
+ s.appearances++;s.starts+=Number(start);s.minutes+=minutes;s.goals+=goals;s.assists+=assists;
+ if(player(id)?.primary==='GK'){s.conceded+=conceded;s.cleanSheets+=Number(cleanSheet)}
+ if(rating!==null){s.ratingTotal+=rating*minutes;s.ratedMinutes+=minutes}
+}
+function recordSimulatedTeam(clubId,goals,conceded){
+ const picks=bestLineup(clubId,club(clubId).formation),lineup=picks.lineup.filter(Boolean),subs=picks.bench.filter(id=>id&&player(id).primary!=='GK').slice(0,3);
+ const attackers=lineup.filter(id=>['ST','LW','RW','AM','CM'].includes(player(id).primary));
+ const scorers=attackers.length?attackers:lineup.filter(id=>player(id).primary!=='GK');
+ const goalsBy={},assistsBy={};
+ for(let g=0;g<goals;g++){const scorer=rand(scorers);if(!scorer)break;goalsBy[scorer]=(goalsBy[scorer]||0)+1;const creator=rand(attackers.filter(id=>id!==scorer));if(creator&&Math.random()<.74)assistsBy[creator]=(assistsBy[creator]||0)+1}
+ const replaced=lineup.filter(id=>player(id).primary!=='GK').slice(-subs.length);
+ for(const id of lineup)recordStats(id,{start:true,minutes:replaced.includes(id)?75:90,goals:goalsBy[id]||0,assists:assistsBy[id]||0,conceded,cleanSheet:conceded===0,rating:Math.max(5.2,Math.min(9.4,6.3+(goalsBy[id]||0)*.75+(assistsBy[id]||0)*.4+(Math.random()-.5)*1.2))});
+ for(const id of subs)recordStats(id,{minutes:15,conceded:0,rating:6.1+Math.random()*.8});
+}
+function updateHappiness(){
+ const minutes=Object.fromEntries(Object.entries(match.participants).map(([id,p])=>[id,Math.max(1,(p.end??90)-p.start)]));
+ for(const p of squadPlayers(career.clubId)){
+  const state=career.players[p.id],role=ratingRole(p),played=minutes[p.id]||0;
+  let delta=0,reason='Content with their squad role.';
+  if(played>=45){delta=role==='Starter'?3:7;reason='Pleased with recent playing time.';state.unusedMatches=0}
+  else if(played>0){delta=state.ambitious?7:4;reason='A substitute appearance helped.';state.unusedMatches=0}
+  else{state.unusedMatches=(state.unusedMatches||0)+1;delta=role==='Starter'?-4:role==='Rotation'?-1:state.ambitious?-3:0;
+   reason=role==='Fringe'&&!state.ambitious?'Accepts a fringe role.':role==='Starter'?'Disappointed to miss a start.':state.ambitious?'Wants more playing time.':'Would like more minutes.'}
+  state.happiness=Math.max(5,Math.min(96,(state.happiness??70)+delta));state.reason=reason;
+  if(state.happiness<25&&state.unusedMatches>=3&&!state.request){state.request=state.happiness<15?'transfer':'loan';state.reason=state.request==='loan'?'Requests a loan for playing time.':'Requests a transfer after limited playing time.';career.news.push({date:career.date,text:`${p.name} has asked to ${state.request==='loan'?'go out on loan':'be transfer listed'}. Review their happiness in Starting XI.`})}
+  if(state.happiness<15&&state.request==='loan'&&state.unusedMatches>=6){state.request='transfer';state.reason='Requests a transfer after a long spell without playing.';career.news.push({date:career.date,text:`${p.name} now asks to be transfer listed.`})}
+  if(state.happiness>=45)state.request=null;
+ }
+}
+function attentionList(){const unhappy=squadPlayers(career.clubId).filter(p=>career.players[p.id]?.request||moodLevel(p.id)<=1),offers=career.offers.filter(o=>o.status==='new'||o.status==='counter');return `<div class="glass panel attention"><span class="eyebrow">Today / Pay attention</span>${offers.length?`<button class="attention-item" data-action="open-offers">${offers.length} transfer proposal${offers.length===1?'':'s'} to review →</button>`:''}${unhappy.slice(0,3).map(p=>`<button class="attention-item" data-action="focus-player" data-player="${p.id}">${html(p.name)} · ${html(career.players[p.id].reason)} →</button>`).join('')}${!offers.length&&!unhappy.length?'<span class="muted">No urgent squad matters today.</span>':''}</div>`}
 function toast(message){notice=message;document.querySelector('.toast')?.remove();const div=document.createElement('div');div.className='toast';div.textContent=message;document.body.appendChild(div);setTimeout(()=>div.remove(),3500)}
 function scene(current,site,open=false,crowd=false,evening=false,wide=false){const layout=career?.clubId===current.id?career.stadium:null;return `<div class="scene ${open?'open':''} ${wide?'menu-scene':''}">${sceneSvg(current,site,crowd,evening,wide?'menu':open,layout)}${wide?sceneSvg(current,site,crowd,evening,'menu-mobile',layout):''}</div>`}
 function logo(small=false){return `<img class="logo ${small?'small':''}" src="assets/clubline-logo.svg?v=${APP_VERSION}" alt="Clubline">`}
@@ -116,33 +157,45 @@ function setupView(){
 }
 
 function topbar(){const next=nextFixture();return `<header class="topbar">${logo(true)}<div class="top-pill"><small>Date / time</small><b>${fmtDate(career.date)} · ${career.time}</b></div><div class="top-pill"><small>Club balance</small><b class="money">${fmtMoney(career.balance)}</b></div><div class="top-pill"><small>Next match</small><b>${next?`${next.home===career.clubId?'H':'A'} ${next.kickoff||'15:00'} · ${html(clubName(opposition(next,career.clubId)))}`:'Season complete'}</b></div><button class="btn slim ghost" data-action="menu">Menu</button></header>`}
-function dashboard(){const c=myClub(),next=nextFixture(),homeMatch=match&&match.home===career.clubId;return `<div class="app-shell" style="--club:${myColour()}">${scene({...c,colour:myColour()},career.site,false,homeMatch,!!(match&&match.kickoff>='17:30'))}<div class="shell-content">${topbar()}<div class="dash-grid"><div><div class="glass panel welcome"><span class="eyebrow">${html(c.ground)} / ${capacity(career.stadium,c).toLocaleString('en-GB')} seats</span><h1>${html(clubName(c.id))}</h1><div class="next-line">${next?`Next: ${next.home===c.id?'at home to':'away at'} ${html(clubName(opposition(next,c.id)))} · ${fmtDate(next.date)} · ${next.kickoff||'15:00'}`:'The league season is complete.'}</div></div><nav class="section-nav" aria-label="Club sections">${[['squad','Squad'],['facilities','Facilities'],['finances','Finances'],['organiser','Organiser']].map(([id,label])=>`<button class="btn ${section===id?'active':''}" data-action="section" data-section="${id}">${label}</button>`).join('')}</nav></div><div class="glass panel section-content">${sectionContent()}</div></div><div class="advance-dock"><button class="btn primary arrow" data-action="advance">${next&&career.date===next.date?'Matchday':'Advance time'}</button><span>${next?`${next.date===career.date?'Kick-off event ahead':'Next fixture '+fmtDate(next.date)}`:'Season finished'}</span></div></div>${match?matchOverlay():''}${career.offers?.some(o=>o.status==='new')?`<button class="offer-alert" data-action="open-offers">Transfer offer received · Review →</button>`:''}</div>`}
+function dashboard(){const c=myClub(),next=nextFixture(),homeMatch=match&&match.home===career.clubId;return `<div class="app-shell" style="--club:${myColour()}">${scene({...c,colour:myColour()},career.site,false,homeMatch,!!(match&&match.kickoff>='17:30'))}<div class="shell-content">${topbar()}<div class="dash-grid"><div><div class="glass panel welcome"><span class="eyebrow">${html(c.ground)} / ${capacity(career.stadium,c).toLocaleString('en-GB')} seats</span><h1>${html(clubName(c.id))}</h1><div class="next-line">${next?`Next: ${next.home===c.id?'at home to':'away at'} ${html(clubName(opposition(next,c.id)))} · ${fmtDate(next.date)} · ${next.kickoff||'15:00'}`:'The league season is complete.'}</div></div>${attentionList()}<nav class="section-nav" aria-label="Club sections">${[['squad','Squad'],['facilities','Facilities'],['finances','Finances'],['organiser','Organiser']].map(([id,label])=>`<button class="btn ${section===id?'active':''}" data-action="section" data-section="${id}">${label}</button>`).join('')}</nav></div><div class="glass panel section-content">${sectionContent()}</div></div><div class="advance-dock"><button class="btn primary arrow" data-action="advance">${next&&career.date===next.date?'Matchday':'Advance time'}</button><span>${next?`${next.date===career.date?'Kick-off event ahead':'Next fixture '+fmtDate(next.date)}`:'Season finished'}</span></div></div>${match?matchOverlay():''}${career.offers?.some(o=>o.status==='new')?`<button class="offer-alert" data-action="open-offers">Transfer offer received · Review →</button>`:''}</div>`}
 
 function sectionContent(){return section==='squad'?squadSection():section==='facilities'?facilitiesSection():section==='finances'?financesSection():organiserSection()}
 
 function tabBar(items){return `<div class="tabs">${items.map(([key,label])=>`<button class="btn ${sub===key?'selected':''}" data-action="sub" data-sub="${key}">${label}</button>`).join('')}</div>`}
 function squadSection(){
- const tabs=[['lineup','Starting XI'],['transfers','Transfers'],['formation','Formation'],['style','Play style'],['orders','Orders'],['form','Form charts']];
+ const tabs=[['lineup','Starting XI'],['transfers','Transfers'],['statistics','Statistics'],['form','Form charts']];
  let content='';
  if(sub==='lineup') content=lineupEditor(false);
  if(sub==='transfers') content=transfersSection();
- if(sub==='formation') content=`<p>Choose a shape. The current players stay in their positions until you arrange them again.</p><div class="choice-grid">${Object.keys(FORMATIONS).map(f=>`<button class="btn ${career.formation===f?'selected':''}" data-action="formation" data-value="${f}">${f}</button>`).join('')}</div>`;
- if(sub==='style') content=`<p>Your approach changes how many chances your side creates and concedes.</p><div class="choice-grid">${STYLES.map(x=>`<button class="btn ${career.style===x?'selected':''}" data-action="style" data-value="${x}">${x}</button>`).join('')}</div>`;
- if(sub==='orders') content=`<p>Set an overall match instruction. You can change this during a watched game.</p><div class="choice-grid">${ORDERS.map(x=>`<button class="btn ${career.order===x?'selected':''}" data-action="order" data-value="${x}">${x}</button>`).join('')}</div>`;
+ if(sub==='statistics') content=statisticsSection();
  if(sub==='form') content=`<p>Recent league results and the players who have stood out.</p><div class="list">${career.reports.slice(-5).reverse().map(r=>`<div class="row"><span>${fmtDate(r.date)} · ${html(clubName(r.opponent))}</span><b>${r.us}-${r.them}</b></div>`).join('')||'<div class="empty-note">No games played yet.</div>'}</div><div class="divider"></div><div class="list">${career.lineup.map(id=>{const p=player(id),form=career.players[id].form;return `<div class="row"><span>${html(p.name)} <small>${p.primary}</small></span><b>${form.length?(form.reduce((a,b)=>a+b,0)/form.length).toFixed(1):'—'}</b></div>`}).join('')}</div>`;
  return `<span class="eyebrow">Football / Squad</span><h2>Shape your eleven</h2>${tabBar(tabs)}${content}`;
 }
+function statisticsSection(){
+ const entries=(statsScope==='club'?squadPlayers(career.clubId):source.players).map(p=>({p,s:career.stats[p.id]||{}}));
+ const value=(x,key)=>key==='overall'?x.p.overall:key==='average'?x.s.ratedMinutes?(x.s.ratingTotal/x.s.ratedMinutes):0:(x.s[key]||0);
+ entries.sort((a,b)=>(value(b,statsSort)-value(a,statsSort))*(statsDescending?1:-1)||value(b,'appearances')-value(a,'appearances')||a.p.name.localeCompare(b.p.name));
+ const columns=[['appearances','Apps'],['starts','Starts'],['minutes','Minutes'],['goals','Goals'],['assists','Assists'],['overall','OVR'],['average','Avg rating'],['conceded','GK conceded'],['cleanSheets','Clean sheets']];
+ const head=([key,label])=>`<th><button class="stat-sort ${statsSort===key?'active':''}" data-action="stats-sort" data-sort="${key}" aria-label="Sort by ${label}">${label}${statsSort===key?(statsDescending?' ↓':' ↑'):''}</button></th>`;
+ return `<div class="stats-intro"><p>Season player statistics. Appearances include starts and substitute appearances; goalkeeper goals conceded count while they play.</p><div class="tabs"><button class="btn ${statsScope==='club'?'selected':''}" data-action="stats-scope" data-scope="club">Your club</button><button class="btn ${statsScope==='league'?'selected':''}" data-action="stats-scope" data-scope="league">Premier Division</button></div></div><div class="table-wrap"><table class="league-table player-stats"><thead><tr><th>Player</th><th>Club</th>${columns.map(head).join('')}</tr></thead><tbody>${entries.map(({p,s})=>`<tr class="${owner(p.id)===career.clubId?'mine':''}"><td><b>${html(p.name)}</b><small>${p.primary}</small></td><td>${html(clubName(owner(p.id)))}</td><td>${s.appearances||0}</td><td>${s.starts||0}</td><td>${s.minutes||0}</td><td>${s.goals||0}</td><td>${s.assists||0}</td><td>${p.overall}</td><td>${s.ratedMinutes?(s.ratingTotal/s.ratedMinutes).toFixed(1):'—'}</td><td>${p.primary==='GK'?(s.conceded||0):'—'}</td><td>${p.primary==='GK'?(s.cleanSheets||0):'—'}</td></tr>`).join('')}</tbody></table></div>`;
+}
 function transfersSection(){
- const listed=source.players.filter(p=>owner(p.id)!==career.clubId).filter(p=>career.transferList.includes(p.id)||p.overall<72).sort((a,b)=>b.overall-a.overall).slice(0,35);
+ const listed=source.players.filter(p=>owner(p.id)!==career.clubId&&!career.loans[p.id]).filter(p=>career.transferList.includes(p.id)||p.overall<72).sort((a,b)=>b.overall-a.overall).slice(0,35);
  const my=squadPlayers(career.clubId).sort((a,b)=>b.overall-a.overall);
  return `<p>Scout the division, inquire about availability, and negotiate a fee. Clubs can accept, reject or counter an offer.</p><h3>Transfer proposals</h3><div class="list">${career.offers.filter(o=>o.status==='new'||o.status==='counter').map(o=>`<div class="transfer-row"><span><b>${html(player(o.id).name)}</b><small>${o.incoming?'Your bid to '+html(clubName(o.clubId)):html(clubName(o.clubId))+' bid'} · ${fmtMoney(o.fee)} ${o.status==='counter'?'counteroffer':'offer'}</small></span><button class="btn slim primary" data-action="accept-offer" data-id="${o.id}" data-club="${o.clubId}">Accept</button><button class="btn slim" data-action="counter-offer" data-id="${o.id}" data-club="${o.clubId}">${o.incoming?'Wait':'Counter'}</button><button class="btn slim ghost" data-action="reject-offer" data-id="${o.id}" data-club="${o.clubId}">Reject</button></div>`).join('')||'<div class="empty-note">No proposals waiting.</div>'}</div><h3>Your squad · ${my.length} players</h3><div class="transfer-list">${my.map(p=>`<div class="transfer-row"><span><b>${html(p.name)}</b><small>${p.primary} · ${p.overall} OVR · value ${fmtMoney(transferValue(p))}</small></span><button class="btn slim ${career.transferList.includes(p.id)?'selected':''}" data-action="list-player" data-id="${p.id}">${career.transferList.includes(p.id)?'Listed ✓':'List'}</button></div>`).join('')}</div><h3>Market</h3><div class="transfer-list">${listed.map(p=>`<div class="transfer-row"><span><b>${html(p.name)}</b><small>${html(clubName(owner(p.id)))} · ${p.primary} · ${p.overall} OVR · ${fmtMoney(transferValue(p))}</small></span><button class="btn slim" data-action="inquire" data-id="${p.id}">Inquire</button><button class="btn slim primary" data-action="bid" data-id="${p.id}">Bid</button></div>`).join('')}</div>`;
 }
 function shirt(p,compact=false){return `<span class="shirt ${compact?'shirt-small':''}" style="--shirt:${myColour()}"><b>${p?html(p.number):'–'}</b></span>`}
+function playerPanel(){
+ if(!instructionPlayer||owner(instructionPlayer)!==career.clubId)return '';
+ const p=player(instructionPlayer),state=playerState(p.id),role=ratingRole(p),[face,label]=MOODS[moodLevel(p.id)];
+ return `<div class="player-panel" role="region" aria-label="${html(p.name)} instructions"><button class="panel-close" data-action="close-player-panel" aria-label="Close player details">×</button><span class="eyebrow">Player / ${html(role)}</span><h3>${html(p.name)} · ${p.primary} · ${p.overall} OVR</h3><p>${face} ${label}: ${html(state.reason||'Content with their squad role.')} ${state.ambitious&&role==='Fringe'?'Wants more playing time.':''}</p><label class="field">Individual instruction<select class="select" data-player-order="${p.id}">${PLAYER_ORDERS.map(x=>`<option value="${x}" ${state.instruction===x?'selected':''}>${x}</option>`).join('')}</select></label><p class="muted">Substitute appearances usually help players asking for minutes. Individual instructions affect the match plan.</p>${!career.loans[p.id]?`<button class="btn slim" data-action="offer-loan" data-player="${p.id}">Offer outgoing loan</button>`:''}${state.request==='loan'?'<span class="badge warning">Requests a loan</span>':state.request==='transfer'?`<button class="btn slim" data-action="list-player" data-id="${p.id}">Transfer list player</button>`:''}</div>`;
+}
 function lineupEditor(inModal=false){
  const pool=squadPlayers(career.clubId).sort((a,b)=>b.overall-a.overall);
+ const tile=(id,pos,index,compact=false)=>{const p=player(id);return `<div role="button" tabindex="0" class="slot shirt-slot ${!p?'empty':''} ${selectedSlot===index?'selected':''}" data-action="slot" data-index="${index}" data-drop-slot="${index}" data-player="${id||''}" draggable="${!!p}" aria-label="${pos}: ${p?html(p.name)+', rated '+p.overall+', condition '+playerFitness(id)+' percent':'Empty'}"><span class="slot-name">${p?html(p.name.split(' ').at(-1)):'Select'}</span>${shirt(p,compact)}<span class="slot-stats">${pos} · ${p?p.overall:'—'} · ${p?playerFitness(id)+'%':'—'}</span>${instructionButton(id)}${moodButton(id)}</div>`};
  let idx=0;
- const pitch=FORMATIONS[career.formation].map(line=>`<div class="pitch-line">${line.map(pos=>{const at=idx++,id=career.lineup[at],p=player(id);return `<button class="slot shirt-slot ${!p?'empty':''} ${selectedSlot===at?'selected':''}" data-action="slot" data-index="${at}" data-drop-slot="${at}" data-player="${id||''}" draggable="${!!p}" aria-label="${pos}: ${p?html(p.name)+', rated '+p.overall+', condition '+playerFitness(id)+' percent':'Empty'}"><span class="slot-name">${p?html(p.name.split(' ').at(-1)):'Select'}</span>${shirt(p)}<span class="slot-stats">${pos} · ${p?p.overall:'—'} · ${p?playerFitness(id)+'%':'—'}</span></button>`}).join('')}</div>`).join('');
- return `<div class="squad-toolbar"><label class="field">Formation <select class="select" data-squad-formation>${Object.keys(FORMATIONS).map(f=>`<option value="${f}" ${f===career.formation?'selected':''}>${f}</option>`).join('')}</select></label><span class="badge">${career.style}</span><button class="btn slim" data-action="auto-lineup">Auto pick</button></div><div class="formation-pitch">${pitch}</div><small>Bench · tap a player, then a slot. Drag and drop also works.</small><div class="bench shirt-bench">${career.bench.map((id,i)=>{const p=player(id);return `<button class="slot shirt-slot ${selectedSlot===11+i?'selected':''}" data-action="slot" data-index="${11+i}" data-drop-slot="${11+i}" data-player="${id||''}" draggable="${!!p}"><span class="slot-name">${p?html(p.name.split(' ').at(-1)):'Select'}</span>${shirt(p,true)}<span class="slot-stats">${p?p.primary+' · '+p.overall+' · '+playerFitness(id)+'%':'Empty'}</span></button>`}).join('')}</div><div class="player-list">${pool.map(p=>`<button draggable="true" class="player-card ${selectedPlayer===p.id?'active':''}" data-action="select-player" data-player="${p.id}">${shirt(p,true)}<span class="player-card-copy"><strong>${html(p.name)}</strong><span class="meta">${p.primary}${p.secondary?' / '+p.secondary:''} · ${p.overall} OVR · ${playerFitness(p.id)}% condition</span><span class="meta">Age ${p.age} ${career.lineup.includes(p.id)?'· XI':career.bench.includes(p.id)?'· Bench':''}</span></span></button>`).join('')}</div>${inModal?'<div class="modal-actions"><button class="btn primary" data-action="confirm-lineup">Confirm lineup</button></div>':''}`;
+ const pitch=FORMATIONS[career.formation].map(line=>`<div class="pitch-line">${line.map(pos=>tile(career.lineup[idx],pos,idx++)).join('')}</div>`).join('');
+ return `<div class="squad-toolbar"><label class="field">Formation<select class="select" data-squad-formation>${Object.keys(FORMATIONS).map(f=>`<option value="${f}" ${f===career.formation?'selected':''}>${f}</option>`).join('')}</select></label><label class="field">Play style<select class="select" data-squad-style>${STYLES.map(x=>`<option value="${x}" ${career.style===x?'selected':''}>${x}</option>`).join('')}</select></label><label class="field">Team orders<select class="select" data-squad-order>${ORDERS.map(x=>`<option value="${x}" ${career.order===x?'selected':''}>${x}</option>`).join('')}</select></label><button class="btn slim" data-action="auto-lineup">Auto pick</button></div><div class="formation-pitch">${pitch}</div><small>Bench · tap a player, then a slot. Drag and drop also works. Use ↗ for instructions and the face for happiness.</small><div class="bench shirt-bench">${career.bench.map((id,i)=>tile(id,player(id)?.primary||'Bench',11+i,true)).join('')}</div>${playerPanel()}<div class="player-list">${pool.map(p=>`<div role="button" tabindex="0" draggable="true" class="player-card ${selectedPlayer===p.id?'active':''}" data-action="select-player" data-player="${p.id}">${shirt(p,true)}<span class="player-card-copy"><strong>${html(p.name)}</strong><span class="meta">${p.primary}${p.secondary?' / '+p.secondary:''} · ${p.overall} OVR · ${playerFitness(p.id)}% condition</span><span class="meta">${ratingRole(p)} · ${career.lineup.includes(p.id)?'XI':career.bench.includes(p.id)?'Bench':'Reserve'}</span></span>${instructionButton(p.id)}${moodButton(p.id)}</div>`).join('')}</div>${inModal?'<div class="modal-actions"><button class="btn primary" data-action="confirm-lineup">Confirm lineup</button></div>':''}`;
 }
 function stadiumEditor(){
  const c=myClub(),draft=editing||normaliseLayout(career.stadium,c),chosen=draft.sections[selectedStand]||draft.sections.N4;
@@ -165,7 +218,7 @@ function advance(){
  if(match){toast('Finish the match first.');return}
  const next=nextFixture();
  if(!next){toast('The season is complete. Check the final table in Organiser.');return}
- if(career.date===next.date&&career.time==='09:00'){career.time=next.kickoff?`${String(Math.floor((Number(next.kickoff.slice(0,2))*60+Number(next.kickoff.slice(3))-15)/60)).padStart(2,'0')}:${String((Number(next.kickoff.slice(0,2))*60+Number(next.kickoff.slice(3))-15)%60).padStart(2,'0')}`:'14:45';match={phase:'choice',fixtureDate:next.date,kickoff:next.kickoff||'15:00',home:next.home,away:next.away,homeGoals:0,awayGoals:0,minute:0,added:2,events:[],paused:false,speed:2,subCount:0,ratings:{},goalCounts:{},cardCounts:{},injured:[],participants:{},lineup:[...career.lineup],bench:[...career.bench]};save();render();return}
+ if(career.date===next.date&&career.time==='09:00'){career.time=next.kickoff?`${String(Math.floor((Number(next.kickoff.slice(0,2))*60+Number(next.kickoff.slice(3))-15)/60)).padStart(2,'0')}:${String((Number(next.kickoff.slice(0,2))*60+Number(next.kickoff.slice(3))-15)%60).padStart(2,'0')}`:'14:45';match={phase:'choice',fixtureDate:next.date,kickoff:next.kickoff||'15:00',home:next.home,away:next.away,homeGoals:0,awayGoals:0,minute:0,added:2,events:[],paused:false,speed:2,subCount:0,ratings:{},goalCounts:{},assistCounts:{},cardCounts:{},injured:[],participants:{},lineup:[...career.lineup],bench:[...career.bench]};save();render();return}
  career.date=addDays(career.date,1);career.time='09:00';
  for(const p of squadPlayers(career.clubId)){
   const state=career.players[p.id];if(state.injuryDays>0)state.injuryDays--;
@@ -179,6 +232,7 @@ function advance(){
 }
 function resolveTransfer(id,newClub,fee){
  const p=player(id),oldClub=owner(id);if(!p||!oldClub||oldClub===newClub)return;
+ if(career.loans[id]){toast('A season loan must finish before a permanent transfer.');return}
  career.owners[id]=newClub;career.transferList=career.transferList.filter(x=>x!==id);
  career.offers=career.offers.filter(o=>o.id!==id);
  career.balance+=newClub===career.clubId?-fee:fee;
@@ -204,6 +258,13 @@ function teamPower(id,phase){
  const chosen=active.map((pid,i)=>player(pid)?.positions[positions[i]]||25);
  const fitness=active.reduce((n,pid)=>n+(pid?playerFitness(pid):40),0)/11;
  let modifier=(chosen.reduce((n,x)=>n+x,0)/11-77)*.48+(fitness-85)*.08;
+ for(const pid of active){const instruction=career.players[pid]?.instruction;
+  if(instruction==='Get forward')modifier+=phase==='attack'?.55:-.18;
+  if(instruction==='Hold position')modifier+=phase==='defence'?.55:-.16;
+  if(instruction==='Press more')modifier+=phase==='attack'?.25:-.12;
+  if(instruction==='Stay wide')modifier+=phase==='attack'?.28:0;
+  if(instruction==='Cut inside')modifier+=phase==='attack'?.33:-.12;
+ }
  if(phase==='attack'&&career.order==='Attack')modifier+=5;
  if(phase==='defence'&&career.order==='Protect lead')modifier+=5;
  if(career.style==='High press')modifier+=phase==='attack'?3:-2;
@@ -221,6 +282,7 @@ function chanceEvent(attackerId){
  if(Math.random()<conversion){
   if(attackerId===match.home)match.homeGoals++;else match.awayGoals++;
   match.goalCounts[attacker.id]=(match.goalCounts[attacker.id]||0)+1;
+  if(creator.id!==attacker.id&&Math.random()<.83){match.assistCounts??={};match.assistCounts[creator.id]=(match.assistCounts[creator.id]||0)+1}
   const descriptions=[`${creator.name} slips a pass into the area and ${attacker.name} finishes beyond ${keeper.name}.`,`${attacker.name} meets a cross at the far post and beats ${keeper.name}.`,`${attacker.name} drives forward and finds the corner despite ${keeper.name}'s dive.`,`${creator.name} wins the ball high up the pitch. ${attacker.name} makes the chance count.`];
   addMoment({minute:match.minute,type:'goal',team:attackerId,playerId:attacker.id,text:`GOAL! ${attacker.name} ${time}. ${rand(descriptions)}`},true);
  }else{
@@ -269,6 +331,7 @@ function finishMatch(){
  const fixture=round.fixtures.find(f=>f.home===match.home&&f.away===match.away);
  fixture.homeGoals=match.homeGoals;fixture.awayGoals=match.awayGoals;
  for(const f of round.fixtures)if(f.homeGoals===null)[f.homeGoals,f.awayGoals]=quickScore(f.home,f.away);
+ for(const f of round.fixtures){if(f.home!==career.clubId)recordSimulatedTeam(f.home,f.homeGoals,f.awayGoals);if(f.away!==career.clubId)recordSimulatedTeam(f.away,f.awayGoals,f.homeGoals)}
  const home=match.home===career.clubId,us=home?match.homeGoals:match.awayGoals,them=home?match.awayGoals:match.homeGoals;
  const attendance=home?Math.round(capacity(career.stadium,myClub())*(.51+Math.random()*.35)):0;
  const tickets=home?attendance*22:0,concessions=home?Math.round(attendance*5.5):0,shop=home?Math.round(attendance*1.6):0;
@@ -277,14 +340,17 @@ function finishMatch(){
  career.balance+=income;
  const performances=[];
  for(const [id,participation] of Object.entries(match.participants)){
-  const p=player(id),minutes=Math.max(1,(participation.end??90)-participation.start),goals=match.goalCounts[id]||0,cards=match.cardCounts[id]||0;
+  const p=player(id),minutes=Math.max(1,(participation.end??90)-participation.start),goals=match.goalCounts[id]||0,assists=match.assistCounts?.[id]||0,cards=match.cardCounts[id]||0;
   let rating=Math.max(4.5,Math.min(9.9,6.2+Math.random()*1.5+(us-them)*.17+goals*1.1-cards*.25));
   rating=Math.round(rating*10)/10;career.players[id].form=[...career.players[id].form.slice(-4),rating];
   career.players[id].fitness=Math.max(34,career.players[id].fitness-Math.max(3,Math.round((12+Math.floor(Math.random()*9))*minutes/90)));
-  performances.push({id,rating,minutes,goals,cards,fitness:career.players[id].fitness,injuryDays:career.players[id].injuryDays||0});
+  recordStats(id,{start:participation.start===0,minutes,goals,assists,conceded:Math.round(them*minutes/90),cleanSheet:them===0,rating});
+  performances.push({id,rating,minutes,goals,assists,cards,fitness:career.players[id].fitness,injuryDays:career.players[id].injuryDays||0});
  }
+ updateHappiness();
  const report={date:career.date,opponent:opposition(match,career.clubId),home,us,them,attendance,tickets,concessions,shop,operating,income,performances,events:[...match.events]};
  career.reports.push(report);career.news.push({date:career.date,text:`${clubName(match.home)} ${match.homeGoals}–${match.awayGoals} ${clubName(match.away)}.`});
+ if(allResults().length===132){for(const [id,loan] of Object.entries(career.loans)){career.owners[id]=loan.parent;career.players[id].reason='Returned from a season loan.';career.news.push({date:career.date,text:`${player(id).name} returns from a loan at ${clubName(loan.to)}.`})}career.loans={}}
  match.phase='report';match.paused=true;career.time='17:15';save();
 }
 
@@ -292,13 +358,13 @@ function matchOverlay(){
  const other=opposition(match,career.clubId),home=match.home===career.clubId;
  let body='';
  if(match.phase==='choice')body=`<span class="eyebrow">Matchday / ${fmtDate(career.date)}</span><h2>${home?'Home at '+html(myClub().ground):'Away fixture'}</h2><div class="scoreline"><span>${html(clubName(match.home))}</span><strong>v</strong><span>${html(clubName(match.away))}</span></div><p>Take your side into a text match with live decisions, or simulate for a quick result. Simulation uses your saved eleven and tactics.</p>${!validLineup()?'<div class="empty-note">Your saved XI needs a fit replacement. Auto pick a fit side or review it before kick-off.</div>':''}<div class="modal-actions"><button class="btn primary arrow" data-action="watch-match">Watch match</button><button class="btn" data-action="simulate-match" ${!validLineup()?'disabled':''}>Simulate result</button><button class="btn" data-action="auto-lineup">Auto pick fit XI</button><button class="btn ghost" data-action="close-choice">Back to club</button></div>`;
- if(match.phase==='confirm')body=`<span class="eyebrow">Matchday / Lineup confirmation</span><h2>Pick your eleven</h2><p>Confirm your XI, bench and shape before kick-off. You can change tactics and make substitutions during the match.</p><div class="match-columns"><div>${lineupEditor(true)}</div><div class="glass panel"><h3>Match plan</h3><div class="detail-row"><span>Formation</span><select class="select" data-match-setting="formation">${Object.keys(FORMATIONS).map(x=>`<option ${x===career.formation?'selected':''}>${x}</option>`).join('')}</select></div><div class="detail-row"><span>Style</span><select class="select" data-match-setting="style">${STYLES.map(x=>`<option ${x===career.style?'selected':''}>${x}</option>`).join('')}</select></div><div class="detail-row"><span>Orders</span><select class="select" data-match-setting="order">${ORDERS.map(x=>`<option ${x===career.order?'selected':''}>${x}</option>`).join('')}</select></div><button class="btn ghost" data-action="choice-back" style="margin-top:20px">← Match options</button></div></div>`;
+ if(match.phase==='confirm')body=`<span class="eyebrow">Matchday / Lineup confirmation</span><h2>Pick your eleven</h2><p>Set your formation, play style, team orders and player instructions here before kick-off.</p>${lineupEditor(true)}<button class="btn ghost" data-action="choice-back" style="margin-top:12px">← Match options</button>`;
  if(match.phase==='live'){
   const last=match.flash,score=`${match.homeGoals} : ${match.awayGoals}`;
   body=`<span class="eyebrow">${home?html(myClub().ground):'Away match'} / ${clockLabel(match.minute)} ${match.paused?'· Paused':''}</span><div class="scoreline"><span>${html(clubName(match.home))}</span><strong>${score}</strong><span>${html(clubName(match.away))}</span></div>${last?`<div class="flash ${last.type==='yellow'?'yellow':last.type==='red'?'red':''}">${last.type==='goal'?'GOAL!:':last.type==='yellow'?'YELLOW CARD:':last.type==='red'?'RED CARD:':last.type==='injury'?'INJURY:':'HALF-TIME'} ${last.playerId?html(player(last.playerId).name):''} ${clockLabel(last.minute)}</div>`:''}<div class="match-toolbar"><small>Match pace</small>${[4,2,1].map(n=>`<button class="btn slim ${match.speed===n?'selected':''}" data-action="speed" data-speed="${n}">${n} min / half</button>`).join('')}${match.paused?'<button class="btn primary slim" data-action="resume-match">Continue ▶</button>':'<button class="btn slim" data-action="pause-match">Pause</button>'}<button class="btn slim" data-action="sim-next">Sim to next event</button><button class="btn slim" data-action="sim-half">Sim to end of half</button><button class="btn slim" data-action="finish-sim">Sim match</button></div><div class="match-columns"><div class="commentary" id="commentary">${match.events.slice(-30).map(e=>`<div class="comment ${e.type}"><small>${clockLabel(e.minute)} ${e.team?html(clubName(e.team)):''}</small><br>${html(e.text)}</div>`).join('')}</div><div class="glass panel"><h3>Touchline decisions</h3><div class="detail-row"><span>Formation</span><select class="select" data-match-setting="formation">${Object.keys(FORMATIONS).map(x=>`<option ${x===career.formation?'selected':''}>${x}</option>`).join('')}</select></div><div class="detail-row"><span>Style</span><select class="select" data-match-setting="style">${STYLES.map(x=>`<option ${x===career.style?'selected':''}>${x}</option>`).join('')}</select></div><div class="detail-row"><span>Orders</span><select class="select" data-match-setting="order">${ORDERS.map(x=>`<option ${x===career.order?'selected':''}>${x}</option>`).join('')}</select></div><div class="divider"></div><small>Substitutions ${match.subCount}/5 · tap a bench player, then the player to replace</small><div class="bench">${match.bench.filter(Boolean).map(id=>`<button class="btn slim ${selectedPlayer===id?'selected':''}" data-action="match-bench" data-player="${id}">${html(player(id).name)} ${playerFitness(id)}%</button>`).join('')}</div><div class="list" style="max-height:190px;overflow:auto">${match.lineup.map((id,i)=>id?`<button class="row" style="color:var(--text);text-align:left;cursor:pointer" data-action="match-replace" data-index="${i}"><span>${slotsFor(career.formation)[i]} · ${html(player(id).name)}</span><small>${playerFitness(id)}%</small></button>`:`<button class="row" data-action="match-replace" data-index="${i}"><span>Empty · replace sent-off player</span></button>`).join('')}</div></div></div>`;
  }
  if(match.phase==='report'){
-  const report=career.reports.at(-1);body=`<span class="eyebrow">Full-time / ${fmtDate(report.date)}</span><h2>Match report card</h2><div class="scoreline"><span>${html(clubName(match.home))}</span><strong>${match.homeGoals} : ${match.awayGoals}</strong><span>${html(clubName(match.away))}</span></div><div class="report-grid"><div><small>Attendance</small><strong>${report.home?report.attendance.toLocaleString('en-GB'):'Away'}</strong></div><div><small>Ticket sales</small><strong>${fmtMoney(report.tickets)}</strong></div><div><small>Food & drink</small><strong>${fmtMoney(report.concessions)}</strong></div><div><small>Club shop</small><strong>${fmtMoney(report.shop)}</strong></div></div><p>Matchday costs: ${fmtMoney(report.operating)} · Net home income: ${fmtMoney(report.income)}</p><div class="match-columns"><div><h3>Your players</h3><div class="report-list list">${report.performances.sort((a,b)=>(b.rating||0)-(a.rating||0)).map(x=>`<div class="row"><span><b>${html(player(x.id).name)}</b><br><small>${player(x.id).primary} · ${x.minutes} min · ${x.goals?x.goals+' goal'+(x.goals>1?'s':'')+' · ':''}${x.cards?'Card · ':''}${x.injuryDays?'Injured · ':''}Fit ${x.fitness}%</small></span><strong>${x.rating??'—'}</strong></div>`).join('')}</div></div><div><h3>Key moments</h3><div class="commentary">${report.events.filter(e=>['goal','yellow','red','injury','chance'].includes(e.type)).map(e=>`<div class="comment ${e.type}"><small>${clockLabel(e.minute)}</small><br>${html(e.text)}</div>`).join('')||'<div class="muted">A quiet game.</div>'}</div></div></div><div class="modal-actions"><button class="btn primary arrow" data-action="close-report">Continue career</button></div>`;
+  const report=career.reports.at(-1);body=`<span class="eyebrow">Full-time / ${fmtDate(report.date)}</span><h2>Match report card</h2><div class="scoreline"><span>${html(clubName(match.home))}</span><strong>${match.homeGoals} : ${match.awayGoals}</strong><span>${html(clubName(match.away))}</span></div><div class="report-grid"><div><small>Attendance</small><strong>${report.home?report.attendance.toLocaleString('en-GB'):'Away'}</strong></div><div><small>Ticket sales</small><strong>${fmtMoney(report.tickets)}</strong></div><div><small>Food & drink</small><strong>${fmtMoney(report.concessions)}</strong></div><div><small>Club shop</small><strong>${fmtMoney(report.shop)}</strong></div></div><p>Matchday costs: ${fmtMoney(report.operating)} · Net home income: ${fmtMoney(report.income)}</p><div class="match-columns"><div><h3>Your players</h3><div class="report-list list">${report.performances.sort((a,b)=>(b.rating||0)-(a.rating||0)).map(x=>`<div class="row"><span><b>${html(player(x.id).name)}</b><br><small>${player(x.id).primary} · ${x.minutes} min · ${x.goals?x.goals+' goal'+(x.goals>1?'s':'')+' · ':''}${x.assists?x.assists+' assist'+(x.assists>1?'s':'')+' · ':''}${x.cards?'Card · ':''}${x.injuryDays?'Injured · ':''}Fit ${x.fitness}%</small></span><strong>${x.rating??'—'}</strong></div>`).join('')}</div></div><div><h3>Key moments</h3><div class="commentary">${report.events.filter(e=>['goal','yellow','red','injury','chance'].includes(e.type)).map(e=>`<div class="comment ${e.type}"><small>${clockLabel(e.minute)}</small><br>${html(e.text)}</div>`).join('')||'<div class="muted">A quiet game.</div>'}</div></div></div><div class="modal-actions"><button class="btn primary arrow" data-action="close-report">Continue career</button></div>`;
  }
  return `<div class="overlay" role="dialog" aria-modal="true" aria-label="Matchday"><div class="modal">${home?`<div class="match-ground" aria-label="Crowd at ${html(myClub().ground)}">${sceneSvg({...myClub(),colour:myColour()},career.site,true,match.kickoff>='17:30',true,career.stadium)}<span>${html(myClub().ground)} · ${capacity(career.stadium,myClub()).toLocaleString('en-GB')} seats</span></div>`:''}<div class="modal-head"><div style="flex:1">${body}</div></div></div></div>`;
 }
@@ -314,8 +380,6 @@ function swapLineup(target,id){
 function setFormation(shape){
  if(!FORMATIONS[shape]||!career)return;
  career.formation=shape;
- const picks=bestLineup(career.clubId,shape);
- career.lineup=picks.lineup;career.bench=picks.bench;
  selectedPlayer=null;selectedSlot=null;save();render();
 }
 function skipMatch(kind){
@@ -363,9 +427,23 @@ root.addEventListener('click',event=>{
  else if(action==='select-stand'){selectedStand=el.dataset.id;render()}
  else if(action==='cancel-stadium'){editing=null;sub='lineup';render()}
  else if(action==='commit-stadium'){if(!editing)return;const newCap=capacity(editing,myClub()),cost=SECTIONS.reduce((sum,x)=>sum+changeCost(career.stadium.sections[x.id],editing.sections[x.id]),0);if(!cost||cost>career.balance||newCap<10000||newCap>75000){toast('Check the build cost and capacity first.');return}career.balance-=cost;career.stadium=normaliseLayout(editing,myClub());editing=null;sub='lineup';career.news.push({date:career.date,text:`${myClub().ground} renovation complete: ${newCap.toLocaleString('en-GB')} capacity.`});save();render();toast('Stadium changes saved.')}
- else if(action==='sub'){sub=el.dataset.sub;render()}
+ else if(action==='sub'){sub=el.dataset.sub;instructionPlayer=null;render()}
  else if(action==='open-offers'){section='squad';sub='transfers';render()}
- else if(action==='list-player'){const id=el.dataset.id;if(career.transferList.includes(id))career.transferList=career.transferList.filter(x=>x!==id);else career.transferList.push(id);save();render()}
+ else if(action==='list-player'){const id=el.dataset.id;if(career.transferList.includes(id))career.transferList=career.transferList.filter(x=>x!==id);else{career.transferList.push(id);career.players[id].request=null}save();render()}
+ else if(action==='player-instructions'||action==='player-happiness'||action==='focus-player'){instructionPlayer=el.dataset.player;section='squad';sub='lineup';render();if(action==='player-happiness')document.querySelector('.player-panel')?.scrollIntoView?.({block:'nearest',behavior:'smooth'})}
+ else if(action==='close-player-panel'){instructionPlayer=null;render()}
+ else if(action==='offer-loan'){
+  const id=el.dataset.player,p=player(id),dest=rand(source.clubs.filter(c=>c.id!==career.clubId&&squadPlayers(c.id).length<28));
+  if(!p||owner(id)!==career.clubId||career.loans[id])return;
+  if(squadPlayers(career.clubId).length<=18||!dest){toast('You need at least 18 players and an available loan club.');return}
+  career.loans[id]={parent:career.clubId,to:dest.id,season:career.schedule.at(-1).date};career.owners[id]=dest.id;
+  career.players[id].happiness=Math.min(95,career.players[id].happiness+18);career.players[id].request=null;career.players[id].reason=`Pleased to join ${clubName(dest.id)} on loan.`;
+  career.transferList=career.transferList.filter(x=>x!==id);instructionPlayer=null;
+  const picks=bestLineup(career.clubId,career.formation);career.lineup=picks.lineup;career.bench=picks.bench;
+  career.news.push({date:career.date,text:`${p.name} joins ${clubName(dest.id)} on loan until the end of the season.`});save();render();toast(`${p.name} joins ${clubName(dest.id)} on loan.`)
+ }
+ else if(action==='stats-scope'){statsScope=el.dataset.scope;render()}
+ else if(action==='stats-sort'){statsDescending=statsSort===el.dataset.sort?!statsDescending:true;statsSort=el.dataset.sort;render()}
  else if(action==='inquire'){const p=player(el.dataset.id);toast(`${clubName(owner(p.id))} value ${p.name} around ${fmtMoney(transferValue(p))}.`)}
  else if(action==='bid'){const p=player(el.dataset.id),fee=Math.round(transferValue(p)*1.1/10000)*10000;if(career.balance<fee){toast(`You need ${fmtMoney(fee)} to make this bid.`);return}if(squadPlayers(owner(p.id)).length<=18){toast('That club needs to keep enough players for its matchday squad.');return}if(Math.random()<.65||career.transferList.includes(p.id)){resolveTransfer(p.id,career.clubId,fee);toast(`${p.name} joins your club for ${fmtMoney(fee)}.`)}else{career.offers.push({id:p.id,clubId:owner(p.id),fee:Math.round(fee*1.2/10000)*10000,status:'counter',incoming:true});career.news.push({date:career.date,text:`${clubName(owner(p.id))} countered your bid for ${p.name}.`});save();render();toast('The selling club has countered your offer.')}}
  else if(['accept-offer','counter-offer','reject-offer'].includes(action)){const id=el.dataset.id,clubId=el.dataset.club,o=career.offers.find(x=>x.id===id&&x.clubId===clubId&&(x.status==='new'||x.status==='counter'));if(!o)return;if(action==='reject-offer'){o.status='rejected';save();render();return}if(action==='counter-offer'){if(o.incoming){toast('The selling club is waiting on your decision.');return}o.fee=Math.round(o.fee*1.2/10000)*10000;o.status='pending';save();render();toast(`Counter proposal sent: ${fmtMoney(o.fee)}.`);return}if(o.incoming){if(career.balance<o.fee){toast('Your club cannot afford that fee.');return}resolveTransfer(id,career.clubId,o.fee)}else{if(squadPlayers(career.clubId).length<=18){toast('Keep at least 18 players in your squad.');return}resolveTransfer(id,clubId,o.fee)}}
@@ -395,6 +473,9 @@ root.addEventListener('change',event=>{
  const el=event.target;
  if(el.dataset.stadiumField){if(!editing)return;editing.sections[selectedStand][el.dataset.stadiumField]=el.value;if(editing.sections[selectedStand].stand==='empty')editing.sections[selectedStand].roof='none';render()}
  else if(el.dataset.squadFormation!==undefined){setFormation(el.value)}
+ else if(el.dataset.squadStyle!==undefined){career.style=el.value;save();render()}
+ else if(el.dataset.squadOrder!==undefined){career.order=el.value;save();render()}
+ else if(el.dataset.playerOrder){career.players[el.dataset.playerOrder].instruction=el.value;save();render()}
  else if(el.id==='clubRename'){setup.names[setup.clubId]=el.value.trim().slice(0,32)||club(setup.clubId).name;render()}
  else if(el.dataset.rename){setup.names[el.dataset.rename]=el.value.trim().slice(0,32)||club(el.dataset.rename).name;render()}
  else if(el.id==='customColour'){setup.colour=el.value;render()}
@@ -405,7 +486,8 @@ root.addEventListener('dragover',event=>{const slot=event.target.closest('[data-
 root.addEventListener('dragleave',event=>{if(!event.relatedTarget?.closest?.('[data-drop-slot]')){dragTarget?.classList.remove('drop-highlight');dragTarget=null}});
 root.addEventListener('dragend',()=>{dragTarget?.classList.remove('drop-highlight');dragTarget=null});
 root.addEventListener('drop',event=>{const slot=event.target.closest('[data-drop-slot]');dragTarget?.classList.remove('drop-highlight');dragTarget=null;if(!slot)return;event.preventDefault();swapLineup(Number(slot.dataset.dropSlot),event.dataTransfer.getData('text/plain'))});
-root.addEventListener('pointerdown',event=>{const card=event.target.closest('.player-card[data-player],.shirt-slot[data-player]');if(!card?.dataset.player)return;activeDrag={id:card.dataset.player,x:event.clientX,y:event.clientY,moved:false}});
+root.addEventListener('keydown',event=>{if((event.key==='Enter'||event.key===' ')&&event.target.matches('.shirt-slot[role="button"],.player-card[role="button"]')){event.preventDefault();event.target.click()}});
+root.addEventListener('pointerdown',event=>{if(event.target.closest('.slot-tool'))return;const card=event.target.closest('.player-card[data-player],.shirt-slot[data-player]');if(!card?.dataset.player)return;activeDrag={id:card.dataset.player,x:event.clientX,y:event.clientY,moved:false}});
 document.addEventListener('pointermove',event=>{
  if(!activeDrag)return;
  if(!activeDrag.moved&&Math.hypot(event.clientX-activeDrag.x,event.clientY-activeDrag.y)<9)return;

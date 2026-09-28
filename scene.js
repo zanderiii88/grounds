@@ -48,6 +48,17 @@ export function sceneSvg(club,site='city',crowd=false,evening=false,close=false,
   const cfg=model.sections[s.id],base=STANDS[cfg.stand],spec=groundsStand(cfg.stand);
   if(!spec)return '';
   const L=s.bays,corner=!!s.corner,segments=corner?12:1,D=spec.depth;
+  const cornerLinks={NW:['W1','N1'],NE:['E1','N8'],SW:['W4','S1'],SE:['E4','S8']};
+  const linked=corner?cornerLinks[s.id].map(id=>({cfg:model.sections[id],spec:groundsStand(model.sections[id].stand)})):null;
+  const endpoint=(u)=>{
+   if(!corner)return null;
+   const t=Math.max(0,Math.min(1,u/L)),a=linked[0].spec||spec,b=linked[1].spec||spec;
+   const lerp=(key)=>a[key]+(b[key]-a[key])*t;
+   return {depth:lerp('depth'),wallH:lerp('wallH'),frontZ:lerp('roofFrontZ'),rearZ:lerp('roofRearZ'),rearV:lerp('roofRearV'),frontV:(linked[0].cfg.roof==='full'?1.1:linked[0].cfg.roof==='cantilever'?.55:.42)*(1-t)+(linked[1].cfg.roof==='full'?1.1:linked[1].cfg.roof==='cantilever'?.55:.42)*t};
+  };
+  const point=(u,v,z)=>{const e=endpoint(u);return world(s,u,e?v*e.depth/D:v,e?z*e.wallH/spec.wallH:z)};
+  const localFace=(verts,fill,extra='')=>poly(verts.map(([u,v,z])=>point(u,v,z)),fill,extra);
+  const localEdge=(verts,stroke,width=1,extra='')=>path(verts.map(([u,v,z])=>point(u,v,z)),stroke,width,extra);
   const rear=corner?0:({compact:0,concourse:1.2,amenities:2,hospitality:2.6}[cfg.rear]||0);
   const mat=cfg.finish==='brick'?['#51443e','#78685a','#ac9983']:cfg.finish==='dark'?['#263740','#40525c','#8aa0aa']:['#344951','#62767e','#a4bcc2'];
   const seat=cfg.stand==='grass'?'#709652':cfg.stand.startsWith('terrace')?'#b9c1b7':colour;
@@ -55,11 +66,21 @@ export function sceneSvg(club,site='city',crowd=false,evening=false,close=false,
   const back=[],bowl=[],facade=[],roof=[],ends=[];
   const panel=(out,verts,fill,extra='')=>{for(let k=0;k<segments;k++){
    const a=k*L/segments,b=(k+1)*L/segments;
-   out.push(face(s,verts.map(([u,v,z])=>[u===0?a:u===L?b:a+(b-a)*u/L,v,z]),fill,extra));
+   out.push(localFace(verts.map(([u,v,z])=>[u===0?a:u===L?b:a+(b-a)*u/L,v,z]),fill,extra));
   }};
   // GROUNDS paints the outward rear wall behind far seating and after near seating.
   // The facade belongs at the back of the bowl, never across a tier opening.
   panel(back,[[0,D,0],[L,D,0],[L,D,spec.wallH],[0,D,spec.wallH]],mat[0]);
+  if(corner){
+   const rearAt=u=>{const t=u/L,depth=x=>({compact:0,concourse:1.2,amenities:2,hospitality:2.6}[x.cfg.rear]||0);return depth(linked[0])*(1-t)+depth(linked[1])*t};
+   for(let k=0;k<segments;k++){
+    const a=k*L/segments,b=(k+1)*L/segments,ea=endpoint(a),eb=endpoint(b);
+    const innerA=ea.depth,innerB=eb.depth,outerA=innerA+rearAt(a),outerB=innerB+rearAt(b);
+    if(rearAt(a)+rearAt(b)<.02)continue;
+    back.push(poly([world(s,a,outerA,0),world(s,b,outerB,0),world(s,b,outerB,eb.wallH),world(s,a,outerA,ea.wallH)],mat[0]));
+    back.push(poly([world(s,a,innerA,ea.wallH),world(s,b,innerB,eb.wallH),world(s,b,outerB,eb.wallH),world(s,a,outerA,ea.wallH)],mat[1]));
+   }
+  }
   if(rear){
    panel(back,[[0,D+rear,0],[L,D+rear,0],[L,D+rear,spec.wallH],[0,D+rear,spec.wallH]],mat[0]);
    panel(back,[[0,D,spec.wallH],[L,D,spec.wallH],[L,D+rear,spec.wallH+.15],[0,D+rear,spec.wallH+.15]],mat[1]);
@@ -67,9 +88,9 @@ export function sceneSvg(club,site='city',crowd=false,evening=false,close=false,
   if(!corner){
    for(let u=.45;u+.6<L;u+=1.05){
     for(let z=2.4;z+1.1<spec.wallH-.5;z+=3.4)
-     facade.push(face(s,[[u,D+rear+.02,z],[u+.53,D+rear+.02,z],[u+.53,D+rear+.02,z+1.1],[u,D+rear+.02,z+1.1]],evening?'#d6ae73':mat[2],'opacity=".75"'));
+     facade.push(localFace([[u,D+rear+.02,z],[u+.53,D+rear+.02,z],[u+.53,D+rear+.02,z+1.1],[u,D+rear+.02,z+1.1]],evening?'#d6ae73':mat[2],'opacity=".75"'));
    }
-   facade.push(face(s,[[L/2-.37,D+rear+.03,.02],[L/2+.37,D+rear+.03,.02],[L/2+.37,D+rear+.03,2.55],[L/2-.37,D+rear+.03,2.55]],'#1d3138'));
+   facade.push(localFace([[L/2-.37,D+rear+.03,.02],[L/2+.37,D+rear+.03,.02],[L/2+.37,D+rear+.03,2.55],[L/2-.37,D+rear+.03,2.55]],'#1d3138'));
   }
   // Treads and risers use GROUNDS' actual start, pitch, rise and depth.
   // Each deck follows its specified setback or raked overhang profile.
@@ -81,8 +102,8 @@ export function sceneSvg(club,site='city',crowd=false,evening=false,close=false,
     panel(bowl,[[0,v,low],[L,v,low],[L,v,z],[0,v,z]],'#504b4b');
     panel(bowl,[[0,v,z],[L,v,z],[L,v1,z],[0,v1,z]],seat,`stroke="#8fa6a3" stroke-width=".2"`);
     if(!corner&&i%2===0)for(const u of [L/3,2*L/3])
-     bowl.push(face(s,[[u-.07,v,z+.02],[u+.07,v,z+.02],[u+.07,Math.min(v1,v+t.tread),z+.02],[u-.07,Math.min(v1,v+t.tread),z+.02]],'#bbc4c0'));
-    if(crowd&&i%2===0)for(let u=.35;u<L;u+=.7){const q=project(world(s,u,v+.06,z+.16));bowl.push(`<circle cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r=".43" fill="${(i+Math.floor(u*2))%3===0?'#e6c3a9':'#dce4dc'}"/>`)}
+     bowl.push(localFace([[u-.07,v,z+.02],[u+.07,v,z+.02],[u+.07,Math.min(v1,v+t.tread),z+.02],[u-.07,Math.min(v1,v+t.tread),z+.02]],'#bbc4c0'));
+    if(crowd&&i%2===0)for(let u=.35;u<L;u+=.7){const q=project(point(u,v+.06,z+.16));bowl.push(`<circle cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r=".43" fill="${(i+Math.floor(u*2))%3===0?'#e6c3a9':'#dce4dc'}"/>`)}
    }
    const d=spec.decks[ti];
    if(d){
@@ -98,42 +119,69 @@ export function sceneSvg(club,site='city',crowd=false,evening=false,close=false,
      panel(bowl,[[0,d.frontV,d.baseZ],[L,d.frontV,d.baseZ],[L,d.frontV,d.topZ],[0,d.frontV,d.topZ]],'#607078');
      panel(bowl,[[0,d.frontV,d.topZ],[L,d.frontV,d.topZ],[L,upper.startV,d.topZ],[0,upper.startV,d.topZ]],'#89969a');
     }
-    bowl.push(edge(s,[[.06,d.frontV,d.topZ+.24],[L-.06,d.frontV,d.topZ+.24]],'#cdd4d0',.65));
+    bowl.push(localEdge([[.06,d.frontV,d.topZ+.24],[L-.06,d.frontV,d.topZ+.24]],'#cdd4d0',.65));
    }
   }
-  // Close exposed ends with a stepped silhouette, retaining the split decks.
-  if(!corner){
-   for(const [u,adj] of [[0,s.i-1],[L,s.i+1]]){
-    const count=s.side==='N'||s.side==='S'?8:4;
-    const endCorner={N:adj<0?'NW':'NE',S:adj<0?'SW':'SE',W:adj<0?'NW':'SW',E:adj<0?'NE':'SE'}[s.side];
-    const neighbor=adj>=0&&adj<count?model.sections[`${s.side}${adj+1}`]:model.sections[endCorner];
-    const other=neighbor&&groundsStand(neighbor.stand);
-    // Adjacent built sections cover the structural edge; a full-height cap
-    // would read as a flat wall across their open seating bowl.
-    if(other)continue;
-    for(const t of spec.tiers)for(let i=0;i<t.rows;i++){
-     const v=t.startV+i*t.rowPitch,z=t.startZ+i*t.rise;
-     ends.push(face(s,[[u,v,0],[u,v+t.rowPitch,0],[u,v+t.rowPitch,z],[u,v,z]],mat[1]));
-    }
-    for(const d of spec.decks)ends.push(face(s,[[u,d.frontV,0],[u,d.backV,0],[u,d.backV,d.topZ],[u,d.frontV,d.topZ]],mat[1]));
-    ends.push(face(s,[[u,D-.18,0],[u,D+rear,0],[u,D+rear,spec.wallH],[u,D-.18,spec.wallH]],mat[1]));
+  // Only the part of an end profile taller than its neighbour is exposed.
+  // Draw the thin stepped cheek instead of a full rectangular wall across the bowl.
+  const profile=(sp,v)=>{
+   if(!sp)return 0;
+   let h=0;
+   for(const t of sp.tiers)for(let i=0;i<t.rows;i++){const x=t.startV+i*t.rowPitch;if(v>=x-.0001&&v<x+t.rowPitch-.0001)h=Math.max(h,t.startZ+i*t.rise)}
+   for(const d of sp.decks)if(v>=d.frontV&&v<d.backV)h=Math.max(h,d.topZ);
+   const rearSeat=Math.max(0,...sp.tiers.map(t=>t.startV+t.rows*t.rowPitch));
+   if(v>=rearSeat-.0001&&v<=sp.depth+.01)h=Math.max(h,sp.wallH);
+   return h;
+  };
+  const adjacent=(u)=>{
+   if(corner){const id=cornerLinks[s.id][u===0?0:1];return model.sections[id]}
+   const i=u===0?s.i-1:s.i+1,count=s.side==='N'||s.side==='S'?8:4;
+   if(i>=0&&i<count)return model.sections[`${s.side}${i+1}`];
+   const endCorner={N:i<0?'NW':'NE',S:i<0?'SW':'SE',W:i<0?'NW':'SW',E:i<0?'NE':'SE'}[s.side];return model.sections[endCorner];
+  };
+  for(const u of [0,L]){
+   const other=groundsStand(adjacent(u)?.stand),endDepth=corner?endpoint(u).depth:D;
+   const toPhysical=v=>corner?v*endDepth/D:v;
+   const otherV=v=>other?toPhysical(v)*other.depth/endDepth:0;
+   const cuts=[0,D,...spec.tiers.flatMap(t=>Array.from({length:t.rows+1},(_,i)=>t.startV+i*t.rowPitch)),...spec.decks.flatMap(d=>[d.frontV,d.backV])];
+   if(other){for(const t of other.tiers)for(let i=0;i<=t.rows;i++)cuts.push((t.startV+i*t.rowPitch)/other.depth*D);for(const d of other.decks)cuts.push(d.frontV/other.depth*D,d.backV/other.depth*D)}
+   const sorted=[...new Set(cuts.filter(v=>v>=0&&v<=D).map(v=>Math.round(v*10000)/10000))].sort((a,b)=>a-b);
+   for(let i=0;i<sorted.length-1;i++){
+    const v=sorted[i],next=sorted[i+1],middle=(v+next)/2;
+    if(next-v<.005)continue;
+    const heightScale=corner?endpoint(u).wallH/spec.wallH:1;
+    const selfH=profile(spec,middle)*heightScale,covered=other?profile(other,otherV(middle)):0;
+    if(selfH<=covered+.18)continue;
+    const bottom=covered/heightScale,top=selfH/heightScale;
+    ends.push(localFace([[u,v,bottom],[u,next,bottom],[u,next,top],[u,v,top]],mat[1]));
    }
+   if(!other&&rear)ends.push(localFace([[u,D,0],[u,D+rear,0],[u,D+rear,spec.wallH],[u,D,spec.wallH]],mat[1]));
   }
   if(cfg.roof!=='none'){
    const v0=cfg.roof==='full'?1.1:cfg.roof==='cantilever'?.55:.42,v1=spec.roofRearV+rear;
    const fz=spec.roofFrontZ,rz=spec.roofRearZ+.15;
    const tint=cfg.roof==='continuous'?'#63828b':cfg.finish==='brick'?'#687a7d':'#566d78';
-   // A curved corner canopy is a ring segment with a clear inner radius;
-   // never draw its diagonal joins across the seating bowl.
-   panel(roof,[[0,v0,fz],[L,v0,fz],[L,v1,rz],[0,v1,rz]],tint,`stroke="#94a9ad" stroke-width=".32" opacity="${near?'.9':'.96'}"`);
-   panel(roof,[[0,v0,fz-.22],[L,v0,fz-.22],[L,v0,fz],[0,v0,fz]],'#98aaab');
-   if(!corner){
-    for(let u=1;u<L;u++)roof.push(edge(s,[[u,v0,fz+.01],[u,v1,rz+.01]],'#91a5ad',.44));
-    if(cfg.roof==='truss'||cfg.roof==='cantilever')for(let u of [0,L/2,L])roof.push(edge(s,[[u,v0,fz+.05],[u,v1,rz+.9]],mat[2],.65));
+   if(corner){
+    const roofEnd=(u)=>{const t=u/L,a=linked[0],b=linked[1],mix=(key)=>{
+     const left=a.spec||spec,right=b.spec||spec;return left[key]*(1-t)+right[key]*t;
+    };const rearDepth=x=>({compact:0,concourse:1.2,amenities:2,hospitality:2.6}[x.cfg.rear]||0);
+    return {front:((a.cfg.roof==='full'?1.1:a.cfg.roof==='cantilever'?.55:.42)*(1-t)+(b.cfg.roof==='full'?1.1:b.cfg.roof==='cantilever'?.55:.42)*t),back:mix('roofRearV')+rearDepth(a)*(1-t)+rearDepth(b)*t,fz:mix('roofFrontZ'),rz:mix('roofRearZ')+.15}};
+    const cornerRoof=(u,back=false,offset=0)=>{const e=roofEnd(u);return world(s,u,back?e.back:e.front,(back?e.rz:e.fz)+offset)};
+    for(let k=0;k<segments;k++){const a=k*L/segments,b=(k+1)*L/segments;
+     roof.push(poly([cornerRoof(a),cornerRoof(b),cornerRoof(b,true),cornerRoof(a,true)],tint,`stroke="#94a9ad" stroke-width=".28" opacity="${near?'.9':'.96'}"`));
+     roof.push(poly([cornerRoof(a,false,-.22),cornerRoof(b,false,-.22),cornerRoof(b),cornerRoof(a)],'#98aaab'));
+     roof.push(path([cornerRoof(a),cornerRoof(a,true)],'#92a6ad',.42));
+    }
+    if(evening)roof.push(path(Array.from({length:segments+1},(_,k)=>cornerRoof(k*L/segments,false,-.2)),'#fff0b1',1.35));
+   }else{
+    panel(roof,[[0,v0,fz],[L,v0,fz],[L,v1,rz],[0,v1,rz]],tint,`stroke="#94a9ad" stroke-width=".32" opacity="${near?'.9':'.96'}"`);
+    panel(roof,[[0,v0,fz-.22],[L,v0,fz-.22],[L,v0,fz],[0,v0,fz]],'#98aaab');
+    for(let u=1;u<L;u++)roof.push(localEdge([[u,v0,fz+.01],[u,v1,rz+.01]],'#91a5ad',.44));
+    if(cfg.roof==='truss'||cfg.roof==='cantilever')for(let u of [0,L/2,L])roof.push(localEdge([[u,v0,fz+.05],[u,v1,rz+.9]],mat[2],.65));
+    if(evening)roof.push(localEdge([[.08,v0,fz-.2],[L-.08,v0,fz-.2]],'#fff0b1',1.35));
    }
-   if(evening)roof.push(edge(s,[[.08,v0,fz-.2],[L-.08,v0,fz-.2]],'#fff0b1',1.35));
   }
-  const surfaces=near?[...bowl,...back,...facade,...ends,...roof]:[...back,...facade,...bowl,...ends,...roof];
+  const surfaces=near?[...bowl,...back,...facade,...ends,...roof]:[...back,...facade,...ends,...bowl,...roof];
   return `<g data-section="${s.id}" aria-label="${s.id}: ${safe(base.label)}">${surfaces.join('')}</g>`;
  }
  const ordered=SECTIONS.map(s=>({s,depth:(()=>{const q=world(s,s.bays/2,3,0);return q.x+q.y})()})).sort((a,b)=>a.depth-b.depth);
