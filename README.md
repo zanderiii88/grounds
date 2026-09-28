@@ -1,7 +1,13 @@
-# Clubline — Release 1.7.2
+# Clubline — Release 1.8.0
 
-Copy the contents of this ZIP to the root of your GitHub Pages repository, including the new `sw.js`.
+Copy all files from the ZIP to the root of your GitHub Pages repository, including `sw.js`.
 
-The mobile recording showed older league data loaded with a newer Clubline screen (`Facilities undefined★`). This build requests league data under a new versioned URL and replaces the lingering GROUNDS cache-first service worker with Clubline's network-first worker. It also keeps the season-start storage recovery from 1.7.1: a failed save no longer traps the setup screen, and an obsolete GROUNDS career save is removed only if the storage quota is reached. If another error occurs while starting a season, setup stays usable and shows a message.
+## Mobile UI
 
-Current Clubline saves and GROUNDS stadium designer data are retained. This is a focused fix; pitch and menu framing notes remain scheduled for a later visual update.
+- A smaller start panel leaves more of the rotating stadium visible on narrow screens. The pitch backing now stays inside the stand footprint.
+- A compact sticky top bar shows the date, club balance and next opponent. Tap Next match for the opponent's attack, defence, style, ground and recent results. Tap the Clubline logo to return to the main menu.
+- A bottom navigation bar holds Squad, Facilities, Finances, Organiser and Advance time.
+- Starting XI tiles are smaller. Player arrow and happiness emoji controls have lighter, transparent backgrounds. Player details now open beside the tapped shirt or list row and can be minimised there.
+- The stadium designer uses tappable highlighted sections on the ground image. Tap multiple sections to apply an edit to them together, or choose a whole side, all corners, or the whole ground. The existing cost and capacity checks still apply.
+
+The cache and storage fixes from 1.7.2 remain. Current Clubline saves retain the same save key. Further stadium and environment scale corrections remain on the visual follow-up list.

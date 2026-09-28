@@ -1,5 +1,5 @@
-const CACHE='clubline-pwa-v1.7.2';
-const CORE=['./','./index.html','./app.js?v=1.7.2','./style.css?v=1.7.2','./data/league.json?v=1.7.2'];
+const CACHE='clubline-pwa-v1.8.0';
+const CORE=['./','./index.html','./app.js?v=1.8.0','./style.css?v=1.8.0','./data/league.json?v=1.8.0'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));
 });
