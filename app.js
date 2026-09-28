@@ -1,7 +1,7 @@
-import {sceneSvg,stadiumProfile} from './scene.js?v=1.6.0';
-import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.6.0';
+import {sceneSvg,stadiumProfile} from './scene.js?v=1.6.1';
+import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.6.1';
 
-const APP_VERSION='1.6.0';
+const APP_VERSION='1.6.1';
 const SAVE_KEY='clubline-career-r1';
 const SITES=[['city','City Waterfront'],['gardens','Civic Gardens'],['rail','Rail District'],['university','University Quarter'],['oldtown','Old Town']];
 const availableSites=c=>c.capacity>=45000?SITES.slice(0,3):SITES;

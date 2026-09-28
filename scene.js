@@ -1,4 +1,5 @@
 import {SECTIONS,STANDS,normaliseLayout,defaultLayout} from './stadium-model.js';
+import {groundsStand} from './grounds-geometry.js';
 // GROUNDS' registered district images and 28 × 18 pitch datum are shared by all views.
 const SITE={
  city:{art:'top-city-redevelopment',origin:[867,482],tile:[6.162,3.382]},harbour:{art:'top-city-redevelopment',origin:[867,482],tile:[6.162,3.382]},
@@ -44,96 +45,96 @@ export function sceneSvg(club,site='city',crowd=false,evening=false,close=false,
  const face=(s,points,fill,extra='')=>poly(points.map(v=>world(s,...v)),fill,extra);
  const edge=(s,points,stroke,width=1,extra='')=>path(points.map(v=>world(s,...v)),stroke,width,extra);
  function sectionSvg(s){
-  const cfg=model.sections[s.id],spec=STANDS[cfg.stand];
-  if(cfg.stand==='empty')return '';
-  const L=s.bays,corner=!!s.corner,steps=corner?12:1,small=spec.depth<4;
-  const d=spec.depth,rear=small?0:({compact:0,concourse:1.1,amenities:1.8,hospitality:2.2}[cfg.rear]||0);
-  const endZ=Math.max(...spec.tiers.map(t=>t[1]+(t[0]-1)*t[2]));
-  const wall=endZ+(small?.3:1.1),roofZ=wall+(small?1.25:2.2),shellTop=cfg.roof==='none'?wall:roofZ+.55;
-  const mat=cfg.finish==='brick'?['#50443e','#78685a','#af9882']:cfg.finish==='dark'?['#263740','#40525c','#8aa0aa']:['#344951','#62767e','#a4bcc2'];
-  const seat=cfg.stand==='grass'?'#608a4c':cfg.stand.startsWith('terrace')?'#aab2a9':colour;
+  const cfg=model.sections[s.id],base=STANDS[cfg.stand],spec=groundsStand(cfg.stand);
+  if(!spec)return '';
+  const L=s.bays,corner=!!s.corner,segments=corner?12:1,D=spec.depth;
+  const rear=corner?0:({compact:0,concourse:1.2,amenities:2,hospitality:2.6}[cfg.rear]||0);
+  const mat=cfg.finish==='brick'?['#51443e','#78685a','#ac9983']:cfg.finish==='dark'?['#263740','#40525c','#8aa0aa']:['#344951','#62767e','#a4bcc2'];
+  const seat=cfg.stand==='grass'?'#709652':cfg.stand.startsWith('terrace')?'#b9c1b7':colour;
   const near=(()=>{const a=world(s,L/2,1,0),b=world(s,L/2,2,0);return b.x+b.y>a.x+a.y})();
-  const shell=[],tiers=[],concourse=[],caps=[],roof=[];
-  // Outer perimeter and rear building are continuous solids; individual bays
-  // contribute facade detail, without exposing the inside of every section.
-  for(let k=0;k<steps;k++){
-   const a=k*L/steps,b=(k+1)*L/steps,back=d+rear;
-   shell.push(face(s,[[a,back,0],[b,back,0],[b,back,shellTop],[a,back,shellTop]],mat[0],`stroke="#273942" stroke-width=".32"`));
-   if(rear){
-    shell.push(face(s,[[a,d,wall-.2],[b,d,wall-.2],[b,back,shellTop],[a,back,shellTop]],mat[1]));
-    shell.push(face(s,[[a,d,0],[b,d,0],[b,d,wall-.2],[a,d,wall-.2]],mat[1]));
-   }
+  const back=[],bowl=[],facade=[],roof=[],ends=[];
+  const panel=(out,verts,fill,extra='')=>{for(let k=0;k<segments;k++){
+   const a=k*L/segments,b=(k+1)*L/segments;
+   out.push(face(s,verts.map(([u,v,z])=>[u===0?a:u===L?b:a+(b-a)*u/L,v,z]),fill,extra));
+  }};
+  // GROUNDS paints the outward rear wall behind far seating and after near seating.
+  // The facade belongs at the back of the bowl, never across a tier opening.
+  panel(back,[[0,D,0],[L,D,0],[L,D,spec.wallH],[0,D,spec.wallH]],mat[0]);
+  if(rear){
+   panel(back,[[0,D+rear,0],[L,D+rear,0],[L,D+rear,spec.wallH],[0,D+rear,spec.wallH]],mat[0]);
+   panel(back,[[0,D,spec.wallH],[L,D,spec.wallH],[L,D+rear,spec.wallH+.15],[0,D+rear,spec.wallH+.15]],mat[1]);
   }
   if(!corner){
-   for(let u=.42;u+.58<L;u+=1.08){
-    for(let z=2.2;z+1.15<shellTop-1.1;z+=3.35)
-     shell.push(face(s,[[u,d+rear+.035,z],[u+.58,d+rear+.035,z],[u+.58,d+rear+.035,z+1.15],[u,d+rear+.035,z+1.15]],evening?'#dfb46f':mat[2],`opacity=".88"`));
+   for(let u=.45;u+.6<L;u+=1.05){
+    for(let z=2.4;z+1.1<spec.wallH-.5;z+=3.4)
+     facade.push(face(s,[[u,D+rear+.02,z],[u+.53,D+rear+.02,z],[u+.53,D+rear+.02,z+1.1],[u,D+rear+.02,z+1.1]],evening?'#d6ae73':mat[2],'opacity=".75"'));
    }
-   shell.push(face(s,[[L/2-.37,d+rear+.05,.05],[L/2+.37,d+rear+.05,.05],[L/2+.37,d+rear+.05,2.5],[L/2-.37,d+rear+.05,2.5]],'#1b3038'));
-   for(let u=1;u<L;u++)shell.push(edge(s,[[u,d+rear+.06,0],[u,d+rear+.06,shellTop-.35]],mat[1],.35,'opacity=".42"'));
-   for(let ti=1;ti<spec.tiers.length;ti++){
-    const z=spec.tiers[ti][1]-1.15;
-    shell.push(face(s,[[.04,d+rear+.075,z-1.15],[L-.04,d+rear+.075,z-1.15],[L-.04,d+rear+.075,z],[.04,d+rear+.075,z]],'#172d38',`stroke="${mat[2]}" stroke-width=".48"`));
-    for(let u=.75;u<L;u+=.85)shell.push(edge(s,[[u,d+rear+.08,z-1.12],[u,d+rear+.08,z]],mat[2],.55));
-   }
+   facade.push(face(s,[[L/2-.37,D+rear+.03,.02],[L/2+.37,D+rear+.03,.02],[L/2+.37,D+rear+.03,2.55],[L/2-.37,D+rear+.03,2.55]],'#1d3138'));
   }
-  // GROUNDS section end caps are exposed only at open gaps or the outside
-  // perimeter. Drawing one on every bay made the stadium look inside out.
-  if(!corner){
-   for(const [u,adjacent] of [[0,s.i-1],[L,s.i+1]]){
-    const count=s.side==='N'||s.side==='S'?8:4;
-    const other=adjacent>=0&&adjacent<count?model.sections[`${s.side}${adjacent+1}`]:model.sections[{N:[s.i===0?'NW':'NE'],S:[s.i===0?'SW':'SE'],E:[s.i===0?'NE':'SE'],W:[s.i===0?'NW':'SW']}[s.side][0]];
-    const otherTop=other&&other.stand!=='empty'?Math.max(...STANDS[other.stand].tiers.map(t=>t[1]+(t[0]-1)*t[2])):0;
-    if(otherTop<wall-2)caps.push(face(s,[[u,.22,1.15],[u,d+rear,0],[u,d+rear,shellTop],[u,d,wall],[u,.22,1.5]],mat[1],`stroke="#30434b" stroke-width=".45"`));
+  // Treads and risers use GROUNDS' actual start, pitch, rise and depth.
+  // Each deck follows its specified setback or raked overhang profile.
+  for(let ti=0;ti<spec.tiers.length;ti++){
+   const t=spec.tiers[ti],rows=Array.from({length:t.rows},(_,i)=>near?t.rows-1-i:i);
+   for(const i of rows){
+    const v=t.startV+i*t.rowPitch,v1=v+t.rowPitch,z=t.startZ+i*t.rise;
+    const low=i===0?Math.max(.8,z-.5):z-t.rise;
+    panel(bowl,[[0,v,low],[L,v,low],[L,v,z],[0,v,z]],'#504b4b');
+    panel(bowl,[[0,v,z],[L,v,z],[L,v1,z],[0,v1,z]],seat,`stroke="#8fa6a3" stroke-width=".2"`);
+    if(!corner&&i%2===0)for(const u of [L/3,2*L/3])
+     bowl.push(face(s,[[u-.07,v,z+.02],[u+.07,v,z+.02],[u+.07,Math.min(v1,v+t.tread),z+.02],[u-.07,Math.min(v1,v+t.tread),z+.02]],'#bbc4c0'));
+    if(crowd&&i%2===0)for(let u=.35;u<L;u+=.7){const q=project(world(s,u,v+.06,z+.16));bowl.push(`<circle cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r=".43" fill="${(i+Math.floor(u*2))%3===0?'#e6c3a9':'#dce4dc'}"/>`)}
    }
-  }
-  const starts=spec.tiers.map((_,ti)=>ti===0?.42:ti===1?(spec.deck==='overhang'?1.72:3.08):spec.deck==='triple'?4.9:4.0);
-  const tierIndices=spec.tiers.map((_,i)=>i);
-  if(!near)tierIndices.reverse();
-  for(const ti of tierIndices){
-   const t=spec.tiers[ti],start=starts[ti];
-   let end=d-.18;
-   if(ti<spec.tiers.length-1){end=spec.deck==='overhang'&&ti===0?Math.min(d-.2,3.75):Math.min(d-.2,starts[ti+1]-.22)}
-   const rowPitch=Math.max(.2,(end-start)/t[0]);
-   const rows=Array.from({length:t[0]},(_,j)=>j);if(!near)rows.reverse();
-   for(const j of rows){
-    const v=start+j*rowPitch,next=Math.min(d-.07,v+rowPitch),z=t[1]+j*t[2];
-    for(let k=0;k<steps;k++){
-     const a=k*L/steps,b=(k+1)*L/steps;
-     tiers.push(face(s,[[a,v,z-.52],[b,v,z-.52],[b,v,z],[a,v,z]],seat,`stroke="#24333b" stroke-width=".23"`));
-     tiers.push(face(s,[[a,v,z],[b,v,z],[b,next,z],[a,next,z]],seat,`stroke="#b1c3be" stroke-width=".22"`));
+   const d=spec.decks[ti];
+   if(d){
+    if(d.style==='setback'){
+     panel(bowl,[[0,d.frontV,d.topZ],[L,d.frontV,d.topZ],[L,d.backV,d.topZ],[0,d.backV,d.topZ]],'#79868a');
+     panel(bowl,[[0,d.backV,d.baseZ],[L,d.backV,d.baseZ],[L,d.backV,d.topZ],[0,d.backV,d.topZ]],'#333f45');
+     panel(bowl,[[0,d.backV+.015,d.baseZ+.1],[L,d.backV+.015,d.baseZ+.1],[L,d.backV+.015,d.topZ-.1],[0,d.backV+.015,d.topZ-.1]],'#172a32');
+    }else{
+     const upper=spec.tiers[ti+1],bend=upper.startV+upper.rowPitch,backV=upper.startV+upper.rows*upper.rowPitch;
+     const soffit=d.baseZ+Math.max(0,backV-bend)*upper.rise/upper.rowPitch;
+     panel(bowl,[[0,d.frontV,d.baseZ],[L,d.frontV,d.baseZ],[L,bend,d.baseZ],[0,bend,d.baseZ]],'#27343a');
+     panel(bowl,[[0,bend,d.baseZ],[L,bend,d.baseZ],[L,backV,soffit],[0,backV,soffit]],'#303b42');
+     panel(bowl,[[0,d.frontV,d.baseZ],[L,d.frontV,d.baseZ],[L,d.frontV,d.topZ],[0,d.frontV,d.topZ]],'#607078');
+     panel(bowl,[[0,d.frontV,d.topZ],[L,d.frontV,d.topZ],[L,upper.startV,d.topZ],[0,upper.startV,d.topZ]],'#89969a');
     }
-    if(!corner&&j%2===0){for(const u of [L/3,2*L/3])tiers.push(face(s,[[u-.08,v,z+.025],[u+.08,v,z+.025],[u+.08,next,z+.025],[u-.08,next,z+.025]],'#cbd2c8'))}
-    if(crowd&&j%2===0)for(let u=.35;u<L;u+=.7){const q=project(world(s,u,v+.07,z+.21));tiers.push(`<circle cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r=".48" fill="${(j+Math.floor(u*2))%3===0?'#f0d3ae':'#d6e2e0'}"/>`)}
+    bowl.push(edge(s,[[.06,d.frontV,d.topZ+.24],[L-.06,d.frontV,d.topZ+.24]],'#cdd4d0',.65));
    }
-   // Real split tiers have an occupied deck, deep soffit and lit concourse.
-   if(ti>0){
-    const v=spec.deck==='overhang'?Math.max(.9,start-.15):start-.4,z=t[1]-1.1;
-    const deck=face(s,[[0,v,z],[L,v,z],[L,Math.min(d,v+1.1),z],[0,Math.min(d,v+1.1),z]],'#576971');
-    const fascia=face(s,[[0,v,z-.95],[L,v,z-.95],[L,v,z],[0,v,z]],'#1d2e37',`stroke="#a2aeb0" stroke-width=".6"`);
-    const rail=edge(s,[[0,v,z+.05],[L,v,z+.05]],'#e0dbcf',.85);
-    const pillars=corner?'':[.7,L/2,L-.7].map(u=>face(s,[[u-.055,v+.03,z-1.0],[u+.055,v+.03,z-1.0],[u+.055,v+.03,z-.13],[u-.055,v+.03,z-.13]],'#899a9f')).join('');
-    concourse.push(deck,fascia,rail,pillars);
+  }
+  // Close exposed ends with a stepped silhouette, retaining the split decks.
+  if(!corner){
+   for(const [u,adj] of [[0,s.i-1],[L,s.i+1]]){
+    const count=s.side==='N'||s.side==='S'?8:4;
+    const endCorner={N:adj<0?'NW':'NE',S:adj<0?'SW':'SE',W:adj<0?'NW':'SW',E:adj<0?'NE':'SE'}[s.side];
+    const neighbor=adj>=0&&adj<count?model.sections[`${s.side}${adj+1}`]:model.sections[endCorner];
+    const other=neighbor&&groundsStand(neighbor.stand);
+    // Adjacent built sections cover the structural edge; a full-height cap
+    // would read as a flat wall across their open seating bowl.
+    if(other)continue;
+    for(const t of spec.tiers)for(let i=0;i<t.rows;i++){
+     const v=t.startV+i*t.rowPitch,z=t.startZ+i*t.rise;
+     ends.push(face(s,[[u,v,0],[u,v+t.rowPitch,0],[u,v+t.rowPitch,z],[u,v,z]],mat[1]));
+    }
+    for(const d of spec.decks)ends.push(face(s,[[u,d.frontV,0],[u,d.backV,0],[u,d.backV,d.topZ],[u,d.frontV,d.topZ]],mat[1]));
+    ends.push(face(s,[[u,D-.18,0],[u,D+rear,0],[u,D+rear,spec.wallH],[u,D-.18,spec.wallH]],mat[1]));
    }
   }
   if(cfg.roof!=='none'){
-   const front=cfg.roof==='cantilever'?.55:cfg.roof==='full'?1.15:.3,back=d+rear+.15;
+   const v0=cfg.roof==='full'?1.1:cfg.roof==='cantilever'?.55:.42,v1=spec.roofRearV+rear;
+   const fz=spec.roofFrontZ,rz=spec.roofRearZ+.15;
    const tint=cfg.roof==='continuous'?'#63828b':cfg.finish==='brick'?'#687a7d':'#566d78';
-   for(let k=0;k<steps;k++){
-    const a=k*L/steps,b=(k+1)*L/steps;
-    roof.push(face(s,[[a,front,roofZ],[b,front,roofZ],[b,back,roofZ+1.1],[a,back,roofZ+1.1]],tint,`stroke="#9eb2b4" stroke-width=".4" opacity="${near?'.90':'.96'}"`));
-    roof.push(face(s,[[a,front,roofZ-.33],[b,front,roofZ-.33],[b,front,roofZ],[a,front,roofZ]],'#a4b2b2'));
+   // A curved corner canopy is a ring segment with a clear inner radius;
+   // never draw its diagonal joins across the seating bowl.
+   panel(roof,[[0,v0,fz],[L,v0,fz],[L,v1,rz],[0,v1,rz]],tint,`stroke="#94a9ad" stroke-width=".32" opacity="${near?'.9':'.96'}"`);
+   panel(roof,[[0,v0,fz-.22],[L,v0,fz-.22],[L,v0,fz],[0,v0,fz]],'#98aaab');
+   if(!corner){
+    for(let u=1;u<L;u++)roof.push(edge(s,[[u,v0,fz+.01],[u,v1,rz+.01]],'#91a5ad',.44));
+    if(cfg.roof==='truss'||cfg.roof==='cantilever')for(let u of [0,L/2,L])roof.push(edge(s,[[u,v0,fz+.05],[u,v1,rz+.9]],mat[2],.65));
    }
-   if(cfg.roof==='truss'||cfg.roof==='cantilever')for(let u=.1;u<L;u+=Math.max(1,L/2)){
-    roof.push(edge(s,[[u,front,roofZ+.1],[u,back,roofZ+1.45]],mat[2],.75));
-    roof.push(edge(s,[[u,front,roofZ+.1],[u,back,roofZ+1.08]],mat[2],.65));
-   }
-   if(cfg.roof==='continuous')roof.push(face(s,[[0,front,roofZ+.02],[L,front,roofZ+.02],[L,front+.6,roofZ+.16],[0,front+.6,roofZ+.16]],'#a8c8cc','opacity=".75"'));
-   if(evening)roof.push(edge(s,[[.08,front,roofZ-.31],[L-.08,front,roofZ-.31]],'#fff2b0',1.6,'opacity=".92"'));
+   if(evening)roof.push(edge(s,[[.08,v0,fz-.2],[L-.08,v0,fz-.2]],'#fff0b1',1.35));
   }
-  // Far sections reveal the seating bowl; near sections show the solid facade.
-  const surfaces=near?[...tiers,...concourse,...shell,...caps,...roof]:[...shell,...tiers,...concourse,...caps,...roof];
-  return `<g data-section="${s.id}" aria-label="${s.id}: ${safe(spec.label)}">${surfaces.join('')}</g>`;
+  const surfaces=near?[...bowl,...back,...facade,...ends,...roof]:[...back,...facade,...bowl,...ends,...roof];
+  return `<g data-section="${s.id}" aria-label="${s.id}: ${safe(base.label)}">${surfaces.join('')}</g>`;
  }
  const ordered=SECTIONS.map(s=>({s,depth:(()=>{const q=world(s,s.bays/2,3,0);return q.x+q.y})()})).sort((a,b)=>a.depth-b.depth);
  const far=ordered.filter(x=>x.depth<66).map(x=>sectionSvg(x.s)).join(''),near=ordered.filter(x=>x.depth>=66).map(x=>sectionSvg(x.s)).join('');

@@ -1,4 +1,4 @@
-# Clubline — Release 1.6.0
+# Clubline — Release 1.6.1
 
 An independent, mobile-first football club career prototype. It does not read or overwrite GROUNDS saves.
 
@@ -34,3 +34,7 @@ The finances are provisional: opening cash derives from the club's pilot budget,
 - `assets/sites/`: day and night GROUNDS location art.
 - `assets/icon.svg` and `assets/icon-192.png`, `icon-512.png`, `icon-180.png`: the angular C and trend arrow app icon.
 - `manifest.webmanifest`, `version.json`: install branding and update checking.
+
+## Stadium geometry correction
+
+The bowl now uses GROUNDS' original tread, riser, setback deck, overhang soffit and roof height dimensions, with its height and depth adjustments. Built corners do not receive full-height side caps, and corner canopies are drawn as ring segments. Saved section choices remain compatible with 1.6.0.
