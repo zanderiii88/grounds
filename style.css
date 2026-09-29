@@ -146,3 +146,17 @@
 .formation-pitch .pitch-line{position:relative;z-index:1}
 .title-backdrop picture img{animation-duration:14s}
 .title-screen .menu-scene-label{left:50%;right:auto;transform:translateX(-50%);width:max-content;max-width:calc(100% - 28px)}
+
+/* 1.19: career bars sit outside the one scrolling content region. */
+.career-screen{position:fixed;inset:0;height:100dvh;min-height:0;overflow:hidden;overscroll-behavior:none}
+.career-screen>.shell-content{height:100%;min-height:0;width:100%;padding:0;overflow:hidden}
+.career-screen .career-topbar{position:relative;top:auto;flex:none;margin:0;padding:10px 16px;z-index:15}
+.career-screen .dash-grid{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;margin:0;padding:16px 20px 140px;align-items:start;scroll-padding-bottom:110px}
+.career-screen .bottom-nav,.career-screen .results-ticker,.career-screen .advance-dock{transform:none}
+.construction-notice{padding:12px;border-left:3px solid #e4bb63;background:#e4bb6315;margin:12px 0;font-size:.82rem}.construction-notice p{margin:7px 0;line-height:1.5}
+.stand-fan,.pitch-player,.visible-match-ball,.stadium-walker{animation:none;transform-box:initial;transform-origin:initial}
+@media(max-width:850px){.career-screen .career-topbar{padding:7px 10px}.career-screen .dash-grid{display:block;padding:12px 10px 135px}.career-screen .dash-grid>.section-content{margin-top:12px}.career-screen .bottom-nav{bottom:0;left:0;right:0;margin:0}.career-screen .results-ticker{bottom:calc(85px + env(safe-area-inset-bottom))}}
+@media(prefers-reduced-motion:reduce){.stadium-walker animateTransform,.pitch-player animateTransform,.visible-match-ball animateTransform,.stand-fan animateTransform{display:none}}
+
+html,body{overscroll-behavior:none}
+.career-screen .section-content{max-height:none;overflow:visible}

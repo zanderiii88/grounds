@@ -1,5 +1,5 @@
-const CACHE='clubline-pwa-v1.18.0';
-const CORE=['./','./index.html','./app.js?v=1.18.0','./style.css?v=1.18.0','./data/league.json?v=1.18.0','./development.js?v=1.18.0','./scene.js?v=1.18.0','./stadium-model.js?v=1.18.0','./grounds-geometry.js','./sites.js','./sites.js?v=1.18.0'];
+const CACHE='clubline-pwa-v1.19.0';
+const CORE=['./','./index.html','./app.js?v=1.19.0','./style.css?v=1.19.0','./data/league.json?v=1.19.0','./development.js?v=1.19.0','./scene.js?v=1.19.0','./stadium-model.js?v=1.19.0','./grounds-geometry.js','./sites.js','./sites.js?v=1.19.0','./stadium-life.js','./construction.js?v=1.19.0','./stadium-model.js'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));
 });

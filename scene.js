@@ -1,3 +1,4 @@
+import {exteriorPeople,pitchPlayers} from './stadium-life.js';
 import {SECTIONS,STANDS,normaliseLayout,defaultLayout} from './stadium-model.js';
 import {groundsStand} from './grounds-geometry.js';
 // Fixed site plots share the stadium grid. No stadium translation or rotation is exposed.
@@ -6,7 +7,7 @@ const ART_WIDTH=830,ART_HEIGHT=1895,SCENE_WIDTH=1100,SCENE_HEIGHT=ART_HEIGHT*SCE
 const at=(x,y,z=0)=>({x,y,z}),mix=(a,b,t)=>at(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t,a.z+(b.z-a.z)*t);
 const safe=s=>String(s??'').replace(/[&<>"']/g,'');
 export const stadiumProfile=club=>({name:defaultLayout(club).name});
-export function sceneSvg(club,site='town',crowd=false,evening=false,close=false,layout=null,selection=null,motion=null){
+export function sceneSvg(club,site='town',crowd=false,evening=false,close=false,layout=null,selection=null,motion=null,works=[]){
  const map=siteById(site),model=normaliseLayout(layout,club),colour=/^#[0-9a-f]{6}$/i.test(club?.colour||'')?club.colour:'#a03948';
  const px=SCENE_WIDTH/ART_WIDTH,py=SCENE_HEIGHT/ART_HEIGHT,zStep=2.55*px;
  // All game objects use the same two ground-plane vectors. This keeps the
@@ -42,6 +43,16 @@ export function sceneSvg(club,site='town',crowd=false,evening=false,close=false,
  const edge=(s,points,stroke,width=1,extra='')=>path(points.map(v=>world(s,...v)),stroke,width,extra);
  function sectionSvg(s){
   const cfg=model.sections[s.id],base=STANDS[cfg.stand],spec=groundsStand(cfg.stand);
+  const work=works.find(job=>job.sections[s.id]);
+  if(work){
+   const future=groundsStand(work.sections[s.id].stand),D=Math.max(spec?.depth||2,future?.depth||2),H=Math.max(spec?.wallH||2,future?.wallH||2),L=s.bays,parts=[];
+   parts.push(face(s,[[0,0,.8],[L,0,.8],[L,D,H],[0,D,H]],'#bcc7c6','opacity=".92"'));
+   parts.push(face(s,[[0,D,0],[L,D,0],[L,D,H],[0,D,H]],'#819a9f','opacity=".95"'));
+   for(let u=0;u<=L;u+=.7)parts.push(edge(s,[[u,0,.5],[u,D,H+.6]],'#50636b',.65));
+   for(let z=2;z<H;z+=3){parts.push(edge(s,[[0,D,z],[L,D,z]],'#d5d5c0',.7));for(let u=0;u+.7<L;u+=.7)parts.push(edge(s,[[u,D,z],[u+.7,D,Math.min(H,z+3)]],'#465963',.5));}
+   parts.push(edge(s,[[0,0,.9],[L,0,.9]],'#e6ba5e',1.4));
+   return `<g class="construction-section" data-section="${s.id}" aria-label="${s.id}: closed for construction until ${work.opens}">${parts.join('')}</g>`;
+  }
   const cornerLinks={NW:['W1','N1'],NE:['E1','N8'],SW:['W4','S1'],SE:['E4','S8']};
   if(!spec){
    if(!s.corner)return '';
@@ -136,7 +147,11 @@ export function sceneSvg(club,site='town',crowd=false,evening=false,close=false,
      bowl.push(localFace([[u-.13,v,z+.03],[u+.13,v,z+.03],[u+.13,Math.min(v1,v+t.tread),z+.03],[u-.13,Math.min(v1,v+t.tread),z+.03]],'#5c6a6b'));
      if(i%2===0)bowl.push(localEdge([[u-.12,v,z+.08],[u-.12,Math.min(v1,v+t.tread),z+.08]],'#d5d0bd',.35));
     }
-    if(crowd&&i%2===0)for(let u=.35;u<L;u+=.7){const q=project(point(u,v+.06,z+.16));bowl.push(`<circle class="spectator ${(i+Math.round(u*10))%9===0?'spectator-active':''}" style="--delay:${((i+Math.round(u*10))%12)*-.15}s" cx="${q.x.toFixed(1)}" cy="${q.y.toFixed(1)}" r=".43" fill="${(i+Math.floor(u*2))%3===0?'#e6c3a9':'#dce4dc'}"/>`)}
+    if(crowd&&i%2===0)for(let u=.28;u<L;u+=.44){
+     const q=project(point(u,v+.08,z+.18)),seed=i*17+Math.round(u*19)+s.id.charCodeAt(0),jump=motion?.scoringTeam===0;
+     const animate=jump?`<animateTransform attributeName="transform" type="translate" values="0 0;0 -${1.3+seed%3*.35};0 0" dur="${.48+seed%7*.07}s" begin="-${seed%17*.053}s" repeatCount="indefinite"/>`:'';
+     bowl.push(`<g class="stand-fan" transform="translate(${q.x.toFixed(1)} ${q.y.toFixed(1)})"><g>${animate}<rect x="-.55" y="-.2" width="1.1" height="1.35" rx=".2" fill="${seed%4===0?colour:['#b9d0d5','#e1d9b5','#536979'][seed%3]}"/><circle cy="-.5" r=".5" fill="${seed%3?'#e8c3a1':'#a47758'}"/></g></g>`);
+    }
    }
    if(!corner){
     const endV=t.startV+t.rows*t.rowPitch,endZ=t.startZ+(t.rows-1)*t.rise;
@@ -240,18 +255,18 @@ export function sceneSvg(club,site='town',crowd=false,evening=false,close=false,
   return `<g data-section="${s.id}" aria-label="${s.id}: ${safe(base.label)}">${surfaces.join('')}</g>`;
  }
  const ordered=SECTIONS.map(s=>({s,depth:(()=>{const q=world(s,s.bays/2,3,0);return q.x+q.y})()})).sort((a,b)=>a.depth-b.depth);
- const far=ordered.filter(x=>x.depth<66).map(x=>sectionSvg(x.s)).join(''),near=ordered.filter(x=>x.depth>=66).map(x=>sectionSvg(x.s)).join('');
+ const closed=id=>works.some(job=>job.sections[id]);
+ const layer=near=>{const list=ordered.filter(x=>(x.depth>=66)===near);return [...list.filter(x=>!closed(x.s.id)),...list.filter(x=>closed(x.s.id))].map(x=>sectionSvg(x.s)).join('')};
+ const far=layer(false),near=layer(true);
  const lights=[[16,15],[56,15],[56,45],[16,45]].map(([x,y],i)=>{const p=project(at(x,y,15)),q=project(at(x,y));return `<path d="M${q.x},${q.y}L${p.x},${p.y}" stroke="#77878b" stroke-width="1.1"/><rect x="${p.x-3.2}" y="${p.y-1.5}" width="6.4" height="2.8" fill="${evening?'#fff3ad':'#aab7b5'}"/>`}).join('');
  const hull=points=>{const sorted=points.sort((a,b)=>a.x-b.x||a.y-b.y),cross=(a,b,c)=>(b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x),lo=[],hi=[];for(const p of sorted){while(lo.length>1&&cross(lo.at(-2),lo.at(-1),p)<=0)lo.pop();lo.push(p)}for(const p of [...sorted].reverse()){while(hi.length>1&&cross(hi.at(-2),hi.at(-1),p)<=0)hi.pop();hi.push(p)}return lo.slice(0,-1).concat(hi.slice(0,-1))};
  const targets=selection===null?'':SECTIONS.map(s=>{const cfg=model.sections[s.id],spec=groundsStand(cfg.stand),d=spec?.depth||2.3,h=spec?.wallH||1.8,points=[];for(const u of [0,s.bays])for(const v of [0,d])for(const z of [0,h])points.push(project(world(s,u,v,z)));const outline=hull(points).map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');return `<polygon class="designer-hit ${selection.has(s.id)?'is-selected':''}" data-action="toggle-stand" data-id="${s.id}" role="button" tabindex="0" aria-label="${s.id}: ${safe(STANDS[cfg.stand].label)}" aria-pressed="${selection.has(s.id)}" points="${outline}"/>`}).join('');
- const athletes=motion?`<g class="match-athletes ${motion.celebrate?'celebrating':''}">${[0,1].map(team=>Array.from({length:11},(_,i)=>{
-  const row=Math.floor(i/4),col=i%4,baseX=team?45-row*3.6:27+row*3.6,baseY=23+col*4.25+(row%2)*1.2;
-  const variation=(i%3-1)*.8,route=[[0,0],[team?-2.4:2.4,variation+1.5],[team?1.8:-1.8,variation-1.4],[team?-1.2:1.2,variation+.4],[0,0]].map(([dx,dy])=>{const q=project(at(baseX+dx,baseY+dy,.28));return `${q.x.toFixed(1)} ${q.y.toFixed(1)}`});
-  const q=route[0];return `<g class="match-athlete ${team?'away':'home'}" transform="translate(${q})"><animateTransform attributeName="transform" type="translate" values="${route.join(';')}" keyTimes="0;.25;.55;.78;1" dur="${(5.2+(i%4)*.7).toFixed(1)}s" begin="-${((i*7+team*3)%11)*.47}s" repeatCount="indefinite"/><g transform="scale(.78)"><ellipse cy="4.1" rx="2.5" ry=".7" fill="#10252a99"/><path d="M-2 -1L-3 .5L-2 1.2L-1.5 .7L-1.4 2.3H1.4L1.5 .7L2 1.2L3 .5L2 -1Z" fill="${team?'#f4e9dc':colour}" stroke="#10242b" stroke-width=".45"/><path d="M-1.1 2.2L-1.4 3.8M1.1 2.2L1.4 3.8" stroke="#172532" stroke-width=".85"/><circle cy="-2" r="1.15" fill="#e7c4a4" stroke="#172532" stroke-width=".3"/></g></g>`
- }).join('')).join('')}${(()=>{const route=[[36,30],[42,25],[32,34],[27,26],[36,30]].map(([x,y])=>project(at(x,y,.35)));return `<circle class="match-ball" cx="${route[0].x.toFixed(1)}" cy="${route[0].y.toFixed(1)}" r="1" fill="white"><animate attributeName="cx" values="${route.map(q=>q.x.toFixed(1)).join(';')}" dur="8.5s" repeatCount="indefinite"/><animate attributeName="cy" values="${route.map(q=>q.y.toFixed(1)).join(';')}" dur="8.5s" repeatCount="indefinite"/></circle>`})()}</g>`:'';
-
+ const athletes=motion?.phase==='live'?pitchPlayers(project,colour,motion.awayColour,motion):'';
+ const specs=SECTIONS.filter(s=>!s.corner).map(s=>({s,cfg:model.sections[s.id],sp:groundsStand(model.sections[s.id].stand)}));
+ const depth=side=>Math.max(3,...specs.filter(x=>x.s.side===side).map(x=>{const next=works.find(j=>j.sections[x.s.id])?.sections[x.s.id],sp=next?groundsStand(next.stand):null,rear=c=>({compact:0,concourse:1.2,amenities:2,hospitality:2.6}[c?.rear]||0);return Math.max((x.sp?.depth||0)+rear(x.cfg),(sp?.depth||0)+rear(next));}))+1.1;
+ const pedestrians=motion?.ambient?exteriorPeople(project,motion.phase||'idle',{left:20-depth('W'),right:52+depth('E'),top:20-depth('N'),bottom:40+depth('S')}):{far:'',near:''};
  const crowdMotion='';
- const art=`assets/sites/${map.art}-${evening&&map.night?'evening':'day'}.webp?v=1.18.0`,cy=map.origin[1]*py;
+ const art=`assets/sites/${map.art}-${evening&&map.night?'evening':'day'}.webp?v=1.19.0`,cy=map.origin[1]*py;
  const viewBox=close==='menu'?`0 ${(cy-410).toFixed(1)} 1100 840`:close==='menu-mobile'?`0 0 1100 ${SCENE_HEIGHT.toFixed(1)}`:close?`0 ${(cy-380).toFixed(1)} 1100 760`:`0 ${(cy-480).toFixed(1)} 1100 960`;
- return `<svg xmlns="http://www.w3.org/2000/svg" class="${close==='menu'?'desktop-scene':close==='menu-mobile'?'mobile-scene':''} ${motion?.celebrate?'goal-scene':''} ${motion?'crowd-motion':''}" viewBox="${viewBox}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}"><image href="${art}" x="0" y="0" width="${SCENE_WIDTH}" height="${SCENE_HEIGHT.toFixed(1)}" preserveAspectRatio="none" ${evening&&!map.night?'style="filter:brightness(.60) saturate(.9)"':''}/>${far}${field.join('')}${athletes}${near}${lights}${crowdMotion}${targets}</svg>`;
+ return `<svg xmlns="http://www.w3.org/2000/svg" class="${close==='menu'?'desktop-scene':close==='menu-mobile'?'mobile-scene':''} ${motion?.scoringTeam===0?'goal-scene':''} ${motion?'crowd-motion':''}" viewBox="${viewBox}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}"><image href="${art}" x="0" y="0" width="${SCENE_WIDTH}" height="${SCENE_HEIGHT.toFixed(1)}" preserveAspectRatio="none" ${evening&&!map.night?'style="filter:brightness(.60) saturate(.9)"':''}/>${pedestrians.far}${far}${field.join('')}${athletes}${near}${lights}${pedestrians.near}${crowdMotion}${targets}</svg>`;
 }
