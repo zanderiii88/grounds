@@ -1,22 +1,26 @@
 import {SECTIONS,STANDS,normaliseLayout,defaultLayout} from './stadium-model.js';
 import {groundsStand} from './grounds-geometry.js';
-// GROUNDS' registered district images and 28 × 18 pitch datum are shared by all views.
+// Fixed site plots share the stadium grid. No stadium translation or rotation is exposed.
 const SITE={
- city:{art:'top-city-redevelopment',origin:[867,482],tile:[6.162,3.382]},harbour:{art:'top-city-redevelopment',origin:[867,482],tile:[6.162,3.382]},
- civic:{art:'top-civic-quarter',origin:[468,768],tile:[7.5,4.116],portrait:true},
- riverside:{art:'top-riverside-quarter',origin:[468,888],tile:[7.5,4.116],portrait:true},
- gardens:{art:'top-civic-gardens',origin:[862,484],tile:[6.265,3.412]},rail:{art:'top-rail-district',origin:[868,482],tile:[6.176,3.382]},
- university:{art:'mid-university-district',origin:[904,452],tile:[6.37,3.667]},oldtown:{art:'mid-market-town-aligned',origin:[898,454],tile:[6.296,3.444]}
+ city:{art:'top-city-redevelopment-v2',origin:[415,1200],tile:[6.35,3.62],scale:1.24},
+ harbour:{art:'top-city-redevelopment-v2',origin:[415,1200],tile:[6.35,3.62],scale:1.24},
+ civic:{art:'top-civic-quarter-v2',origin:[415,1150],tile:[6.4,3.6],scale:1.24},
+ riverside:{art:'top-riverside-quarter-v2',origin:[415,1140],tile:[6.4,3.6],scale:1.24},
+ gardens:{art:'top-civic-gardens-v2',origin:[415,1350],tile:[6.3,3.55],scale:1.38},
+ rail:{art:'top-rail-district-v2',origin:[415,1220],tile:[6.2,3.55],scale:1.32},
+ university:{art:'mid-university-district-v2',origin:[415,1150],tile:[6.1,3.5],scale:1.28},
+ oldtown:{art:'mid-market-town-v2',origin:[415,1155],tile:[6.05,3.45],scale:1.25}
 };
+const ART_WIDTH=830,ART_HEIGHT=1895,SCENE_WIDTH=1100,SCENE_HEIGHT=ART_HEIGHT*SCENE_WIDTH/ART_WIDTH;
 const at=(x,y,z=0)=>({x,y,z}),mix=(a,b,t)=>at(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t,a.z+(b.z-a.z)*t);
 const safe=s=>String(s??'').replace(/[&<>"']/g,'');
 export const stadiumProfile=club=>({name:defaultLayout(club).name});
 export function sceneSvg(club,site='city',crowd=false,evening=false,close=false,layout=null,selection=null,motion=null){
  const map=SITE[site]||SITE.city,model=normaliseLayout(layout,club),colour=/^#[0-9a-f]{6}$/i.test(club?.colour||'')?club.colour:'#a03948';
- const px=map.portrait?1100/936:1100/1774,py=map.portrait?1976/1681:550/887,zStep=7.5*map.tile[0]/24*px;
+ const px=SCENE_WIDTH/ART_WIDTH,py=SCENE_HEIGHT/ART_HEIGHT,zStep=7.5*map.tile[0]/24*px;
  // A uniform stadium-only visual scale uses the spare apron in the site art.
  // Every pitch line, stand and roof shares the same centre and grid axes.
-  const scale=1.27;
+ const scale=map.scale;
  const project=p=>{const x=36+(p.x-36)*scale,y=30+(p.y-30)*scale,z=(p.z||0)*scale;return {x:(map.origin[0]+((x-y)-6)*map.tile[0])*px,y:(map.origin[1]+((x+y)-66)*map.tile[1])*py-z*zStep}};
  const coord=p=>{const q=project(p);return `${q.x.toFixed(2)},${q.y.toFixed(2)}`};
  const poly=(pts,fill,extra='')=>`<polygon points="${pts.map(coord).join(' ')}" fill="${fill}" ${extra}/>`;
@@ -216,9 +220,7 @@ export function sceneSvg(club,site='city',crowd=false,evening=false,close=false,
  }).join('')).join('')}${(()=>{const route=[[36,30],[42,25],[32,34],[27,26],[36,30]].map(([x,y])=>project(at(x,y,.35)));return `<circle class="match-ball" cx="${route[0].x.toFixed(1)}" cy="${route[0].y.toFixed(1)}" r="1" fill="white"><animate attributeName="cx" values="${route.map(q=>q.x.toFixed(1)).join(';')}" dur="8.5s" repeatCount="indefinite"/><animate attributeName="cy" values="${route.map(q=>q.y.toFixed(1)).join(';')}" dur="8.5s" repeatCount="indefinite"/></circle>`})()}</g>`:'';
 
  const crowdMotion='';
- const art=`assets/sites/${map.art}-${map.portrait?'day':evening?'night':'day'}.webp`,cx=map.origin[0]*px,cy=map.origin[1]*py;
- const viewBox=map.portrait
-  ?close==='menu'?`0 ${(cy-430).toFixed(1)} 1100 750`:close==='menu-mobile'?'0 0 1100 1976':close?`0 ${(cy-365).toFixed(1)} 1100 700`:`0 ${(cy-440).toFixed(1)} 1100 850`
-  :close==='menu'?`${(cx-381).toFixed(1)} ${(cy-154).toFixed(1)} 550 308`:close==='menu-mobile'?`${(cx-215).toFixed(1)} ${(cy-395).toFixed(1)} 430 560`:close?`${(cx-182).toFixed(1)} ${(cy-118).toFixed(1)} 364 236`:'0 0 1100 550';
- return `<svg xmlns="http://www.w3.org/2000/svg" class="${close==='menu'?'desktop-scene':close==='menu-mobile'?'mobile-scene':''} ${motion?.celebrate?'goal-scene':''} ${motion?'crowd-motion':''}" viewBox="${viewBox}" preserveAspectRatio="xMidYMid ${close==='menu'||close==='menu-mobile'||map.portrait&&!close?'slice':'meet'}" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}"><image href="${art}" x="0" y="0" width="1100" height="${map.portrait?1976:550}" preserveAspectRatio="none" ${map.portrait&&evening?'style="filter:brightness(.64) saturate(.9)"':''}/>${far}${field.join('')}${athletes}${near}${lights}${crowdMotion}${targets}</svg>`;
+ const art=`assets/sites/${map.art}-day.webp`,cy=map.origin[1]*py;
+ const viewBox=close==='menu'?`0 ${(cy-410).toFixed(1)} 1100 840`:close==='menu-mobile'?`0 0 1100 ${SCENE_HEIGHT.toFixed(1)}`:close?`0 ${(cy-380).toFixed(1)} 1100 760`:`0 ${(cy-480).toFixed(1)} 1100 960`;
+ return `<svg xmlns="http://www.w3.org/2000/svg" class="${close==='menu'?'desktop-scene':close==='menu-mobile'?'mobile-scene':''} ${motion?.celebrate?'goal-scene':''} ${motion?'crowd-motion':''}" viewBox="${viewBox}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}"><image href="${art}" x="0" y="0" width="${SCENE_WIDTH}" height="${SCENE_HEIGHT.toFixed(1)}" preserveAspectRatio="none" ${evening?'style="filter:brightness(.60) saturate(.9)"':''}/>${far}${field.join('')}${athletes}${near}${lights}${crowdMotion}${targets}</svg>`;
 }

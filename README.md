@@ -1,16 +1,14 @@
-# Clubline — Release 1.12.0
+# Clubline — Release 1.13.0
 
-Copy **all** ZIP contents to the root of your GitHub Pages repository, including `sw.js` and the `assets` directory. Use **Check for updates** in the installed app if it still shows the previous release. Existing Clubline careers retain their save key.
+Copy **all** ZIP contents into the root of your GitHub Pages repository, including `sw.js`, `assets`, `data` and the HTML/JS/CSS files. Use **Check for updates** in the installed app if it still shows the previous version.
 
-## Stadium and settings
+## Fixed stadium locations
 
-- The engine stadium is larger within its plot. Partial roofs sit farther back, exposing the raked tiers on far stands; curved corner roofs follow the adjoining sections. Open corner layouts gain a low concourse edge rather than an abrupt visual gap.
-- Civic Quarter and Riverside Quarter are two new portrait location pilots in club setup. Both use the game's generated stadiums and designer layouts on top of their site art. Existing locations remain available.
-- Portrait locations use a shared scene projection and view framing for menu, designer and career views. Their evening treatment darkens the daytime painting; separate night paintings and a full redraw of surrounding street geometry are future art work.
+- Seven rebuilt portrait sites: Civic Quarter, Riverside Quarter, City Waterfront, Civic Gardens, Rail District, University Quarter and Old Town. Each has several blocks of map above the fixed stadium plot for mobile framing.
+- Plots are empty and have a clear paved edge. Older town and campus settings keep a tighter frontage; larger city grounds have more open space. Painted pedestrians and road vehicles have been removed from the new site art. Riverside/Waterfront boats and the Rail District train remain environmental details.
+- Each location has a fixed stadium position and orientation. The ground and pitch grow together from that datum; there are no placement or rotation controls.
+- Site-specific visual scale fits the generated stands in each plot. A maximum-depth stand preview was checked on all seven locations.
+- Location capacity limits are shown in club setup and enforced in the stadium designer: 40k Old Town, 45k University Quarter, 60k Rail District, 70k Civic Gardens, and 75k at the other three sites. Clubs starting above a site's limit cannot choose it.
+- Seven regenerated engine stadium frames rotate on the start screen. Mobile controls are more compact so the ground can show beneath them.
 
-## Start screen
-
-- A smaller menu stays toward the upper portion of the phone screen so the stadium and neighbourhood are visible below it.
-- Six distinct stadiums cycle across the two pilot locations in day and evening. Their desktop and mobile frames are pre-rendered from the actual stadium engine. The frames crossfade and pan gently without rebuilding the SVG at every transition.
-
-This release is a pilot for the new locations. Some lines and small painted details in the background art do not yet match the engine's exact isometric projection; the site paintings will need a geometry pass before every street edge and moving vehicle can be aligned perfectly.
+The evening versions currently grade the day art darker; separately painted night maps are still to come. The painted surroundings and generated stadium now follow the same approximate isometric axes, but a final pixel-level registration pass may still be needed for every street edge. This release does not add moving pedestrians or traffic.
