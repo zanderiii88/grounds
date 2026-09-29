@@ -1,11 +1,11 @@
-import {sceneSvg,stadiumProfile} from './scene.js?v=1.11.0';
-import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.11.0';
+import {sceneSvg,stadiumProfile} from './scene.js?v=1.12.0';
+import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.12.0';
 
-const APP_VERSION='1.11.0';
+const APP_VERSION='1.12.0';
 const SAVE_KEY='clubline-career-r1';
-const SITES=[['city','City Waterfront'],['gardens','Civic Gardens'],['rail','Rail District'],['university','University Quarter'],['oldtown','Old Town']];
-const availableSites=c=>c.capacity>=45000?SITES.slice(0,3):SITES;
-const firstMenuScene=Math.floor(Math.random()*12);
+const SITES=[['civic','Civic Quarter'],['riverside','Riverside Quarter'],['city','City Waterfront'],['gardens','Civic Gardens'],['rail','Rail District'],['university','University Quarter'],['oldtown','Old Town']];
+const availableSites=c=>c.capacity>=45000?SITES.filter(([id])=>!['university','oldtown'].includes(id)):SITES;
+const firstMenuScene=Math.floor(Math.random()*6);
 let titleSceneIndex=firstMenuScene,titleSceneTimer=null;
 const COLOURS=['#862e43','#de414b','#e17837','#e7bd63','#257b5e','#1b8189','#3a6cbc','#633d8d','#edf0e9','#252c38'];
 const FORMATIONS={
@@ -32,13 +32,15 @@ const rand=(arr)=>arr[Math.floor(Math.random()*arr.length)];
 let dateFlashUntil=0,postMatchTable=false,benchExpanded=true,reservesExpanded=false,tickerTimer=null,tickerIndex=0;
 let dragGhost=null,dragTarget=null,activeDrag=null,suppressDragClick=false,autoResumeTimer=null;
 let editing=null,selectedStand='N4',selectedStands=new Set(['N4']),opponentOpen=false,instructionAnchorType='shirt-slot',fixtureCursor=null,reportIndex=null;
-let saveWarning='',source,career=null,view='title',section='hub',sub='lineup',setup={clubId:'C01',site:'city',names:{},colour:null},selectedPlayer=null,selectedSlot=null,instructionPlayer=null,statsScope='club',statsSort='goals',statsDescending=true,match=null,timer=null,notice='',updateMessage='',availableVersion=null,checkingUpdate=false;
+let saveWarning='',source,career=null,view='title',section='hub',sub='lineup',setup={clubId:'C01',site:'civic',names:{},colour:null},selectedPlayer=null,selectedSlot=null,instructionPlayer=null,statsScope='club',statsSort='goals',statsDescending=true,match=null,timer=null,notice='',updateMessage='',availableVersion=null,checkingUpdate=false;
 const root=document.getElementById('app');
 
-try {source=await (await fetch('./data/league.json?v=1.11.0',{cache:'no-store'})).json();}
+try {source=await (await fetch('./data/league.json?v=1.12.0',{cache:'no-store'})).json();}
 catch(error){root.innerHTML='<main class="app-shell"><div class="shell-content"><h1>Clubline</h1><p>Could not load the league data. Open the game through a web server or GitHub Pages.</p></div></main>';throw error;}
 const ambitiousIds=new Set(source.clubs.map(c=>source.players.filter(p=>p.clubId===c.id).sort((a,b)=>a.overall-b.overall).slice(0,6).sort((a,b)=>b.potential-a.potential)[0]?.id));
-const menuScenes=source.clubs.map((c,i)=>({club:c,site:availableSites(c)[(i+Math.floor(i/3))%availableSites(c).length][0],evening:i%2===1}));
+const menuPlaces=['civic','riverside','civic','riverside','civic','riverside'];
+const menuScenes=source.clubs.slice(0,6).map((c,i)=>({club:c,site:menuPlaces[i],evening:i%2===1}));
+const menuFrame=i=>`<div class="scene menu-scene"><picture><source media="(max-width:850px)" srcset="assets/menu/scene-${i}-mobile.webp?v=${APP_VERSION}"><img src="assets/menu/scene-${i}-desktop.webp?v=${APP_VERSION}" alt="" decoding="async"></picture></div>`;
 const club=id=>source.clubs.find(c=>c.id===id);
 const player=id=>source.players.find(p=>p.id===id);
 const owner=id=>career?.owners?.[id]||player(id)?.clubId;
@@ -178,7 +180,7 @@ function attentionList(){const unhappy=squadPlayers(career.clubId).filter(p=>car
 function toast(message){notice=message;document.querySelector('.toast')?.remove();const div=document.createElement('div');div.className='toast';div.textContent=message;document.body.appendChild(div);setTimeout(()=>div.remove(),3500)}
 function scene(current,site,open=false,crowd=false,evening=false,wide=false){const layout=career?.clubId===current.id?career.stadium:null;return `<div class="scene ${open?'open':''} ${wide?'menu-scene':''}">${sceneSvg(current,site,crowd,evening,wide?'menu':open,layout)}${wide?sceneSvg(current,site,crowd,evening,'menu-mobile',layout):''}</div>`}
 function logo(small=false){return `<img class="logo ${small?'small':''}" src="assets/clubline-logo.svg?v=${APP_VERSION}" alt="Clubline">`}
-function titleView(){const shot=menuScenes[titleSceneIndex],c=shot.club,paint=career?.clubId===c.id?career.colour:c.colour;return `<div class="app-shell title-screen" style="--club:${paint}">${scene({...c,colour:paint},shot.site,true,true,shot.evening,true)}<div class="menu-scene-label">${html(c.name)} · ${html(c.ground)} · ${html(SITES.find(x=>x[0]===shot.site)?.[1])} · ${shot.evening?'Evening':'Day'}</div><div class="shell-content"><div class="menu-hero"><div class="hero-copy glass">${logo()}<p class="title-tagline">Your club. Your call.</p><div class="hero-actions"><button class="btn primary arrow wide" data-action="new-game">New career</button>${hasSave()?'<button class="btn wide" data-action="continue">Continue</button>':''}</div><small>12 clubs · Premier Division · 22 fixtures</small><div class="update-area"><button class="btn ghost slim" data-action="check-update" ${checkingUpdate?'disabled':''}>${checkingUpdate?'Checking…':'↻ Check for updates'}</button><span class="build-label">v${APP_VERSION}</span>${availableVersion?'<button class="btn slim primary" data-action="load-update">Load update</button>':''}${updateMessage?`<p role="status">${html(updateMessage)}</p>`:''}</div></div></div></div></div>`}
+function titleView(){const shot=menuScenes[titleSceneIndex],c=shot.club,paint=career?.clubId===c.id?career.colour:c.colour;return `<div class="app-shell title-screen" style="--club:${paint}"><div class="title-backdrop">${menuFrame(titleSceneIndex)}</div><div class="menu-scene-label" data-menu-scene-label>${html(c.name)} · ${html(c.ground)} · ${html(SITES.find(x=>x[0]===shot.site)?.[1])} · ${shot.evening?'Evening':'Day'}</div><div class="shell-content"><div class="menu-hero"><div class="hero-copy glass">${logo()}<p class="title-tagline">Your club. Your call.</p><div class="hero-actions"><button class="btn primary arrow wide" data-action="new-game">New career</button>${hasSave()?'<button class="btn wide" data-action="continue">Continue</button>':''}</div><small>12 clubs · Premier Division · 22 fixtures</small><div class="update-area"><button class="btn ghost slim" data-action="check-update" ${checkingUpdate?'disabled':''}>${checkingUpdate?'Checking…':'↻ Check for updates'}</button><span class="build-label">v${APP_VERSION}</span>${availableVersion?'<button class="btn slim primary" data-action="load-update">Load update</button>':''}${updateMessage?`<p role="status">${html(updateMessage)}</p>`:''}</div></div></div></div></div>`}
 async function checkForUpdates(){
  if(checkingUpdate)return;
  checkingUpdate=true;updateMessage='';availableVersion=null;render();
@@ -272,7 +274,21 @@ function organiserSection(){
 }
 
 function positionPlayerPanel(){const panel=document.querySelector('.player-panel');if(!panel)return;const candidates=[...document.querySelectorAll(`.${instructionAnchorType}[data-player="${instructionPlayer}"]`)];const anchor=candidates.find(el=>{const r=el.getBoundingClientRect();return r.height&&r.bottom>0&&r.top<innerHeight})||candidates[0];if(!anchor)return;const rect=anchor.getBoundingClientRect(),width=Math.min(370,innerWidth-24),height=Math.min(panel.scrollHeight,innerHeight*.7);panel.style.width=`${width}px`;panel.style.left=`${Math.max(12,Math.min(innerWidth-width-12,rect.left+rect.width/2-width/2))}px`;panel.style.top=`${Math.max(12,Math.min(innerHeight-height-12,rect.top-height-10>=12?rect.top-height-10:rect.bottom+10))}px`}
-function render(){clearInterval(tickerTimer);tickerTimer=null;clearInterval(timer);timer=null;clearTimeout(titleSceneTimer);titleSceneTimer=null;root.innerHTML=view==='title'?titleView():view==='setup'?setupView():dashboard();positionPlayerPanel();if(view==='career'&&tickerItems().length>1){tickerTimer=setInterval(()=>{const items=tickerItems(),textEl=document.querySelector('[data-ticker-text]');if(!textEl||!items.length)return;tickerIndex=(tickerIndex+1)%items.length;textEl.textContent=items[tickerIndex];textEl.style.animation='none';void textEl.offsetWidth;textEl.style.animation=''},8500);tickerTimer?.unref?.()}if(view==='title')titleSceneTimer=setTimeout(()=>{if(view==='title'){titleSceneIndex=(titleSceneIndex+1)%menuScenes.length;render()}},12000);titleSceneTimer?.unref?.();if(match?.phase==='live'&&!match.paused)startClock()}
+function advanceTitleScene(){
+ if(view!=='title')return;
+ titleSceneIndex=(titleSceneIndex+1)%menuScenes.length;
+ const shot=menuScenes[titleSceneIndex],c=shot.club,paint=career?.clubId===c.id?career.colour:c.colour;
+ const backdrop=document.querySelector('.title-backdrop'),label=document.querySelector('[data-menu-scene-label]');
+ if(!backdrop)return;
+ const previous=backdrop.querySelector('.scene.is-visible');
+ backdrop.insertAdjacentHTML('beforeend',menuFrame(titleSceneIndex));
+ const incoming=backdrop.lastElementChild;
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{incoming.classList.add('is-visible');previous?.classList.remove('is-visible')}));
+ if(label)label.textContent=`${c.name} · ${c.ground} · ${SITES.find(x=>x[0]===shot.site)?.[1]||shot.site} · ${shot.evening?'Evening':'Day'}`;
+ setTimeout(()=>{if(previous?.parentElement===backdrop)previous.remove()},1800);
+ titleSceneTimer=setTimeout(advanceTitleScene,12000);titleSceneTimer?.unref?.();
+}
+function render(){clearInterval(tickerTimer);tickerTimer=null;clearInterval(timer);timer=null;clearTimeout(titleSceneTimer);titleSceneTimer=null;root.innerHTML=view==='title'?titleView():view==='setup'?setupView():dashboard();positionPlayerPanel();if(view==='career'&&tickerItems().length>1){tickerTimer=setInterval(()=>{const items=tickerItems(),textEl=document.querySelector('[data-ticker-text]');if(!textEl||!items.length)return;tickerIndex=(tickerIndex+1)%items.length;textEl.textContent=items[tickerIndex];textEl.style.animation='none';void textEl.offsetWidth;textEl.style.animation=''},8500);tickerTimer?.unref?.()}if(view==='title'){document.querySelector('.title-backdrop .scene')?.classList.add('is-visible');titleSceneTimer=setTimeout(advanceTitleScene,12000);titleSceneTimer?.unref?.()}if(match?.phase==='live'&&!match.paused)startClock()}
 
 function validLineup(){const ids=[...career.lineup,...career.bench];return career.lineup.length===11&&career.bench.length===7&&ids.every(Boolean)&&new Set(ids).size===18&&career.lineup.some((id,i)=>slotsFor(career.formation)[i]==='GK'&&player(id).primary==='GK')&&career.lineup.every(id=>!(career.players[id]?.injuryDays>0))}
 function advance(){
@@ -504,7 +520,7 @@ root.addEventListener('click',event=>{
  if(suppressDragClick){suppressDragClick=false;return}
  const el=event.target.closest('[data-action]');if(!el)return;
  const action=el.dataset.action;
- if(action==='new-game'){setup={clubId:'C01',site:'city',names:{},colour:null};view='setup';render()}
+ if(action==='new-game'){setup={clubId:'C01',site:'civic',names:{},colour:null};view='setup';render()}
  else if(action==='continue'){if(load()){view='career';render()}}
  else if(action==='check-update')checkForUpdates();
  else if(action==='load-update'&&availableVersion){const url=new URL(location.href);url.searchParams.set('update',availableVersion);url.searchParams.set('t',Date.now());location.assign(url.href)}
@@ -515,7 +531,7 @@ root.addEventListener('click',event=>{
  else if(action==='calendar-fixture'){fixtureCursor=Number(el.dataset.index);if(clubFixtures()[fixtureCursor].homeGoals!==null)reportIndex=fixtureCursor;else opponentOpen=true;render()}
  else if(action==='open-report'){reportIndex=Number(el.dataset.index);opponentOpen=false;render()}
  else if(action==='close-history'){reportIndex=null;render()}
- else if(action==='choose-club'){setup.clubId=el.dataset.id;setup.colour=null;if(!availableSites(club(setup.clubId)).some(x=>x[0]===setup.site))setup.site='city';render()}
+ else if(action==='choose-club'){setup.clubId=el.dataset.id;setup.colour=null;if(!availableSites(club(setup.clubId)).some(x=>x[0]===setup.site))setup.site='civic';render()}
  else if(action==='rename-all'){setup.showNames=!setup.showNames;render()}
  else if(action==='colour'){setup.colour=el.dataset.colour;render()}
  else if(action==='site'){if(availableSites(club(setup.clubId)).some(x=>x[0]===el.dataset.site))setup.site=el.dataset.site;render()}

@@ -3,6 +3,8 @@ import {groundsStand} from './grounds-geometry.js';
 // GROUNDS' registered district images and 28 × 18 pitch datum are shared by all views.
 const SITE={
  city:{art:'top-city-redevelopment',origin:[867,482],tile:[6.162,3.382]},harbour:{art:'top-city-redevelopment',origin:[867,482],tile:[6.162,3.382]},
+ civic:{art:'top-civic-quarter',origin:[468,768],tile:[7.5,4.116],portrait:true},
+ riverside:{art:'top-riverside-quarter',origin:[468,888],tile:[7.5,4.116],portrait:true},
  gardens:{art:'top-civic-gardens',origin:[862,484],tile:[6.265,3.412]},rail:{art:'top-rail-district',origin:[868,482],tile:[6.176,3.382]},
  university:{art:'mid-university-district',origin:[904,452],tile:[6.37,3.667]},oldtown:{art:'mid-market-town-aligned',origin:[898,454],tile:[6.296,3.444]}
 };
@@ -11,10 +13,10 @@ const safe=s=>String(s??'').replace(/[&<>"']/g,'');
 export const stadiumProfile=club=>({name:defaultLayout(club).name});
 export function sceneSvg(club,site='city',crowd=false,evening=false,close=false,layout=null,selection=null,motion=null){
  const map=SITE[site]||SITE.city,model=normaliseLayout(layout,club),colour=/^#[0-9a-f]{6}$/i.test(club?.colour||'')?club.colour:'#a03948';
- const px=1100/1774,py=550/887,zStep=7.5*map.tile[0]/24*px;
+ const px=map.portrait?1100/936:1100/1774,py=map.portrait?1976/1681:550/887,zStep=7.5*map.tile[0]/24*px;
  // A uniform stadium-only visual scale uses the spare apron in the site art.
  // Every pitch line, stand and roof shares the same centre and grid axes.
- const scale=1.16;
+  const scale=1.27;
  const project=p=>{const x=36+(p.x-36)*scale,y=30+(p.y-30)*scale,z=(p.z||0)*scale;return {x:(map.origin[0]+((x-y)-6)*map.tile[0])*px,y:(map.origin[1]+((x+y)-66)*map.tile[1])*py-z*zStep}};
  const coord=p=>{const q=project(p);return `${q.x.toFixed(2)},${q.y.toFixed(2)}`};
  const poly=(pts,fill,extra='')=>`<polygon points="${pts.map(coord).join(' ')}" fill="${fill}" ${extra}/>`;
@@ -46,9 +48,24 @@ export function sceneSvg(club,site='city',crowd=false,evening=false,close=false,
  const edge=(s,points,stroke,width=1,extra='')=>path(points.map(v=>world(s,...v)),stroke,width,extra);
  function sectionSvg(s){
   const cfg=model.sections[s.id],base=STANDS[cfg.stand],spec=groundsStand(cfg.stand);
-  if(!spec)return '';
-  const L=s.bays,corner=!!s.corner,segments=corner?12:1,D=spec.depth;
   const cornerLinks={NW:['W1','N1'],NE:['E1','N8'],SW:['W4','S1'],SE:['E4','S8']};
+  if(!spec){
+   if(!s.corner)return '';
+   // Open seating corners still need a low continuous perimeter, with a
+   // concourse behind it. This closes the exposed floor and wall ends while
+   // keeping the club's intentionally open corner silhouette.
+   const neighbours=cornerLinks[s.id].map(id=>groundsStand(model.sections[id].stand)).filter(Boolean);
+   const depth=Math.max(2.6,Math.min(5.3,...neighbours.map(x=>x.depth))),h=2.6;
+   const pieces=[];
+   for(let i=0;i<12;i++){
+    const a=i*s.bays/12,b=(i+1)*s.bays/12,inner=depth-.95;
+    pieces.push(poly([world(s,a,depth,0),world(s,b,depth,0),world(s,b,depth,h),world(s,a,depth,h)],'#394a4d'));
+    pieces.push(poly([world(s,a,inner,h),world(s,b,inner,h),world(s,b,depth,h),world(s,a,depth,h)],'#7e8e89',`stroke="#a5b3a8" stroke-width=".25"`));
+    pieces.push(path([world(s,a,inner,h),world(s,b,inner,h)],'#cad0be',.45));
+   }
+   return `<g data-section="${s.id}" aria-label="Open corner concourse">${pieces.join('')}</g>`;
+  }
+  const L=s.bays,corner=!!s.corner,segments=corner?12:1,D=spec.depth;
   const linked=corner?cornerLinks[s.id].map(id=>({cfg:model.sections[id],spec:groundsStand(model.sections[id].stand)})):null;
   const endpoint=(u)=>{
    if(!corner)return null;
@@ -158,14 +175,17 @@ export function sceneSvg(club,site='city',crowd=false,evening=false,close=false,
    if(!other&&rear)ends.push(localFace([[u,D,0],[u,D+rear,0],[u,D+rear,spec.wallH],[u,D,spec.wallH]],mat[1]));
   }
   if(cfg.roof!=='none'){
-   const v0=cfg.roof==='full'?1.1:cfg.roof==='cantilever'?.55:.42,v1=spec.roofRearV+rear;
+   // Full canopies cover the bowl; truss and cantilever roofs expose the
+   // lower rake. The former hard-coded front at .42 hid almost every row.
+   const roofFront=(c,sp)=>c.roof==='full'?1.1:c.roof==='cantilever'?sp.partialFrontV*.69:c.roof==='continuous'?sp.partialFrontV*.84:sp.partialFrontV;
+   const v0=roofFront(cfg,spec),v1=spec.roofRearV+rear;
    const fz=spec.roofFrontZ,rz=spec.roofRearZ+.15;
    const tint=cfg.roof==='continuous'?'#63828b':cfg.finish==='brick'?'#687a7d':'#566d78';
    if(corner){
     const roofEnd=(u)=>{const t=u/L,a=linked[0],b=linked[1],mix=(key)=>{
      const left=a.spec||spec,right=b.spec||spec;return left[key]*(1-t)+right[key]*t;
     };const rearDepth=x=>({compact:0,concourse:1.2,amenities:2,hospitality:2.6}[x.cfg.rear]||0);
-    return {front:((a.cfg.roof==='full'?1.1:a.cfg.roof==='cantilever'?.55:.42)*(1-t)+(b.cfg.roof==='full'?1.1:b.cfg.roof==='cantilever'?.55:.42)*t),back:mix('roofRearV')+rearDepth(a)*(1-t)+rearDepth(b)*t,fz:mix('roofFrontZ'),rz:mix('roofRearZ')+.15}};
+    return {front:roofFront(a.cfg,a.spec||spec)*(1-t)+roofFront(b.cfg,b.spec||spec)*t,back:mix('roofRearV')+rearDepth(a)*(1-t)+rearDepth(b)*t,fz:mix('roofFrontZ'),rz:mix('roofRearZ')+.15}};
     const cornerRoof=(u,back=false,offset=0)=>{const e=roofEnd(u);return world(s,u,back?e.back:e.front,(back?e.rz:e.fz)+offset)};
     for(let k=0;k<segments;k++){const a=k*L/segments,b=(k+1)*L/segments;
      roof.push(poly([cornerRoof(a),cornerRoof(b),cornerRoof(b,true),cornerRoof(a,true)],tint,`stroke="#94a9ad" stroke-width=".28" opacity="${near?'.9':'.96'}"`));
@@ -196,7 +216,9 @@ export function sceneSvg(club,site='city',crowd=false,evening=false,close=false,
  }).join('')).join('')}${(()=>{const route=[[36,30],[42,25],[32,34],[27,26],[36,30]].map(([x,y])=>project(at(x,y,.35)));return `<circle class="match-ball" cx="${route[0].x.toFixed(1)}" cy="${route[0].y.toFixed(1)}" r="1" fill="white"><animate attributeName="cx" values="${route.map(q=>q.x.toFixed(1)).join(';')}" dur="8.5s" repeatCount="indefinite"/><animate attributeName="cy" values="${route.map(q=>q.y.toFixed(1)).join(';')}" dur="8.5s" repeatCount="indefinite"/></circle>`})()}</g>`:'';
 
  const crowdMotion='';
- const art=`assets/sites/${map.art}-${evening?'night':'day'}.webp`,cx=map.origin[0]*px,cy=map.origin[1]*py;
- const viewBox=close==='menu'?`${(cx-381).toFixed(1)} ${(cy-154).toFixed(1)} 550 308`:close==='menu-mobile'?`${(cx-215).toFixed(1)} ${(cy-395).toFixed(1)} 430 560`:close?`${(cx-182).toFixed(1)} ${(cy-118).toFixed(1)} 364 236`:'0 0 1100 550';
- return `<svg xmlns="http://www.w3.org/2000/svg" class="${close==='menu'?'desktop-scene':close==='menu-mobile'?'mobile-scene':''} ${motion?.celebrate?'goal-scene':''} ${motion?'crowd-motion':''}" viewBox="${viewBox}" preserveAspectRatio="xMidYMid ${close==='menu'?'slice':'meet'}" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}"><image href="${art}" x="0" y="0" width="1100" height="550" preserveAspectRatio="none"/>${far}${field.join('')}${athletes}${near}${lights}${crowdMotion}${targets}</svg>`;
+ const art=`assets/sites/${map.art}-${map.portrait?'day':evening?'night':'day'}.webp`,cx=map.origin[0]*px,cy=map.origin[1]*py;
+ const viewBox=map.portrait
+  ?close==='menu'?`0 ${(cy-430).toFixed(1)} 1100 750`:close==='menu-mobile'?'0 0 1100 1976':close?`0 ${(cy-365).toFixed(1)} 1100 700`:`0 ${(cy-440).toFixed(1)} 1100 850`
+  :close==='menu'?`${(cx-381).toFixed(1)} ${(cy-154).toFixed(1)} 550 308`:close==='menu-mobile'?`${(cx-215).toFixed(1)} ${(cy-395).toFixed(1)} 430 560`:close?`${(cx-182).toFixed(1)} ${(cy-118).toFixed(1)} 364 236`:'0 0 1100 550';
+ return `<svg xmlns="http://www.w3.org/2000/svg" class="${close==='menu'?'desktop-scene':close==='menu-mobile'?'mobile-scene':''} ${motion?.celebrate?'goal-scene':''} ${motion?'crowd-motion':''}" viewBox="${viewBox}" preserveAspectRatio="xMidYMid ${close==='menu'||close==='menu-mobile'||map.portrait&&!close?'slice':'meet'}" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}"><image href="${art}" x="0" y="0" width="1100" height="${map.portrait?1976:550}" preserveAspectRatio="none" ${map.portrait&&evening?'style="filter:brightness(.64) saturate(.9)"':''}/>${far}${field.join('')}${athletes}${near}${lights}${crowdMotion}${targets}</svg>`;
 }
