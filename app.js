@@ -1,13 +1,14 @@
-import {initialiseDevelopment,promoteProspect,developmentDay,rolloverDevelopment,squadSpace,canRegister,youthLevel,estimatedStars} from './development.js?v=1.17.0';
-import {sceneSvg,stadiumProfile} from './scene.js?v=1.17.0';
-import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.17.0';
+import {SITES as SITE_CATALOGUE,SHOWCASE_SITES} from './sites.js?v=1.18.0';
+import {initialiseDevelopment,promoteProspect,developmentDay,rolloverDevelopment,squadSpace,canRegister,youthLevel,estimatedStars} from './development.js?v=1.18.0';
+import {sceneSvg,stadiumProfile} from './scene.js?v=1.18.0';
+import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.18.0';
 
-const APP_VERSION='1.17.0';
+const APP_VERSION='1.18.0';
 const SAVE_KEY='clubline-career-r1';
-const SITES=[['town','Town Quarter',75000],['riverside','Riverside City',75000],['beach','Beach Resort',75000],['rural','Woodland Station',75000]];
+const SITES=SITE_CATALOGUE.map(s=>[s.id,s.name,s.limit]);
 const availableSites=c=>SITES.filter(([, ,limit])=>c.capacity<=limit);
 const siteLimit=id=>SITES.find(([key])=>key===id)?.[2]||75000;
-const firstMenuScene=Math.floor(Math.random()*8);
+const firstMenuScene=Math.floor(Math.random()*(SHOWCASE_SITES.length*2));
 let titleSceneIndex=firstMenuScene,titleSceneTimer=null;
 const COLOURS=['#862e43','#de414b','#e17837','#e7bd63','#257b5e','#1b8189','#3a6cbc','#633d8d','#edf0e9','#252c38'];
 const FORMATIONS={
@@ -37,13 +38,12 @@ let editing=null,selectedStand='N4',selectedStands=new Set(['N4']),opponentOpen=
 let saveWarning='',source,career=null,view='title',section='hub',sub='lineup',setup={clubId:'C01',site:'town',names:{},colour:null},selectedPlayer=null,selectedSlot=null,instructionPlayer=null,statsScope='club',statsSort='goals',statsDescending=true,match=null,timer=null,notice='',updateMessage='',availableVersion=null,checkingUpdate=false;
 const root=document.getElementById('app');
 
-try {source=await (await fetch('./data/league.json?v=1.17.0',{cache:'no-store'})).json();}
+try {source=await (await fetch('./data/league.json?v=1.18.0',{cache:'no-store'})).json();}
 catch(error){root.innerHTML='<main class="app-shell"><div class="shell-content"><h1>Clubline</h1><p>Could not load the league data. Open the game through a web server or GitHub Pages.</p></div></main>';throw error;}
 const originalLeague=structuredClone(source);
 const ambitiousIds=new Set(source.clubs.map(c=>source.players.filter(p=>p.clubId===c.id).sort((a,b)=>a.overall-b.overall).slice(0,6).sort((a,b)=>b.potential-a.potential)[0]?.id));
-const menuPlaces=['town','riverside','beach','rural','town','riverside','beach','rural'];
-const menuScenes=source.clubs.slice(0,8).map((c,i)=>({club:c,site:menuPlaces[i],evening:i>=4}));
-const menuFrame=i=>`<div class="scene menu-scene"><picture><source media="(max-width:850px)" srcset="assets/menu/scene-${i}-mobile.webp?v=${APP_VERSION}"><img src="assets/menu/scene-${i}-desktop.webp?v=${APP_VERSION}" alt="" decoding="async"></picture></div>`;
+const menuScenes=[false,true].flatMap(evening=>SHOWCASE_SITES.map((site,i)=>({club:source.clubs[(i+(evening?5:0))%source.clubs.length],site,evening}))); 
+const menuFrame=i=>`<div class="scene menu-scene"><picture><source media="(max-width:850px) and (orientation:portrait)" srcset="assets/menu/scene-${i}-mobile.webp?v=${APP_VERSION}"><img src="assets/menu/scene-${i}-desktop.webp?v=${APP_VERSION}" alt="" decoding="async"></picture></div>`;
 const club=id=>source.clubs.find(c=>c.id===id);
 const player=id=>source.players.find(p=>p.id===id);
 const owner=id=>career?.owners?.[id]||player(id)?.clubId;
@@ -270,7 +270,7 @@ function lineupEditor(inModal=false){
  let idx=0;
  const listCard=(p,place,index=null)=>`<div role="button" tabindex="0" draggable="true" ${index!==null?`data-drop-slot="${index}"`:`data-drop-player="${p.id}"`} class="player-card ${selectedPlayer===p.id?'active':''}" data-action="select-player" data-player="${p.id}">${shirt(p,true)}<span class="player-card-copy"><strong>${html(p.name)}</strong><span class="meta">${p.primary}${p.secondary?' / '+p.secondary:''} · ${p.overall} OVR · Age ${p.age} · ${playerFitness(p.id)}% condition</span><span class="meta">${place} · ${ratingRole(p)}</span></span>${instructionButton(p.id)}${moodButton(p.id)}${injuryBadge(p.id)}${index!==null?`<button class="bench-target" data-action="slot" data-index="${index}" data-drop-slot="${index}" aria-label="Swap into bench place ${index-10}">↔</button>`:''}</div>`;
  const pitch=FORMATIONS[career.formation].map(line=>`<div class="pitch-line">${line.map(pos=>tile(career.lineup[idx],pos,idx++)).join('')}</div>`).join('');
- return `<div class="squad-toolbar"><label class="field">Formation<select class="select" data-squad-formation>${Object.keys(FORMATIONS).map(f=>`<option value="${f}" ${f===career.formation?'selected':''}>${f}</option>`).join('')}</select></label><label class="field">Play style<select class="select" data-squad-style>${STYLES.map(x=>`<option value="${x}" ${career.style===x?'selected':''}>${x}</option>`).join('')}</select></label><label class="field">Team orders<select class="select" data-squad-order>${ORDERS.map(x=>`<option value="${x}" ${career.order===x?'selected':''}>${x}</option>`).join('')}</select></label><button class="btn slim" data-action="auto-lineup">Auto pick XI</button><button class="btn slim" data-action="auto-subs">Auto Pick Subs</button></div><div class="formation-pitch">${pitch}</div><small>Tap or drag a reserve onto a substitute to swap them. You can also swap anyone into the XI.</small>${career.lineup.some(id=>career.players[id]?.injuryDays>0)?`<div class="decision-alert">An injured starter cannot play. Choose a fit player from your bench or reserves, or use Auto pick to replace them.</div>`:''}<button class="squad-list-heading collapse-toggle" data-action="toggle-squad-list" data-list="bench" aria-expanded="${benchExpanded}">Substitutes · ${career.bench.filter(Boolean).length} <span>${benchExpanded?'−':'+'}</span></button><div class="player-list bench-list ${benchExpanded?'':'collapsed'}">${career.bench.map((id,i)=>id?listCard(player(id),'Bench',11+i):`<button class="empty-bench" data-action="slot" data-index="${11+i}" data-drop-slot="${11+i}">Empty bench place ${i+1}</button>`).join('')}</div><button class="squad-list-heading collapse-toggle" data-action="toggle-squad-list" data-list="reserves" aria-expanded="${reservesExpanded}">Reserves · ${pool.length} <span>${reservesExpanded?'−':'+'}</span></button><div class="player-list reserve-list ${reservesExpanded?'':'collapsed'}">${pool.map(p=>listCard(p,'Reserve')).join('')||'<p class="muted">No additional squad players.</p>'}</div>${inModal?'<div class="modal-actions"><button class="btn primary" data-action="confirm-lineup">Confirm lineup</button></div>':''}`;
+ return `<div class="squad-toolbar"><label class="field">Formation<select class="select" data-squad-formation>${Object.keys(FORMATIONS).map(f=>`<option value="${f}" ${f===career.formation?'selected':''}>${f}</option>`).join('')}</select></label><label class="field">Play style<select class="select" data-squad-style>${STYLES.map(x=>`<option value="${x}" ${career.style===x?'selected':''}>${x}</option>`).join('')}</select></label><label class="field">Team orders<select class="select" data-squad-order>${ORDERS.map(x=>`<option value="${x}" ${career.order===x?'selected':''}>${x}</option>`).join('')}</select></label><button class="btn slim" data-action="auto-lineup">Auto pick XI</button><button class="btn slim" data-action="auto-subs">Auto Pick Subs</button></div><div class="formation-pitch">${formationMarkings()}${pitch}</div><small>Tap or drag a reserve onto a substitute to swap them. You can also swap anyone into the XI.</small>${career.lineup.some(id=>career.players[id]?.injuryDays>0)?`<div class="decision-alert">An injured starter cannot play. Choose a fit player from your bench or reserves, or use Auto pick to replace them.</div>`:''}<button class="squad-list-heading collapse-toggle" data-action="toggle-squad-list" data-list="bench" aria-expanded="${benchExpanded}">Substitutes · ${career.bench.filter(Boolean).length} <span>${benchExpanded?'−':'+'}</span></button><div class="player-list bench-list ${benchExpanded?'':'collapsed'}">${career.bench.map((id,i)=>id?listCard(player(id),'Bench',11+i):`<button class="empty-bench" data-action="slot" data-index="${11+i}" data-drop-slot="${11+i}">Empty bench place ${i+1}</button>`).join('')}</div><button class="squad-list-heading collapse-toggle" data-action="toggle-squad-list" data-list="reserves" aria-expanded="${reservesExpanded}">Reserves · ${pool.length} <span>${reservesExpanded?'−':'+'}</span></button><div class="player-list reserve-list ${reservesExpanded?'':'collapsed'}">${pool.map(p=>listCard(p,'Reserve')).join('')||'<p class="muted">No additional squad players.</p>'}</div>${inModal?'<div class="modal-actions"><button class="btn primary" data-action="confirm-lineup">Confirm lineup</button></div>':''}`;
 }
 function stadiumEditor(){
  const c=myClub(),draft=editing||normaliseLayout(career.stadium,c),chosen=draft.sections[selectedStand]||draft.sections.N4;
@@ -292,19 +292,26 @@ function organiserSection(){
 function positionPlayerPanel(){const panel=document.querySelector('.player-panel');if(!panel)return;const candidates=[...document.querySelectorAll(`.${instructionAnchorType}[data-player="${instructionPlayer}"]`)];const anchor=candidates.find(el=>{const r=el.getBoundingClientRect();return r.height&&r.bottom>0&&r.top<innerHeight})||candidates[0];if(!anchor)return;const rect=anchor.getBoundingClientRect(),width=Math.min(370,innerWidth-24),height=Math.min(panel.scrollHeight,innerHeight*.7);panel.style.width=`${width}px`;panel.style.left=`${Math.max(12,Math.min(innerWidth-width-12,rect.left+rect.width/2-width/2))}px`;panel.style.top=`${Math.max(12,Math.min(innerHeight-height-12,rect.top-height-10>=12?rect.top-height-10:rect.bottom+10))}px`}
 function advanceTitleScene(){
  if(view!=='title')return;
- titleSceneIndex=(titleSceneIndex+1)%menuScenes.length;
- const shot=menuScenes[titleSceneIndex],c=shot.club,paint=career?.clubId===c.id?career.colour:c.colour;
- const backdrop=document.querySelector('.title-backdrop'),label=document.querySelector('[data-menu-scene-label]');
+ const nextIndex=(titleSceneIndex+1)%menuScenes.length;
+ const backdrop=document.querySelector('.title-backdrop');
  if(!backdrop)return;
  const previous=backdrop.querySelector('.scene.is-visible');
- backdrop.insertAdjacentHTML('beforeend',menuFrame(titleSceneIndex));
- const incoming=backdrop.lastElementChild;
- incoming.querySelector('img').decode().catch(()=>{}).then(()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{if(incoming.isConnected){incoming.classList.add('is-visible');previous?.classList.remove('is-visible');setTimeout(()=>{if(previous?.parentElement===backdrop)previous.remove()},1800)}})));
- if(label)label.textContent=`${c.name} · ${c.ground} · ${SITES.find(x=>x[0]===shot.site)?.[1]||shot.site} · ${shot.evening?'Evening':'Day'}`;
- titleSceneTimer=setTimeout(advanceTitleScene,12000);titleSceneTimer?.unref?.();
+ backdrop.insertAdjacentHTML('beforeend',menuFrame(nextIndex));
+ const incoming=backdrop.lastElementChild,img=incoming.querySelector('img');
+ img.decode().then(()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{
+  if(view!=='title'||!incoming.isConnected)return;
+  titleSceneIndex=nextIndex;
+  const shot=menuScenes[nextIndex],c=shot.club,label=backdrop.parentElement.querySelector('[data-menu-scene-label]');
+  incoming.classList.add('is-visible');previous?.classList.remove('is-visible');
+  if(label)label.textContent=`${c.name} · ${c.ground} · ${SITES.find(x=>x[0]===shot.site)?.[1]||shot.site} · ${shot.evening?'Evening':'Day'}`;
+  setTimeout(()=>{if(previous?.parentElement===backdrop)previous.remove()},1800);
+ }))).catch(()=>incoming.remove());
+ titleSceneTimer=setTimeout(advanceTitleScene,14000);titleSceneTimer?.unref?.();
 }
-function render(){clearInterval(tickerTimer);tickerTimer=null;clearInterval(timer);timer=null;clearTimeout(titleSceneTimer);titleSceneTimer=null;root.innerHTML=view==='title'?titleView():view==='setup'?setupView():dashboard();positionPlayerPanel();if(view==='career'&&tickerItems().length>1){tickerTimer=setInterval(()=>{const items=tickerItems(),textEl=document.querySelector('[data-ticker-text]');if(!textEl||!items.length)return;tickerIndex=(tickerIndex+1)%items.length;textEl.textContent=items[tickerIndex];textEl.style.animation='none';void textEl.offsetWidth;textEl.style.animation=''},8500);tickerTimer?.unref?.()}if(view==='title'){document.querySelector('.title-backdrop .scene')?.classList.add('is-visible');titleSceneTimer=setTimeout(advanceTitleScene,12000);titleSceneTimer?.unref?.()}if(match?.phase==='live'&&!match.paused)startClock()}
 
+function render(){clearInterval(tickerTimer);tickerTimer=null;clearInterval(timer);timer=null;clearTimeout(titleSceneTimer);titleSceneTimer=null;root.innerHTML=view==='title'?titleView():view==='setup'?setupView():dashboard();positionPlayerPanel();if(view==='career'&&tickerItems().length>1){tickerTimer=setInterval(()=>{const items=tickerItems(),textEl=document.querySelector('[data-ticker-text]');if(!textEl||!items.length)return;tickerIndex=(tickerIndex+1)%items.length;textEl.textContent=items[tickerIndex];textEl.style.animation='none';void textEl.offsetWidth;textEl.style.animation=''},8500);tickerTimer?.unref?.()}if(view==='title'){document.querySelector('.title-backdrop .scene')?.classList.add('is-visible');titleSceneTimer=setTimeout(advanceTitleScene,14000);titleSceneTimer?.unref?.()}if(match?.phase==='live'&&!match.paused)startClock()}
+
+function formationMarkings(){return `<svg class="formation-markings" viewBox="0 0 300 460" preserveAspectRatio="none" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 12H288V448H12ZM12 230H288M62 12V80H238V12M110 12V38H190V12M62 448V380H238V448M110 448V422H190V448"/><circle cx="150" cy="230" r="34"/><path d="M124 80a34 34 0 0 0 52 0M124 380a34 34 0 0 1 52 0M12 18a6 6 0 0 0 6-6M282 12a6 6 0 0 0 6 6M12 442a6 6 0 0 1 6 6M282 448a6 6 0 0 1 6-6"/></g><g fill="currentColor"><circle cx="150" cy="230" r="2"/><circle cx="150" cy="60" r="2"/><circle cx="150" cy="400" r="2"/></g></svg>`}
 function validLineup(){const ids=[...career.lineup,...career.bench];return career.lineup.length===11&&career.bench.length===7&&ids.every(Boolean)&&new Set(ids).size===18&&career.lineup.some((id,i)=>slotsFor(career.formation)[i]==='GK'&&player(id).primary==='GK')&&career.lineup.every(id=>!(career.players[id]?.injuryDays>0))}
 function advance(){
  if(match||postMatchTable){toast('Finish matchday first.');return}

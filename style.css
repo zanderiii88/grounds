@@ -138,3 +138,11 @@
 
 /* 1.17 youth and development */
 .youth-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.youth-card{padding:14px;background:#ffffff09;border:1px solid #ffffff25;display:flex;flex-direction:column;gap:8px}.youth-card h3,.youth-card p{margin:0}.youth-card small{letter-spacing:0;text-transform:none;line-height:1.5}.youth-card .btn{align-self:start}.youth-stars{color:#f3c94c;white-space:nowrap;font-size:1.1rem}.youth-stars small{color:#d4dfe1}.youth-rating{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:.8rem}.squad-capacity{padding:10px;background:#234334;margin-bottom:12px;font-size:.8rem}.development-row{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #ffffff25;padding:10px 0}.development-row small{display:block;letter-spacing:0;text-transform:none;font-weight:500;margin-top:4px}.development-hub{border-top:1px solid #ffffff25;border-bottom:1px solid #ffffff25;padding:14px 0;margin:16px 0}.development-hub .hero-actions{margin:8px 0}details>summary{cursor:pointer;padding:10px 0}.development-list{margin-bottom:16px}@media(max-width:600px){.youth-grid{grid-template-columns:1fr}.youth-card{padding:12px}.youth-rating{font-size:.75rem}}
+
+/* 1.18: legible football markings underneath unboxed player shirts. */
+.formation-pitch{background:repeating-linear-gradient(0deg,#174535 0 10%,#1a4938 10% 20%);isolation:isolate}
+.formation-pitch:before{display:none}
+.formation-markings{position:absolute;inset:8px;width:calc(100% - 16px);height:calc(100% - 16px);color:#b9d0b7;opacity:.30;pointer-events:none;z-index:0}
+.formation-pitch .pitch-line{position:relative;z-index:1}
+.title-backdrop picture img{animation-duration:14s}
+.title-screen .menu-scene-label{left:50%;right:auto;transform:translateX(-50%);width:max-content;max-width:calc(100% - 28px)}
