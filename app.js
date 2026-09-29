@@ -1,7 +1,7 @@
-import {sceneSvg,stadiumProfile} from './scene.js?v=1.13.0';
-import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.13.0';
+import {sceneSvg,stadiumProfile} from './scene.js?v=1.14.0';
+import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.14.0';
 
-const APP_VERSION='1.13.0';
+const APP_VERSION='1.14.0';
 const SAVE_KEY='clubline-career-r1';
 const SITES=[['civic','Civic Quarter',75000],['riverside','Riverside Quarter',75000],['city','City Waterfront',75000],['gardens','Civic Gardens',70000],['rail','Rail District',60000],['university','University Quarter',45000],['oldtown','Old Town',40000]];
 const availableSites=c=>SITES.filter(([, ,limit])=>c.capacity<=limit);
@@ -36,7 +36,7 @@ let editing=null,selectedStand='N4',selectedStands=new Set(['N4']),opponentOpen=
 let saveWarning='',source,career=null,view='title',section='hub',sub='lineup',setup={clubId:'C01',site:'civic',names:{},colour:null},selectedPlayer=null,selectedSlot=null,instructionPlayer=null,statsScope='club',statsSort='goals',statsDescending=true,match=null,timer=null,notice='',updateMessage='',availableVersion=null,checkingUpdate=false;
 const root=document.getElementById('app');
 
-try {source=await (await fetch('./data/league.json?v=1.13.0',{cache:'no-store'})).json();}
+try {source=await (await fetch('./data/league.json?v=1.14.0',{cache:'no-store'})).json();}
 catch(error){root.innerHTML='<main class="app-shell"><div class="shell-content"><h1>Clubline</h1><p>Could not load the league data. Open the game through a web server or GitHub Pages.</p></div></main>';throw error;}
 const ambitiousIds=new Set(source.clubs.map(c=>source.players.filter(p=>p.clubId===c.id).sort((a,b)=>a.overall-b.overall).slice(0,6).sort((a,b)=>b.potential-a.potential)[0]?.id));
 const menuPlaces=['civic','riverside','city','gardens','rail','university','oldtown'];
