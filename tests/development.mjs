@@ -1,0 +1,23 @@
+import fs from 'node:fs';import assert from 'node:assert/strict';import * as dev from '../development.js';
+const base=JSON.parse(fs.readFileSync(new URL('../data/league.json',import.meta.url)));
+const create=(level=0)=>{const l=structuredClone(base),c={clubId:'C01',date:'2026-08-13',seasonStart:'2026-08-13',youthFunding:level,youthSeed:'test-seed',players:{},owners:{},news:[],loans:{},reports:[],schedule:[],stats:{},lineup:[],bench:[]};dev.initialiseDevelopment(c,l);return {c,l}};
+let {c,l}=create();assert.equal(c.prospects.length,5);assert.equal(new Set(c.prospects.map(p=>p.name)).size,5);assert(c.prospects.every(p=>p.age>=16&&p.age<=18));
+const p=c.prospects[0];assert.equal(dev.promoteProspect(c,l,p.id),null);assert.equal(dev.squadSpace(c,l).development,1);assert.equal(l.players.find(x=>x.id===p.id).overall,p.overall);assert(dev.promoteProspect(c,l,p.id));
+for(const q of c.prospects.slice(1))assert.equal(dev.promoteProspect(c,l,q.id),null);assert.equal(dev.squadSpace(c,l).development,5);
+const saved=structuredClone(c),fresh=structuredClone(base);dev.initialiseDevelopment(saved,fresh);assert.equal(fresh.players.length,base.players.length+5);dev.initialiseDevelopment(saved,fresh);assert.equal(fresh.players.length,base.players.length+5);
+({c,l}=create());c.date='2026-08-19';dev.developmentDay(c,l,{date:'2026-08-22'});assert.equal(c.developmentReports.length,1);dev.developmentDay(c,l,{date:'2026-08-22'});assert.equal(c.developmentReports.length,1);
+c.prospects.forEach(p=>p.form=8);c.date='2026-09-03';dev.developmentDay(c,l,{date:'2026-09-05'});assert(c.news.some(n=>n.text.startsWith('Youth watch:')));const count=c.news.length;dev.developmentDay(c,l,{date:'2026-09-05'});assert.equal(c.news.length,count);
+c.date='2026-09-10';dev.developmentDay(c,l,null);assert.equal(c.conversations.length,1);const conversation=c.conversations[0];assert(['retirement','position'].includes(conversation.type));
+const original=c.prospects.map(p=>p.id);c.players[l.players[0].id].retirementAfterSeason=1;c.lineup=l.players.filter(p=>p.clubId==='C01').slice(0,11).map(p=>p.id);dev.rolloverDevelopment(c,l,'2027-08-13');assert.equal(c.season,2);assert.equal(c.prospects.length,5);assert(c.players[l.players[0].id].retired);assert.equal(c.archives.length,1);assert(c.prospects.some(p=>!original.includes(p.id)));assert(dev.squadSpace(c,l).senior<=24);assert(dev.squadSpace(c,l).development<=5);
+// Stronger funding raises intake quality over many independent intakes; exceptional talent remains rare.
+let low=0,high=0,exceptional=0,total=0;
+for(let i=0;i<150;i++)for(const level of [0,3]){const a=create(level);a.c.season=2;a.c.youthSeed='sample'+i;a.c.prospects=[];dev.generateIntake(a.c,a.l);const avg=a.c.prospects.reduce((sum,p)=>sum+p.overall,0)/5;if(level===0)low+=avg;else high+=avg;for(const p of a.c.prospects){total++;if(dev.estimatedStars(p.potential)===5)exceptional++;}}
+assert(high>low);assert(exceptional/total<.04);
+console.log('Youth generation, promotion limits, save reload, report cadence, conversations, retirement, annual intake and facility influence passed. Five-star prospects:',exceptional+'/'+total);
+// Returning loans cannot bypass the senior cap.
+({c,l}=create());const other=l.players.filter(p=>p.clubId!=='C01').slice(0,3);for(const p of other)c.owners[p.id]='C01';const loaned=l.players.find(p=>p.clubId==='C01');c.loans[loaned.id]={parent:'C01',to:'C02'};c.owners[loaned.id]='C02';dev.rolloverDevelopment(c,l,'2027-08-13');assert.equal(dev.squadSpace(c,l).senior,24);assert(l.players.filter(p=>(c.owners[p.id]||p.clubId)==='C01'&&c.players[p.id].unregistered).length>=3);
+// A player turning 20 loses the additional development place and needs senior registration.
+({c,l}=create());const q=c.prospects[0];q.age=19;assert.equal(dev.promoteProspect(c,l,q.id),null);dev.rolloverDevelopment(c,l,'2027-08-13');assert.equal(dev.squadSpace(c,l).development,0);assert(c.players[q.id].unregistered);assert.equal(l.players.find(p=>p.id===q.id).age,20);
+// A trial needs minutes in the requested role; an ordinary day cannot instantly retrain a player.
+({c,l}=create());const trainee=l.players.find(p=>p.clubId==='C01'&&p.secondary&&p.positions[p.secondary]/p.overall<.85);const state=c.players[trainee.id],pos=trainee.secondary,before=trainee.positions[pos];state.positionTrial=pos;state.trialMinutes=0;c.date='2026-08-20';dev.developmentDay(c,l,null);assert.equal(trainee.positions[pos],before);state.trialMinutes=180;c.date='2026-08-27';dev.developmentDay(c,l,null);assert.equal(trainee.positions[pos],before+1);
+console.log('Loan return limits, aging-out registration and gradual position trials passed');
