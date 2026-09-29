@@ -1,15 +1,18 @@
-# Clubline — Release 1.10.0
+# Clubline — Release 1.11.0
 
-Copy **all** ZIP contents to the root of your GitHub Pages repository, including `sw.js`. Use **Check for updates** in the installed app if it still shows the previous release. Existing Clubline careers retain their save key.
+Copy **all** ZIP contents to the root of your GitHub Pages repository, including `sw.js`. Use **Check for updates** in the installed app if it still shows the previous release. Existing Clubline careers keep their save key.
 
-## This release
+## Squad
 
-- Advancing the calendar flashes the date and time, including on the matchday prompt.
-- Injured players show a medical cross and an estimated duration beside their mood. Their card names the injury; the Starting XI warns when a player cannot play and offers Auto pick. Training and match injuries have several severities; severe injuries are uncommon, and a club has at most two current injuries. Recovery news arrives as players become available.
-- Finances offers three levels each of injury prevention and recovery investment. The price and effect are shown before purchase. Prevention cuts injury frequency; recovery reduces duration.
-- The keeper shirt has a separate gold colour. Squad cards are lighter, and substitutes and reserves can be collapsed independently.
-- Transfer proposals show ability, squad role, starts and appearances, recent form, mood and reason, contract length, wages and the fee before a decision.
-- The match report separates gross home revenue, operational costs and net income. After the report, the league table shows played, won, drawn, lost, goals for, goals against and points, with movement arrows. Continue to the new club and league news hub.
-- The yellow ticker reveals today's news and scores one item at a time. Organiser retains the full table, fixtures, past reports and league news.
+- Player shirts and their information sit directly on the pitch without a rectangle around each player or a box around the instruction arrow. The pitch boundaries and clear drop highlight remain.
+- Tap or drag a reserve onto a whole bench row to swap places. Swapping a bench player onto a reserve works too. The ghost shirt and highlighted destination remain during dragging.
+- Auto Pick Subs selects seven fit players, aiming for goalkeeper, defensive, midfield and attacking cover while leaving the starting XI alone.
+- The substitutes and reserves lists remember their open or minimised state across sections and when the career is reloaded.
+- Player profiles list age, overall, potential, fitness, injury risk, derived traits and positions. The native position is marked. Green means at least 90% positional confidence; orange means 75–89%. Outside those positions, the player uses 60% of their overall rating. The Starting XI displays the effective rating in the chosen slot, and positional fit affects match strength and lineup selection.
 
-The match player and crowd animation remains a stylised first pass; the larger movement and stadium surroundings revision is planned separately.
+## Matchday
+
+- Before kickoff, choose whether the assistant manager handles in-match changes. When delegated, the assistant automatically replaces an injured player where possible, reshapes the side after a sending off, and makes routine fresh-leg substitutions. Each action appears in the match feed. Take control pauses the match so you can intervene.
+- Watched home and away matches use smaller player markers following varied routes around the pitch, with the ball moving between areas. Home crowds continue to animate and react to goals.
+
+Match graphics remain stylised. The broader stadium surroundings, crowds outside before kickoff and more detailed player choreography can continue in a later visual pass.

@@ -1,7 +1,7 @@
-import {sceneSvg,stadiumProfile} from './scene.js?v=1.10.0';
-import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.10.0';
+import {sceneSvg,stadiumProfile} from './scene.js?v=1.11.0';
+import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.11.0';
 
-const APP_VERSION='1.10.0';
+const APP_VERSION='1.11.0';
 const SAVE_KEY='clubline-career-r1';
 const SITES=[['city','City Waterfront'],['gardens','Civic Gardens'],['rail','Rail District'],['university','University Quarter'],['oldtown','Old Town']];
 const availableSites=c=>c.capacity>=45000?SITES.slice(0,3):SITES;
@@ -35,7 +35,7 @@ let editing=null,selectedStand='N4',selectedStands=new Set(['N4']),opponentOpen=
 let saveWarning='',source,career=null,view='title',section='hub',sub='lineup',setup={clubId:'C01',site:'city',names:{},colour:null},selectedPlayer=null,selectedSlot=null,instructionPlayer=null,statsScope='club',statsSort='goals',statsDescending=true,match=null,timer=null,notice='',updateMessage='',availableVersion=null,checkingUpdate=false;
 const root=document.getElementById('app');
 
-try {source=await (await fetch('./data/league.json?v=1.10.0',{cache:'no-store'})).json();}
+try {source=await (await fetch('./data/league.json?v=1.11.0',{cache:'no-store'})).json();}
 catch(error){root.innerHTML='<main class="app-shell"><div class="shell-content"><h1>Clubline</h1><p>Could not load the league data. Open the game through a web server or GitHub Pages.</p></div></main>';throw error;}
 const ambitiousIds=new Set(source.clubs.map(c=>source.players.filter(p=>p.clubId===c.id).sort((a,b)=>a.overall-b.overall).slice(0,6).sort((a,b)=>b.potential-a.potential)[0]?.id));
 const menuScenes=source.clubs.map((c,i)=>({club:c,site:availableSites(c)[(i+Math.floor(i/3))%availableSites(c).length][0],evening:i%2===1}));
@@ -62,6 +62,11 @@ function applyInjury(id,context){
  state.injuryType=chosen[0];state.injuryDays=Math.max(1,Math.round((chosen[1]+Math.floor(Math.random()*(chosen[2]-chosen[1]+1)))*(1-recovery*.12)));
  career.news.push({date:career.date,text:`${context}: ${player(id).name} has a ${state.injuryType.toLowerCase()} and is expected out ${injuryLength(state.injuryDays)}.`});
 }
+const positionRatio=(p,pos)=>pos===p.primary?1:(p.positions[pos]||0)/p.overall;
+const positionTier=(p,pos)=>positionRatio(p,pos)>=.9?'natural':positionRatio(p,pos)>=.75?'comfortable':'unfamiliar';
+const effectivePosition=(p,pos)=>positionTier(p,pos)==='unfamiliar'?Math.round(p.overall*.6):p.positions[pos];
+const positionLabel=(p,pos)=>`${pos} ${Math.round(positionRatio(p,pos)*100)}%${pos===p.primary?' · Native':''}`;
+const playerTraits=p=>{const traits=[];if(p.potential-p.overall>=8)traits.push('High potential');if(p.risk<=3)traits.push('Durable');if(p.risk>=7)traits.push('Injury prone');if(Object.keys(p.positions).filter(pos=>positionRatio(p,pos)>=.75).length>=3)traits.push('Versatile');if(p.primary==='ST'&&p.overall>=82)traits.push('Clinical finisher');if(['AM','LW','RW'].includes(p.primary)&&p.overall>=82)traits.push('Creative');if(['CB','DM','GK'].includes(p.primary)&&p.overall>=82)traits.push('Defensive leader');return traits.length?traits:['Steady squad player']};
 const instructionButton=id=>id?`<button type="button" class="slot-tool instructions" data-action="player-instructions" data-player="${id}" title="Individual instructions" aria-label="Instructions for ${html(player(id).name)}">↗</button>`:'';
 const slotsFor=f=>FORMATIONS[f||'4-3-3'].flat();
 const opposition=(fixture,me)=>fixture.home===me?fixture.away:fixture.home;
@@ -71,13 +76,20 @@ function bestLineup(clubId,formation){
  const remaining=pool.filter(p=>!(career?.clubId===clubId&&career?.players?.[p.id]?.injuryDays>0));
  const slots=slotsFor(formation);
  const lineup=slots.map(pos=>{
-  remaining.sort((a,b)=>(b.positions[pos]+(b.primary===pos?3:0)+(playerFitness(b.id)-80)*.05)-(a.positions[pos]+(a.primary===pos?3:0)+(playerFitness(a.id)-80)*.05));
+  remaining.sort((a,b)=>(effectivePosition(b,pos)+(b.primary===pos?3:0)+(playerFitness(b.id)-80)*.05)-(effectivePosition(a,pos)+(a.primary===pos?3:0)+(playerFitness(a.id)-80)*.05));
   const choice=remaining.shift();return choice?.id||null;
  });
  remaining.sort((a,b)=>(b.overall+(playerFitness(b.id)-80)*.08)-(a.overall+(playerFitness(a.id)-80)*.08));
- const bench=[];const keeper=remaining.find(p=>p.primary==='GK');if(keeper){bench.push(keeper.id);remaining.splice(remaining.indexOf(keeper),1)}
- bench.push(...remaining.slice(0,7-bench.length).map(p=>p.id));
+ const bench=pickBalancedBench(remaining,7);
  return {lineup,bench};
+}
+function pickBalancedBench(pool,count=7){
+ const remaining=pool.filter(p=>!(career?.clubId===owner(p.id)&&playerState(p.id).injuryDays>0));
+ const picks=[];for(const group of [['GK'],['CB','LB','RB'],['CM','DM','AM'],['ST','LW','RW']]){
+  const candidates=remaining.filter(p=>group.some(pos=>positionRatio(p,pos)>=.75)).sort((a,b)=>b.overall-a.overall);
+  const chosen=candidates[0];if(chosen){picks.push(chosen.id);remaining.splice(remaining.indexOf(chosen),1)}
+ }
+ remaining.sort((a,b)=>b.overall-a.overall);picks.push(...remaining.slice(0,Math.max(0,count-picks.length)).map(p=>p.id));return picks.slice(0,count)
 }
 function scheduleSeason(){
  const ids=source.clubs.map(c=>c.id),rotation=[...ids],rounds=[];
@@ -94,9 +106,9 @@ function scheduleSeason(){
 }
 function newCareer(){
  try{
- postMatchTable=false;benchExpanded=true;reservesExpanded=false;tickerIndex=0;
+ postMatchTable=false;benchExpanded=true;reservesExpanded=false;tickerIndex=0;career=null;
  const c=club(setup.clubId),choice=bestLineup(c.id,c.formation);
- career={version:1,clubId:c.id,names:{...setup.names},colour:setup.colour||c.colour,site:setup.site,date:'2026-08-13',time:'09:00',balance:c.budget*5,formation:c.formation,style:c.style,order:'Standard',lineup:choice.lineup,bench:choice.bench,players:Object.fromEntries(source.players.map(p=>[p.id,{fitness:p.fitness,form:[],happiness:64+(p.number*7)%25,ambitious:ambitiousIds.has(p.id),instruction:'Standard',reason:'Content with their squad role.'}])),stats:{},loans:{},owners:{},transferList:[],offers:[],stadium:defaultLayout(c),schedule:scheduleSeason(),reports:[],news:[],medical:{prevention:0,recovery:0},kit:{home:'solid',away:'stripes'}};
+ career={version:1,clubId:c.id,names:{...setup.names},colour:setup.colour||c.colour,site:setup.site,date:'2026-08-13',time:'09:00',balance:c.budget*5,formation:c.formation,style:c.style,order:'Standard',lineup:choice.lineup,bench:choice.bench,players:Object.fromEntries(source.players.map(p=>[p.id,{fitness:p.fitness,form:[],happiness:64+(p.number*7)%25,ambitious:ambitiousIds.has(p.id),instruction:'Standard',reason:'Content with their squad role.'}])),stats:{},loans:{},owners:{},transferList:[],offers:[],stadium:defaultLayout(c),schedule:scheduleSeason(),reports:[],news:[],medical:{prevention:0,recovery:0},ui:{benchExpanded:true,reservesExpanded:false},kit:{home:'solid',away:'stripes'}};
  view='career';section='hub';sub='lineup';const saved=save();render();
  if(!saved)toast('The season is open, but this device could not save it. Free storage before reloading.');
  }catch(error){
@@ -118,7 +130,7 @@ function save(){
   return false;
  }
 }
-function load(){try{const saved=JSON.parse(localStorage.getItem(SAVE_KEY));if(saved?.career?.version===1){postMatchTable=false;career=saved.career;career.owners??={};career.transferList??=[];career.offers??=[];career.stats??={};career.loans??={};career.medical??={prevention:0,recovery:0};career.medical.prevention??=0;career.medical.recovery??=0;for(const p of source.players){const state=career.players[p.id]??(career.players[p.id]={fitness:p.fitness,form:[]});state.happiness??=70;state.ambitious??=ambitiousIds.has(p.id);state.instruction??='Standard';state.reason??='Content with their squad role.';if(state.injuryDays&&!state.injuryType)state.injuryType='Knock'}career.stadium=normaliseLayout(career.stadium,club(career.clubId));if(career.site==='harbour')career.site='city';match=saved.match||null;if(match)match.kickoff??='15:00';return true}}catch{}return false}
+function load(){try{const saved=JSON.parse(localStorage.getItem(SAVE_KEY));if(saved?.career?.version===1){postMatchTable=false;career=saved.career;career.ui??={benchExpanded:true,reservesExpanded:false};benchExpanded=career.ui.benchExpanded;reservesExpanded=career.ui.reservesExpanded;career.owners??={};career.transferList??=[];career.offers??=[];career.stats??={};career.loans??={};career.medical??={prevention:0,recovery:0};career.medical.prevention??=0;career.medical.recovery??=0;for(const p of source.players){const state=career.players[p.id]??(career.players[p.id]={fitness:p.fitness,form:[]});state.happiness??=70;state.ambitious??=ambitiousIds.has(p.id);state.instruction??='Standard';state.reason??='Content with their squad role.';if(state.injuryDays&&!state.injuryType)state.injuryType='Knock'}career.stadium=normaliseLayout(career.stadium,club(career.clubId));if(career.site==='harbour')career.site='city';match=saved.match||null;if(match)match.kickoff??='15:00';return true}}catch{}return false}
 const hasSave=()=>{try{return JSON.parse(localStorage.getItem(SAVE_KEY))?.career?.version===1}catch{return false}};
 function nextFixture(){if(!career)return null;for(const round of career.schedule){const f=round.fixtures.find(x=>(x.home===career.clubId||x.away===career.clubId)&&x.homeGoals===null);if(f)return {...f,date:round.date,round}}return null}
 function allResults(){return career.schedule.flatMap(r=>r.fixtures.filter(f=>f.homeGoals!==null).map(f=>({...f,date:r.date})))}
@@ -204,14 +216,16 @@ function sectionContent(){return section==='hub'?homeHub():section==='squad'?squ
 
 function tabBar(items){return `<div class="tabs">${items.map(([key,label])=>`<button class="btn ${sub===key?'selected':''}" data-action="sub" data-sub="${key}">${label}</button>`).join('')}</div>`}
 function squadSection(){
- const tabs=[['lineup','Starting XI'],['transfers','Transfers'],['statistics','Statistics'],['form','Form charts']];
+ const tabs=[['lineup','Starting XI'],['profiles','Player profiles'],['transfers','Transfers'],['statistics','Statistics'],['form','Form charts']];
  let content='';
  if(sub==='lineup') content=lineupEditor(false);
+ if(sub==='profiles') content=playerProfiles();
  if(sub==='transfers') content=transfersSection();
  if(sub==='statistics') content=statisticsSection();
  if(sub==='form') content=`<p>Recent league results and the players who have stood out.</p><div class="list">${career.reports.slice(-5).reverse().map(r=>`<div class="row"><span>${fmtDate(r.date)} · ${html(clubName(r.opponent))}</span><b>${r.us}-${r.them}</b></div>`).join('')||'<div class="empty-note">No games played yet.</div>'}</div><div class="divider"></div><div class="list">${career.lineup.map(id=>{const p=player(id),form=career.players[id].form;return `<div class="row"><span>${html(p.name)} <small>${p.primary}</small></span><b>${form.length?(form.reduce((a,b)=>a+b,0)/form.length).toFixed(1):'—'}</b></div>`}).join('')}</div>`;
  return `<span class="eyebrow">Football / Squad</span><h2>Shape your eleven</h2>${tabBar(tabs)}${content}`;
 }
+function playerProfiles(){return `<p>Player attributes, traits and positional confidence. Green is 90% or more, orange is 75–89%; all other positions play at 60% capability.</p><div class="profile-grid">${squadPlayers(career.clubId).sort((a,b)=>b.overall-a.overall).map(p=>`<button class="profile-row" data-action="focus-player" data-player="${p.id}">${shirt(p,true)}<span><b>${html(p.name)}</b><small>${p.primary} · ${p.overall} OVR · ${p.age} years · ${playerFitness(p.id)}% fit</small><small>${playerTraits(p).join(' · ')}</small></span><span>View ↗</span></button>`).join('')}</div>`}
 function statisticsSection(){
  const entries=(statsScope==='club'?squadPlayers(career.clubId):source.players).map(p=>({p,s:career.stats[p.id]||{}}));
  const value=(x,key)=>key==='overall'?x.s.ratedMinutes?(x.s.ratingTotal/x.s.ratedMinutes):0:(x.s[key]||0);
@@ -230,15 +244,15 @@ function shirt(p,compact=false){return `<span class="shirt ${compact?'shirt-smal
 function playerPanel(){
  if(!instructionPlayer||owner(instructionPlayer)!==career.clubId)return '';
  const p=player(instructionPlayer),state=playerState(p.id),role=ratingRole(p),[face,label]=MOODS[moodLevel(p.id)];
- return `<div class="player-panel" role="dialog" aria-label="${html(p.name)} instructions"><button class="panel-close" data-action="close-player-panel" aria-label="Minimise player details">−</button><span class="eyebrow">Player / ${html(role)}</span><h3>${html(p.name)} · ${p.primary} · ${p.overall} OVR</h3><p>${face} ${label}: ${html(state.reason||'Content with their squad role.')} ${state.ambitious&&role==='Fringe'?'Wants more playing time.':''}</p>${state.injuryDays?`<p class="medical-note"><span class="med-cross">✚</span> ${html(state.injuryType||'Injury')} · ${state.injuryDays} days remaining (${injuryLength(state.injuryDays)})</p>`:''}<label class="field">Individual instruction<select class="select" data-player-order="${p.id}">${PLAYER_ORDERS.map(x=>`<option value="${x}" ${state.instruction===x?'selected':''}>${x}</option>`).join('')}</select></label><p class="muted">Substitute appearances usually help players asking for minutes. Individual instructions affect the match plan.</p>${!career.loans[p.id]?`<button class="btn slim" data-action="offer-loan" data-player="${p.id}">Offer outgoing loan</button>`:''}${state.request==='loan'?'<span class="badge warning">Requests a loan</span>':state.request==='transfer'?`<button class="btn slim" data-action="list-player" data-id="${p.id}">Transfer list player</button>`:''}</div>`;
+ return `<div class="player-panel" role="dialog" aria-label="${html(p.name)} instructions"><button class="panel-close" data-action="close-player-panel" aria-label="Minimise player details">−</button><span class="eyebrow">Player / ${html(role)}</span><h3>${html(p.name)} · ${p.primary} · ${p.overall} OVR</h3><p>${face} ${label}: ${html(state.reason||'Content with their squad role.')} ${state.ambitious&&role==='Fringe'?'Wants more playing time.':''}</p>${state.injuryDays?`<p class="medical-note"><span class="med-cross">✚</span> ${html(state.injuryType||'Injury')} · ${state.injuryDays} days remaining (${injuryLength(state.injuryDays)})</p>`:''}<label class="field">Individual instruction<select class="select" data-player-order="${p.id}">${PLAYER_ORDERS.map(x=>`<option value="${x}" ${state.instruction===x?'selected':''}>${x}</option>`).join('')}</select></label><div class="profile-attributes"><div><b>Attributes</b><p>Age ${p.age} · Overall ${p.overall} · Potential ${p.potential} · Fitness ${playerFitness(p.id)}% · Injury risk ${p.risk}/10</p><p>Traits: ${playerTraits(p).map(html).join(' · ')}</p></div><div><b>Positions</b><div class="position-list">${Object.keys(p.positions).filter(pos=>positionRatio(p,pos)>=.75||pos===p.primary).sort((a,b)=>positionRatio(p,b)-positionRatio(p,a)).map(pos=>`<span class="fit-${positionTier(p,pos)}">${positionLabel(p,pos)} · ${effectivePosition(p,pos)} effective</span>`).join('')}</div><small>Other positions: 60% of overall ability.</small></div></div><p class="muted">Substitute appearances usually help players asking for minutes. Individual instructions affect the match plan.</p>${!career.loans[p.id]?`<button class="btn slim" data-action="offer-loan" data-player="${p.id}">Offer outgoing loan</button>`:''}${state.request==='loan'?'<span class="badge warning">Requests a loan</span>':state.request==='transfer'?`<button class="btn slim" data-action="list-player" data-id="${p.id}">Transfer list player</button>`:''}</div>`;
 }
 function lineupEditor(inModal=false){
  const pool=squadPlayers(career.clubId).filter(p=>!career.lineup.includes(p.id)&&!career.bench.includes(p.id)).sort((a,b)=>b.overall-a.overall);
- const tile=(id,pos,index,compact=false)=>{const p=player(id);return `<div role="button" tabindex="0" class="slot shirt-slot ${!p?'empty':''} ${selectedSlot===index?'selected':''}" data-action="slot" data-index="${index}" data-drop-slot="${index}" data-player="${id||''}" draggable="${!!p}" aria-label="${pos}: ${p?html(p.name)+', rated '+p.overall+', condition '+playerFitness(id)+' percent':'Empty'}">${shirt(p,compact)}<span class="slot-name">${p?html(p.name.split(' ').at(-1)):'Select'}</span><span class="slot-stats">${pos} · ${p?p.overall:'—'} · ${p?playerFitness(id)+'%':'—'}</span>${instructionButton(id)}${moodButton(id)}${injuryBadge(id)}</div>`};
+ const tile=(id,pos,index,compact=false)=>{const p=player(id);return `<div role="button" tabindex="0" class="slot shirt-slot ${!p?'empty':''} ${selectedSlot===index?'selected':''}" data-action="slot" data-index="${index}" data-drop-slot="${index}" data-player="${id||''}" draggable="${!!p}" aria-label="${pos}: ${p?html(p.name)+', rated '+p.overall+', condition '+playerFitness(id)+' percent':'Empty'}">${shirt(p,compact)}<span class="slot-name">${p?html(p.name.split(' ').at(-1)):'Select'}</span><span class="slot-stats">${pos} · ${p?effectivePosition(p,pos):'—'} fit · ${p?playerFitness(id)+'%':'—'}</span>${instructionButton(id)}${moodButton(id)}${injuryBadge(id)}</div>`};
  let idx=0;
- const listCard=(p,place,index=null)=>`<div role="button" tabindex="0" draggable="true" class="player-card ${selectedPlayer===p.id?'active':''}" data-action="select-player" data-player="${p.id}">${shirt(p,true)}<span class="player-card-copy"><strong>${html(p.name)}</strong><span class="meta">${p.primary}${p.secondary?' / '+p.secondary:''} · ${p.overall} OVR · ${playerFitness(p.id)}% condition</span><span class="meta">${place} · ${ratingRole(p)}</span></span>${instructionButton(p.id)}${moodButton(p.id)}${injuryBadge(p.id)}${index!==null?`<button class="bench-target" data-action="slot" data-index="${index}" data-drop-slot="${index}" aria-label="Swap into bench place ${index-10}">↔</button>`:''}</div>`;
+ const listCard=(p,place,index=null)=>`<div role="button" tabindex="0" draggable="true" ${index!==null?`data-drop-slot="${index}"`:`data-drop-player="${p.id}"`} class="player-card ${selectedPlayer===p.id?'active':''}" data-action="select-player" data-player="${p.id}">${shirt(p,true)}<span class="player-card-copy"><strong>${html(p.name)}</strong><span class="meta">${p.primary}${p.secondary?' / '+p.secondary:''} · ${p.overall} OVR · ${playerFitness(p.id)}% condition</span><span class="meta">${place} · ${ratingRole(p)}</span></span>${instructionButton(p.id)}${moodButton(p.id)}${injuryBadge(p.id)}${index!==null?`<button class="bench-target" data-action="slot" data-index="${index}" data-drop-slot="${index}" aria-label="Swap into bench place ${index-10}">↔</button>`:''}</div>`;
  const pitch=FORMATIONS[career.formation].map(line=>`<div class="pitch-line">${line.map(pos=>tile(career.lineup[idx],pos,idx++)).join('')}</div>`).join('');
- return `<div class="squad-toolbar"><label class="field">Formation<select class="select" data-squad-formation>${Object.keys(FORMATIONS).map(f=>`<option value="${f}" ${f===career.formation?'selected':''}>${f}</option>`).join('')}</select></label><label class="field">Play style<select class="select" data-squad-style>${STYLES.map(x=>`<option value="${x}" ${career.style===x?'selected':''}>${x}</option>`).join('')}</select></label><label class="field">Team orders<select class="select" data-squad-order>${ORDERS.map(x=>`<option value="${x}" ${career.order===x?'selected':''}>${x}</option>`).join('')}</select></label><button class="btn slim" data-action="auto-lineup">Auto pick</button></div><div class="formation-pitch">${pitch}</div><small>Tap a bench or reserve player, then an XI slot to swap. Drag and drop also works.</small>${career.lineup.some(id=>career.players[id]?.injuryDays>0)?`<div class="decision-alert">An injured starter cannot play. Choose a fit player from your bench or reserves, or use Auto pick to replace them.</div>`:''}<button class="squad-list-heading collapse-toggle" data-action="toggle-squad-list" data-list="bench" aria-expanded="${benchExpanded}">Substitutes · ${career.bench.filter(Boolean).length} <span>${benchExpanded?'−':'+'}</span></button><div class="player-list bench-list ${benchExpanded?'':'collapsed'}">${career.bench.filter(Boolean).map((id,i)=>listCard(player(id),'Bench',11+i)).join('')}</div><button class="squad-list-heading collapse-toggle" data-action="toggle-squad-list" data-list="reserves" aria-expanded="${reservesExpanded}">Reserves · ${pool.length} <span>${reservesExpanded?'−':'+'}</span></button><div class="player-list reserve-list ${reservesExpanded?'':'collapsed'}">${pool.map(p=>listCard(p,'Reserve')).join('')||'<p class="muted">No additional squad players.</p>'}</div>${inModal?'<div class="modal-actions"><button class="btn primary" data-action="confirm-lineup">Confirm lineup</button></div>':''}`;
+ return `<div class="squad-toolbar"><label class="field">Formation<select class="select" data-squad-formation>${Object.keys(FORMATIONS).map(f=>`<option value="${f}" ${f===career.formation?'selected':''}>${f}</option>`).join('')}</select></label><label class="field">Play style<select class="select" data-squad-style>${STYLES.map(x=>`<option value="${x}" ${career.style===x?'selected':''}>${x}</option>`).join('')}</select></label><label class="field">Team orders<select class="select" data-squad-order>${ORDERS.map(x=>`<option value="${x}" ${career.order===x?'selected':''}>${x}</option>`).join('')}</select></label><button class="btn slim" data-action="auto-lineup">Auto pick XI</button><button class="btn slim" data-action="auto-subs">Auto Pick Subs</button></div><div class="formation-pitch">${pitch}</div><small>Tap or drag a reserve onto a substitute to swap them. You can also swap anyone into the XI.</small>${career.lineup.some(id=>career.players[id]?.injuryDays>0)?`<div class="decision-alert">An injured starter cannot play. Choose a fit player from your bench or reserves, or use Auto pick to replace them.</div>`:''}<button class="squad-list-heading collapse-toggle" data-action="toggle-squad-list" data-list="bench" aria-expanded="${benchExpanded}">Substitutes · ${career.bench.filter(Boolean).length} <span>${benchExpanded?'−':'+'}</span></button><div class="player-list bench-list ${benchExpanded?'':'collapsed'}">${career.bench.map((id,i)=>id?listCard(player(id),'Bench',11+i):`<button class="empty-bench" data-action="slot" data-index="${11+i}" data-drop-slot="${11+i}">Empty bench place ${i+1}</button>`).join('')}</div><button class="squad-list-heading collapse-toggle" data-action="toggle-squad-list" data-list="reserves" aria-expanded="${reservesExpanded}">Reserves · ${pool.length} <span>${reservesExpanded?'−':'+'}</span></button><div class="player-list reserve-list ${reservesExpanded?'':'collapsed'}">${pool.map(p=>listCard(p,'Reserve')).join('')||'<p class="muted">No additional squad players.</p>'}</div>${inModal?'<div class="modal-actions"><button class="btn primary" data-action="confirm-lineup">Confirm lineup</button></div>':''}`;
 }
 function stadiumEditor(){
  const c=myClub(),draft=editing||normaliseLayout(career.stadium,c),chosen=draft.sections[selectedStand]||draft.sections.N4;
@@ -288,7 +302,7 @@ function resolveTransfer(id,newClub,fee){
 }
 function beginMatch(mode){
  if(mode==='simulate'&&!validLineup()){toast('The saved lineup needs changes. Use Auto pick or confirm a watched lineup.');return}
- match.phase=mode==='watch'?'confirm':'live';match.lineup=[...career.lineup];match.bench=[...career.bench];
+ match.assistant=mode==='simulate'?true:!!match.assistant;match.phase=mode==='watch'?'confirm':'live';match.lineup=[...career.lineup];match.bench=[...career.bench];
  match.oppLineup=bestLineup(opposition(match,career.clubId),club(opposition(match,career.clubId)).formation).lineup;
  match.events.push({minute:0,type:'info',text:`Kick-off approaches: ${clubName(match.home)} v ${clubName(match.away)}.`});
  if(mode==='simulate'){match.participants=Object.fromEntries(match.lineup.map(id=>[id,{start:0,end:null}]));while(match&&match.phase==='live'&&match.minute<96)tickMatch(true);if(match?.phase!=='report')finishMatch();}
@@ -302,7 +316,7 @@ function teamPower(id,phase){
  const c=club(id),base=phase==='attack'?c.attack:c.defence;
  if(id!==career.clubId)return base;
  const positions=slotsFor(career.formation),active=match?.phase==='live'?match.lineup:career.lineup;
- const chosen=active.map((pid,i)=>player(pid)?.positions[positions[i]]||25);
+ const chosen=active.map((pid,i)=>pid?effectivePosition(player(pid),match?.slotOverrides?.[i]||positions[i]):0);
  const fitness=active.reduce((n,pid)=>n+(pid?playerFitness(pid):40),0)/11;
  let modifier=(chosen.reduce((n,x)=>n+x,0)/11-77)*.48+(fitness-85)*.08;
  for(const pid of active){const instruction=career.players[pid]?.instruction;
@@ -313,7 +327,7 @@ function teamPower(id,phase){
   if(instruction==='Cut inside')modifier+=phase==='attack'?.33:-.12;
  }
  if(phase==='attack'&&career.order==='Attack')modifier+=5;
- if(phase==='defence'&&career.order==='Protect lead')modifier+=5;
+ if(phase==='defence'&&(match?.phase==='live'&&match.orderOverride||career.order)==='Protect lead')modifier+=5;
  if(career.style==='High press')modifier+=phase==='attack'?3:-2;
  if(career.style==='Counter')modifier+=phase==='defence'?2:-1;
  if(career.style==='Possession')modifier+=phase==='attack'?1:1;
@@ -337,14 +351,38 @@ function chanceEvent(attackerId){
   addMoment({minute:match.minute,type:'chance',team:attackerId,playerId:attacker.id,text:`Chance for ${clubName(attackerId)}: ${rand(descriptions)}`});
  }
 }
+function assistantSubstitute(index,reason){
+ if(match.subCount>=5||index<0)return false;
+ const role=match.slotOverrides?.[index]||slotsFor(career.formation)[index],eligible=match.bench.filter(id=>id&&!career.players[id]?.injuryDays);
+ if(!eligible.length)return false;
+ eligible.sort((a,b)=>effectivePosition(player(b),role)-effectivePosition(player(a),role));
+ const id=eligible[0],out=match.lineup[index];match.bench.splice(match.bench.indexOf(id),1);
+ if(out&&match.participants[out])match.participants[out].end=match.minute;
+ match.lineup[index]=id;match.participants[id]={start:match.minute,end:null};match.subCount++;
+ match.events.push({minute:match.minute,type:'info',text:`Assistant: ${player(id).name} ${out?'replaces '+player(out).name:'fills the vacant '+role+' slot'} — ${reason}.`});return true
+}
+function assistantDecision(type,at){
+ if(!match.assistant)return;
+ if(type==='injury'){
+  if(!assistantSubstitute(at,'injury replacement'))match.events.push({minute:match.minute,type:'info',text:'Assistant: no eligible substitute remains. The team continues a player short.'});
+ }else if(type==='red'){
+  const role=slotsFor(career.formation)[at];match.orderOverride='Protect lead';
+  if(['GK','CB','LB','RB','DM'].includes(role)){
+   const i=match.lineup.findIndex((id,index)=>id&&index!==at&&slotsFor(career.formation)[index]!=='GK'&&positionRatio(player(id),role)>=.75);
+   if(i>=0){match.lineup[at]=match.lineup[i];match.lineup[i]=null;match.events.push({minute:match.minute,type:'info',text:`Assistant: ${player(match.lineup[at]).name} drops into ${role}. The side regroups with ten players.`})}
+   else match.events.push({minute:match.minute,type:'info',text:'Assistant: the side drops into a compact shape with ten players.'});
+  }else match.events.push({minute:match.minute,type:'info',text:'Assistant: the side drops into a compact shape with ten players.'});
+ }
+ if(match.phase==='live')match.paused=true;
+}
 function cardEvent(teamId){const offender=onPitch(teamId,['CB','DM','CM','LB','RB']);const time=clockLabel(match.minute),previous=match.cardCounts[offender.id]||0;match.cardCounts[offender.id]=previous+1;const red=previous>0||Math.random()<.07;
  addMoment({minute:match.minute,type:red?'red':'yellow',team:teamId,playerId:offender.id,text:`${red?'RED':'YELLOW'} CARD! ${offender.name} ${time}. ${rand(['Late challenge near the touchline.','The referee punishes a mistimed tackle.','A foul stops a promising move.'])}`},true);
- if(red&&teamId===career.clubId){match.lineup=match.lineup.map(id=>id===offender.id?null:id);if(match.participants[offender.id])match.participants[offender.id].end=match.minute;career.news.push({date:career.date,text:`${offender.name} was sent off against ${clubName(opposition(match,career.clubId))}.`})}
+ if(red&&teamId===career.clubId){const vacantAt=match.lineup.indexOf(offender.id);match.lineup=match.lineup.map(id=>id===offender.id?null:id);if(match.participants[offender.id])match.participants[offender.id].end=match.minute;career.news.push({date:career.date,text:`${offender.name} was sent off against ${clubName(opposition(match,career.clubId))}.`});assistantDecision('red',vacantAt)}
  if(red&&teamId!==career.clubId)match.oppLineup=match.oppLineup.map(id=>id===offender.id?null:id);
 }
 function injuryEvent(teamId){if(teamId===career.clubId&&(squadPlayers(career.clubId).filter(p=>career.players[p.id].injuryDays>0).length>=2||Math.random()<.2*(career.medical?.prevention||0)))return;const injured=onPitch(teamId,['ST','LW','RW','CM','CB','LB','RB']);const time=clockLabel(match.minute);match.injured.push(injured.id);
  addMoment({minute:match.minute,type:'injury',team:teamId,playerId:injured.id,text:`INJURY! ${injured.name} ${time}. Play stops while ${injured.name} receives treatment.`},true);
- if(teamId===career.clubId){applyInjury(injured.id,'Match injury');match.lineup=match.lineup.map(id=>id===injured.id?null:id);if(match.participants[injured.id])match.participants[injured.id].end=match.minute;}
+ if(teamId===career.clubId){const vacantAt=match.lineup.indexOf(injured.id);applyInjury(injured.id,'Match injury');match.lineup=match.lineup.map(id=>id===injured.id?null:id);if(match.participants[injured.id])match.participants[injured.id].end=match.minute;assistantDecision('injury',vacantAt)}
 }
 function tickMatch(quick){
  if(!match||match.phase!=='live'||(match.paused&&!quick))return;
@@ -360,10 +398,11 @@ function tickMatch(quick){
   else if(Math.random()<.021)cardEvent(chosen);
   else if(Math.random()<.0025)injuryEvent(chosen);
   else if(m%15===0)match.events.push({minute:m,type:'info',text:`${clockLabel(m)} The contest remains finely balanced.`});
+  if(match.assistant&&m>=64&&m<90&&m%13===0&&match.subCount<5){const options=match.lineup.map((id,i)=>({id,i,score:id?playerFitness(id)+effectivePosition(player(id),slotsFor(career.formation)[i])*.12:999})).filter(x=>x.id&&slotsFor(career.formation)[x.i]!=='GK').sort((a,b)=>a.score-b.score);const target=options.find(x=>match.bench.some(pid=>pid&&positionRatio(player(pid),slotsFor(career.formation)[x.i])>=.75));if(target)assistantSubstitute(target.i,'fresh legs')};
  }
  if(!quick){
   save();if(match?.paused)render();else updateLiveMatch();
-  if(match?.paused&&['goal','yellow'].includes(match.pauseReason)){
+  if(match?.paused&&(['goal','yellow'].includes(match.pauseReason)||match.assistant&&['red','injury'].includes(match.pauseReason))){
    const pausedAt=match.minute,reason=match.pauseReason;
    clearTimeout(autoResumeTimer);
    autoResumeTimer=setTimeout(()=>{if(match?.phase==='live'&&match.paused&&match.minute===pausedAt&&match.pauseReason===reason){match.paused=false;match.flash=null;save();render()}},1800);
@@ -402,17 +441,18 @@ function finishMatch(){
  match.phase='report';match.paused=true;career.time='17:15';save();
 }
 
-function awayPitchSvg(){const spots=[0,1].map(team=>Array.from({length:11},(_,i)=>{const x=team?290-Math.floor(i/4)*38:110+Math.floor(i/4)*38,y=22+(i%4)*31;return `<circle class="match-athlete ${team?'away':'home'}" cx="${x}" cy="${y}" r="5" style="--delay:${-i*.13}s" fill="${team?'#e8e3d9':myColour()}" stroke="#10242b" stroke-width="1.3"/>`}).join('')).join('');return `<svg viewBox="0 0 400 145" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Animated away match pitch"><rect width="400" height="145" fill="#276d4a"/><path d="M12 9H388V136H12ZM200 9V136M200 53a20 20 0 1 0 0 40a20 20 0 1 0 0 -40M12 45H52V100H12M388 45H348V100H388" stroke="#d9efdf" fill="none" stroke-width="1.4"/>${spots}<circle class="match-ball" cx="200" cy="72" r="3" fill="white"/></svg>`}
+function awayPitchSvg(){const spots=[0,1].map(team=>Array.from({length:11},(_,i)=>{const x=team?290-Math.floor(i/4)*38:110+Math.floor(i/4)*38,y=22+(i%4)*31,dx=team?-18:18,dy=(i%3-1)*13;return `<circle class="match-athlete ${team?'away':'home'}" cx="${x}" cy="${y}" r="3.6" fill="${team?'#e8e3d9':myColour()}" stroke="#10242b" stroke-width="1"><animate attributeName="cx" values="${x};${x+dx};${x-dx*.7};${x}" dur="${5+i%3}s" begin="-${i*.3}s" repeatCount="indefinite"/><animate attributeName="cy" values="${y};${y+dy};${y-dy*.6};${y}" dur="${5+i%3}s" begin="-${i*.3}s" repeatCount="indefinite"/></circle>`}).join('')).join('');return `<svg viewBox="0 0 400 145" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Animated away match pitch"><rect width="400" height="145" fill="#276d4a"/><path d="M12 9H388V136H12ZM200 9V136M200 53a20 20 0 1 0 0 40a20 20 0 1 0 0 -40M12 45H52V100H12M388 45H348V100H388" stroke="#d9efdf" fill="none" stroke-width="1.4"/>${spots}<circle class="match-ball" cx="200" cy="72" r="2.1" fill="white"><animate attributeName="cx" values="200;248;140;206;200" dur="7s" repeatCount="indefinite"/><animate attributeName="cy" values="72;49;91;66;72" dur="7s" repeatCount="indefinite"/></circle></svg>`}
+
 function liveMatchBody(){const home=match.home===career.clubId,last=match.flash,decision=match.paused&&['red','injury'].includes(match.pauseReason),score=`${match.homeGoals} : ${match.awayGoals}`;
  const stage=home?sceneSvg({...myClub(),colour:myColour()},career.site,true,match.kickoff>='17:30',true,career.stadium,null,{celebrate:last?.type==='goal'&&last.team===career.clubId}):awayPitchSvg();
- return `<div class="live-head"><span class="eyebrow">${home?html(myClub().ground):'Away match'} · <span data-live-minute>${clockLabel(match.minute)}</span> <span data-live-status>${match.paused?'· Paused':''}</span></span><div class="scoreline"><span>${html(clubName(match.home))}</span><strong data-live-score>${score}</strong><span>${html(clubName(match.away))}</span></div></div><div class="live-stage ${last?.type==='goal'&&last.team===career.clubId&&home?'goal-celebration':''}">${stage}${last?`<div class="live-event ${last.type}">${last.type==='goal'?'GOAL!':last.type==='red'?'RED CARD':last.type==='injury'?'INJURY':last.type==='yellow'?'YELLOW CARD':'HALF-TIME'} · ${last.playerId?html(player(last.playerId).name):''} ${clockLabel(last.minute)}</div>`:''}</div>${decision?`<div class="decision-alert" role="alert">${match.pauseReason==='injury'?'An injury needs your decision.':'A player has been sent off.'} Review substitutions or tactics before resuming.</div>`:''}<div class="match-toolbar live-toolbar"><small>Match pace</small>${[4,2,1].map(n=>`<button class="btn slim ${match.speed===n?'selected':''}" data-action="speed" data-speed="${n}">${n} min / half</button>`).join('')}${match.paused?'<button class="btn primary slim" data-action="resume-match">Continue ▶</button>':'<button class="btn slim" data-action="pause-match">Pause</button>'}<button class="btn slim" data-action="sim-next">Next event</button><button class="btn slim" data-action="sim-half">End of half</button><button class="btn slim" data-action="finish-sim">Sim match</button></div><div class="commentary live-commentary ${match.paused?'paused':''}" id="commentary" data-event-count="${match.events.length}">${match.events.slice(match.paused?-40:-4).map(e=>`<div class="comment ${e.type}"><small>${clockLabel(e.minute)} ${e.team?html(clubName(e.team)):''}</small><br>${html(e.text)}</div>`).join('')}</div><details class="live-decisions" ${decision?'open':''}><summary>Touchline decisions · ${match.subCount}/5 subs</summary><div class="live-decisions-body"><label>Formation<select class="select" data-match-setting="formation">${Object.keys(FORMATIONS).map(x=>`<option ${x===career.formation?'selected':''}>${x}</option>`).join('')}</select></label><label>Style<select class="select" data-match-setting="style">${STYLES.map(x=>`<option ${x===career.style?'selected':''}>${x}</option>`).join('')}</select></label><label>Orders<select class="select" data-match-setting="order">${ORDERS.map(x=>`<option ${x===career.order?'selected':''}>${x}</option>`).join('')}</select></label><div class="live-subs"><small>Select a bench player, then a player to replace.</small><div class="bench">${match.bench.filter(Boolean).map(id=>`<button class="btn slim ${selectedPlayer===id?'selected':''}" data-action="match-bench" data-player="${id}">${html(player(id).name.split(' ').at(-1))}</button>`).join('')}</div><div class="live-xi">${match.lineup.map((id,i)=>`<button class="btn slim" data-action="match-replace" data-index="${i}">${slotsFor(career.formation)[i]} · ${id?html(player(id).name.split(' ').at(-1)):'Vacant'}</button>`).join('')}</div></div></div></details>`;
+ return `<div class="live-head"><span class="eyebrow">${home?html(myClub().ground):'Away match'} · <span data-live-minute>${clockLabel(match.minute)}</span> <span data-live-status>${match.paused?'· Paused':''}</span></span><div class="scoreline"><span>${html(clubName(match.home))}</span><strong data-live-score>${score}</strong><span>${html(clubName(match.away))}</span></div></div><div class="live-stage ${last?.type==='goal'&&last.team===career.clubId&&home?'goal-celebration':''}">${stage}${last?`<div class="live-event ${last.type}">${last.type==='goal'?'GOAL!':last.type==='red'?'RED CARD':last.type==='injury'?'INJURY':last.type==='yellow'?'YELLOW CARD':'HALF-TIME'} · ${last.playerId?html(player(last.playerId).name):''} ${clockLabel(last.minute)}</div>`:''}</div>${decision&&!match.assistant?`<div class="decision-alert" role="alert">${match.pauseReason==='injury'?'An injury needs your decision.':'A player has been sent off.'} Review substitutions or tactics before resuming.</div>`:''}<div class="match-toolbar live-toolbar"><small>Match pace</small><button class="btn slim assistant-toggle ${match.assistant?'selected':''}" data-action="toggle-assistant">${match.assistant?'Take control':'Delegate to assistant'}</button>${[4,2,1].map(n=>`<button class="btn slim ${match.speed===n?'selected':''}" data-action="speed" data-speed="${n}">${n} min / half</button>`).join('')}${match.paused?'<button class="btn primary slim" data-action="resume-match">Continue ▶</button>':'<button class="btn slim" data-action="pause-match">Pause</button>'}<button class="btn slim" data-action="sim-next">Next event</button><button class="btn slim" data-action="sim-half">End of half</button><button class="btn slim" data-action="finish-sim">Sim match</button></div><div class="commentary live-commentary ${match.paused?'paused':''}" id="commentary" data-event-count="${match.events.length}">${match.events.slice(match.paused?-40:-4).map(e=>`<div class="comment ${e.type}"><small>${clockLabel(e.minute)} ${e.team?html(clubName(e.team)):''}</small><br>${html(e.text)}</div>`).join('')}</div><details class="live-decisions" ${decision&&!match.assistant?'open':''}><summary>Touchline decisions · ${match.subCount}/5 subs</summary><div class="live-decisions-body"><label>Formation<select class="select" data-match-setting="formation">${Object.keys(FORMATIONS).map(x=>`<option ${x===career.formation?'selected':''}>${x}</option>`).join('')}</select></label><label>Style<select class="select" data-match-setting="style">${STYLES.map(x=>`<option ${x===career.style?'selected':''}>${x}</option>`).join('')}</select></label><label>Orders<select class="select" data-match-setting="order">${ORDERS.map(x=>`<option ${x===career.order?'selected':''}>${x}</option>`).join('')}</select></label><div class="live-subs"><small>Select a bench player, then a player to replace.</small><div class="bench">${match.bench.filter(Boolean).map(id=>`<button class="btn slim ${selectedPlayer===id?'selected':''}" data-action="match-bench" data-player="${id}">${html(player(id).name.split(' ').at(-1))}</button>`).join('')}</div><div class="live-xi">${match.lineup.map((id,i)=>`<button class="btn slim" data-action="match-replace" data-index="${i}">${slotsFor(career.formation)[i]} · ${id?html(player(id).name.split(' ').at(-1)):'Vacant'}</button>`).join('')}</div></div></div></details>`;
 }
 function updateLiveMatch(){if(!match||match.phase!=='live')return;const minute=document.querySelector('[data-live-minute]');if(!minute)return;minute.textContent=clockLabel(match.minute);const score=document.querySelector('[data-live-score]');if(score)score.textContent=`${match.homeGoals} : ${match.awayGoals}`;const comments=document.querySelector('#commentary');if(comments&&Number(comments.dataset.eventCount)!==match.events.length){comments.dataset.eventCount=match.events.length;comments.innerHTML=match.events.slice(-4).map(e=>`<div class="comment ${e.type}"><small>${clockLabel(e.minute)} ${e.team?html(clubName(e.team)):''}</small><br>${html(e.text)}</div>`).join('')}}
 function matchOverlay(){
  const other=opposition(match,career.clubId),home=match.home===career.clubId;
  let body='';
- if(match.phase==='choice')body=`<span class="eyebrow date-pill ${Date.now()<dateFlashUntil?'date-flash':''}">Matchday / ${fmtDate(career.date)} · ${career.time}</span><h2>${home?'Home at '+html(myClub().ground):'Away fixture'}</h2><div class="scoreline"><span>${html(clubName(match.home))}</span><strong>v</strong><span>${html(clubName(match.away))}</span></div><p>Take your side into a text match with live decisions, or simulate for a quick result. Simulation uses your saved eleven and tactics.</p>${!validLineup()?'<div class="empty-note">Your saved XI needs a fit replacement. Auto pick a fit side or review it before kick-off.</div>':''}<div class="modal-actions"><button class="btn primary arrow" data-action="watch-match">Watch match</button><button class="btn" data-action="simulate-match" ${!validLineup()?'disabled':''}>Simulate result</button><button class="btn" data-action="auto-lineup">Auto pick fit XI</button><button class="btn ghost" data-action="close-choice">Back to club</button></div>`;
- if(match.phase==='confirm')body=`<span class="eyebrow">Matchday / Lineup confirmation</span><h2>Pick your eleven</h2><p>Set your formation, play style, team orders and player instructions here before kick-off.</p>${lineupEditor(true)}<button class="btn ghost" data-action="choice-back" style="margin-top:12px">← Match options</button>`;
+ if(match.phase==='choice')body=`<span class="eyebrow date-pill ${Date.now()<dateFlashUntil?'date-flash':''}">Matchday / ${fmtDate(career.date)} · ${career.time}</span><h2>${home?'Home at '+html(myClub().ground):'Away fixture'}</h2><div class="scoreline"><span>${html(clubName(match.home))}</span><strong>v</strong><span>${html(clubName(match.away))}</span></div><p>Watch with live decisions, or simulate for a quick result. Choose whether your assistant handles injuries, sending offs and routine substitutions.</p><label class="assistant-choice"><input type="checkbox" data-assistant-choice ${match.assistant?'checked':''}> Delegate in-match decisions to assistant manager</label>${!validLineup()?'<div class="empty-note">Your saved XI needs a fit replacement. Auto pick a fit side or review it before kick-off.</div>':''}<div class="modal-actions"><button class="btn primary arrow" data-action="watch-match">Watch match</button><button class="btn" data-action="simulate-match" ${!validLineup()?'disabled':''}>Simulate result</button><button class="btn" data-action="auto-lineup">Auto pick fit XI</button><button class="btn ghost" data-action="close-choice">Back to club</button></div>`;
+ if(match.phase==='confirm')body=`<span class="eyebrow">Matchday / Lineup confirmation</span><h2>Pick your eleven</h2><p>Set your formation, play style, team orders and player instructions here before kick-off.</p><label class="assistant-choice"><input type="checkbox" data-assistant-choice ${match.assistant?'checked':''}> Delegate substitutions and sending offs to assistant manager</label>${lineupEditor(true)}<button class="btn ghost" data-action="choice-back" style="margin-top:12px">← Match options</button>`;
  if(match.phase==='live')body=liveMatchBody();
  if(match.phase==='report'){
   const report=career.reports.at(-1);body=`<span class="eyebrow">Full-time / ${fmtDate(report.date)}</span><h2>Match report card</h2><div class="scoreline"><span>${html(clubName(match.home))}</span><strong>${match.homeGoals} : ${match.awayGoals}</strong><span>${html(clubName(match.away))}</span></div><div class="report-grid"><div><small>Attendance</small><strong>${report.home?report.attendance.toLocaleString('en-GB'):'Away'}</strong></div><div><small>Ticket sales</small><strong>${fmtMoney(report.tickets)}</strong></div><div><small>Food & drink</small><strong>${fmtMoney(report.concessions)}</strong></div><div><small>Club shop</small><strong>${fmtMoney(report.shop)}</strong></div></div><p>Gross revenue: ${fmtMoney(report.tickets+report.concessions+report.shop)} · Operational costs: ${fmtMoney(report.operating)} · Net home income: ${fmtMoney(report.income)}</p><div class="match-columns"><div><h3>Your players</h3><div class="report-list list">${report.performances.sort((a,b)=>(b.rating||0)-(a.rating||0)).map(x=>`<div class="row"><span><b>${html(player(x.id).name)}</b><br><small>${player(x.id).primary} · ${x.minutes} min · ${x.goals?x.goals+' goal'+(x.goals>1?'s':'')+' · ':''}${x.assists?x.assists+' assist'+(x.assists>1?'s':'')+' · ':''}${x.cards?'Card · ':''}${x.injuryDays?'Injured · ':''}Fit ${x.fitness}%</small></span><strong>${x.rating??'—'}</strong></div>`).join('')}</div></div><div><h3>Key moments</h3><div class="commentary">${report.events.filter(e=>['goal','yellow','red','injury','chance'].includes(e.type)).map(e=>`<div class="comment ${e.type}"><small>${clockLabel(e.minute)}</small><br>${html(e.text)}</div>`).join('')||'<div class="muted">A quiet game.</div>'}</div></div></div><div class="modal-actions"><button class="btn primary arrow" data-action="close-report">Continue career</button></div>`;
@@ -420,8 +460,9 @@ function matchOverlay(){
  return `<div class="overlay" role="dialog" aria-modal="true" aria-label="Matchday"><div class="modal ${match.phase==='live'?'live-modal':''}">${home&&match.phase!=='live'?`<div class="match-ground" aria-label="Crowd at ${html(myClub().ground)}">${sceneSvg({...myClub(),colour:myColour()},career.site,true,match.kickoff>='17:30',true,career.stadium)}<span>${html(myClub().ground)} · ${capacity(career.stadium,myClub()).toLocaleString('en-GB')} seats</span></div>`:''}<div class="modal-head"><div style="flex:1">${body}</div></div></div></div>`;
 }
 
+function swapPlayers(a,b){let target=career.lineup.indexOf(b)>=0?career.lineup.indexOf(b):career.bench.indexOf(b)>=0?11+career.bench.indexOf(b):-1;let incoming=a;if(target<0){target=career.lineup.indexOf(a)>=0?career.lineup.indexOf(a):career.bench.indexOf(a)>=0?11+career.bench.indexOf(a):-1;incoming=b}if(target<0)return false;swapLineup(target,incoming);return true}
 function swapLineup(target,id){
- if(!id)return;
+ if(!id||!Number.isInteger(target)||target<0||target>=18||owner(id)!==career.clubId)return;
  const list=target<11?career.lineup:career.bench,offset=target<11?target:target-11;
  const old=list[offset];const oldXi=career.lineup.indexOf(id),oldBench=career.bench.indexOf(id);
  if(oldXi>=0)career.lineup[oldXi]=old;
@@ -489,7 +530,7 @@ root.addEventListener('click',event=>{
  else if(action==='sub'){sub=el.dataset.sub;instructionPlayer=null;render()}
  else if(action==='open-offers'){section='squad';sub='transfers';render()}
  else if(action==='list-player'){const id=el.dataset.id;if(career.transferList.includes(id))career.transferList=career.transferList.filter(x=>x!==id);else{career.transferList.push(id);career.players[id].request=null}save();render()}
- else if(action==='player-instructions'||action==='player-happiness'||action==='focus-player'){instructionPlayer=el.dataset.player;instructionAnchorType=el.closest?.('.player-card')?'player-card':'shirt-slot';section='squad';sub='lineup';render()}
+ else if(action==='player-instructions'||action==='player-happiness'||action==='focus-player'){instructionPlayer=el.dataset.player;instructionAnchorType=el.closest?.('.profile-row')?'profile-row':el.closest?.('.player-card')?'player-card':'shirt-slot';section='squad';if(sub!=='profiles')sub='lineup';render()}
  else if(action==='close-player-panel'){instructionPlayer=null;render()}
  else if(action==='offer-loan'){
   const id=el.dataset.player,p=player(id),dest=rand(source.clubs.filter(c=>c.id!==career.clubId&&squadPlayers(c.id).length<28));
@@ -507,20 +548,22 @@ root.addEventListener('click',event=>{
  else if(action==='bid'){const p=player(el.dataset.id),fee=Math.round(transferValue(p)*1.1/10000)*10000;if(career.balance<fee){toast(`You need ${fmtMoney(fee)} to make this bid.`);return}if(squadPlayers(career.clubId).length>=26){toast('The first-team squad is full at 26 players.');return}if(squadPlayers(owner(p.id)).length<=18){toast('That club needs to keep enough players for its matchday squad.');return}if(Math.random()<.65||career.transferList.includes(p.id)){resolveTransfer(p.id,career.clubId,fee);toast(`${p.name} joins your club for ${fmtMoney(fee)}.`)}else{career.offers.push({id:p.id,clubId:owner(p.id),fee:Math.round(fee*1.2/10000)*10000,status:'counter',incoming:true});career.news.push({date:career.date,text:`${clubName(owner(p.id))} countered your bid for ${p.name}.`});save();render();toast('The selling club has countered your offer.')}}
  else if(['accept-offer','counter-offer','reject-offer'].includes(action)){const id=el.dataset.id,clubId=el.dataset.club,o=career.offers.find(x=>x.id===id&&x.clubId===clubId&&(x.status==='new'||x.status==='counter'));if(!o)return;if(action==='reject-offer'){o.status='rejected';save();render();return}if(action==='counter-offer'){if(o.incoming){toast('The selling club is waiting on your decision.');return}o.fee=Math.round(o.fee*1.2/10000)*10000;o.status='pending';save();render();toast(`Counter proposal sent: ${fmtMoney(o.fee)}.`);return}if(o.incoming){if(career.balance<o.fee){toast('Your club cannot afford that fee.');return}if(squadPlayers(career.clubId).length>=26){toast('The first-team squad is full at 26 players.');return}resolveTransfer(id,career.clubId,o.fee)}else{if(squadPlayers(career.clubId).length<=18){toast('Keep at least 18 players in your squad.');return}resolveTransfer(id,clubId,o.fee)}}
  else if(action==='medical-invest'){const kind=el.dataset.kind,level=career.medical[kind],cost=(level+1)*(kind==='prevention'?150000:120000);if(!['prevention','recovery'].includes(kind)||level>=3||career.balance<cost)return;career.balance-=cost;career.medical[kind]++;career.news.push({date:career.date,text:`Medical ${kind} funded to level ${career.medical[kind]} for ${fmtMoney(cost)}.`});save();render()}
- else if(action==='toggle-squad-list'){if(el.dataset.list==='bench')benchExpanded=!benchExpanded;else reservesExpanded=!reservesExpanded;render()}
+ else if(action==='toggle-squad-list'){if(el.dataset.list==='bench')benchExpanded=!benchExpanded;else reservesExpanded=!reservesExpanded;career.ui={benchExpanded,reservesExpanded};save();render()}
  else if(action==='close-table'){postMatchTable=false;section='hub';save();render()}
  else if(action==='advance')advance();
  else if(action==='auto-lineup'){const picks=bestLineup(career.clubId,career.formation);career.lineup=picks.lineup;career.bench=picks.bench;save();render()}
+ else if(action==='auto-subs'){career.bench=pickBalancedBench(squadPlayers(career.clubId).filter(p=>!career.lineup.includes(p.id)),7);save();render();toast('Substitutes picked with goalkeeper, defensive, midfield and attacking cover.')}
  else if(action==='formation'){setFormation(el.dataset.value)}
  else if(action==='style'){career.style=el.dataset.value;save();render()}
  else if(action==='order'){career.order=el.dataset.value;save();render()}
- else if(action==='select-player'){const id=el.dataset.player;if(selectedSlot!==null)swapLineup(selectedSlot,id);else{selectedPlayer=id;render()}}
+ else if(action==='select-player'){const id=el.dataset.player;if(selectedSlot!==null)swapLineup(selectedSlot,id);else if(selectedPlayer&&selectedPlayer!==id&&swapPlayers(selectedPlayer,id)){}else{selectedPlayer=id;render()}}
  else if(action==='slot'){const at=Number(el.dataset.index);if(selectedPlayer)swapLineup(at,selectedPlayer);else{selectedSlot=at;render()}}
  else if(action==='close-choice'){match=null;career.time='09:00';save();render()}
  else if(action==='choice-back'){match.phase='choice';save();render()}
  else if(action==='watch-match')beginMatch('watch');
  else if(action==='simulate-match')beginMatch('simulate');
  else if(action==='confirm-lineup'){if(!validLineup()){toast('Complete your XI and bench, including a fit goalkeeper.');return}match.lineup=[...career.lineup];match.bench=[...career.bench];match.participants=Object.fromEntries(match.lineup.map(id=>[id,{start:0,end:null}]));match.phase='live';career.time=match.kickoff||'15:00';match.events.push({minute:0,type:'info',text:'Kick-off! The match is underway.'});save();render()}
+ else if(action==='toggle-assistant'){if(!match||match.phase!=='live')return;match.assistant=!match.assistant;if(!match.assistant){clearTimeout(autoResumeTimer);if(match.paused&&['red','injury'].includes(match.pauseReason))match.pauseReason='manual';else match.paused=true}match.events.push({minute:match.minute,type:'info',text:match.assistant?'Assistant manager now handles substitutions and sending offs.':'You have taken control of match decisions.'});save();render()}
  else if(action==='speed'){match.speed=Number(el.dataset.speed);save();render()}
  else if(action==='sim-next')skipMatch('next');
  else if(action==='sim-half')skipMatch('half');
@@ -541,13 +584,14 @@ root.addEventListener('change',event=>{
  else if(el.id==='clubRename'){setup.names[setup.clubId]=el.value.trim().slice(0,32)||club(setup.clubId).name;render()}
  else if(el.dataset.rename){setup.names[el.dataset.rename]=el.value.trim().slice(0,32)||club(el.dataset.rename).name;render()}
  else if(el.id==='customColour'){setup.colour=el.value;render()}
+ else if(el.dataset.assistantChoice!==undefined){match.assistant=el.checked;save();render()}
  else if(el.dataset.matchSetting){if(el.dataset.matchSetting==='formation'){if(match?.phase==='live'){career.formation=el.value;save();render()}else setFormation(el.value);return}career[el.dataset.matchSetting]=el.value;save();render()}
 });
 root.addEventListener('dragstart',event=>{const card=event.target.closest('[data-player]');if(!card?.draggable)return;event.dataTransfer.setData('text/plain',card.dataset.player);const ghost=card.querySelector('.shirt')?.cloneNode(true);if(ghost){ghost.classList.add('drag-preview');document.body.appendChild(ghost);event.dataTransfer.setDragImage(ghost,20,20);setTimeout(()=>ghost.remove(),0)}});
-root.addEventListener('dragover',event=>{const slot=event.target.closest('[data-drop-slot]');if(slot)event.preventDefault();if(dragTarget!==slot){dragTarget?.classList.remove('drop-highlight');dragTarget=slot;dragTarget?.classList.add('drop-highlight')}});
-root.addEventListener('dragleave',event=>{if(!event.relatedTarget?.closest?.('[data-drop-slot]')){dragTarget?.classList.remove('drop-highlight');dragTarget=null}});
+root.addEventListener('dragover',event=>{const slot=event.target.closest('[data-drop-slot],[data-drop-player]');if(slot)event.preventDefault();if(dragTarget!==slot){dragTarget?.classList.remove('drop-highlight');dragTarget=slot;dragTarget?.classList.add('drop-highlight')}});
+root.addEventListener('dragleave',event=>{if(!event.relatedTarget?.closest?.('[data-drop-slot],[data-drop-player]')){dragTarget?.classList.remove('drop-highlight');dragTarget=null}});
 root.addEventListener('dragend',()=>{dragTarget?.classList.remove('drop-highlight');dragTarget=null});
-root.addEventListener('drop',event=>{const slot=event.target.closest('[data-drop-slot]');dragTarget?.classList.remove('drop-highlight');dragTarget=null;if(!slot)return;event.preventDefault();swapLineup(Number(slot.dataset.dropSlot),event.dataTransfer.getData('text/plain'))});
+root.addEventListener('drop',event=>{const slot=event.target.closest('[data-drop-slot],[data-drop-player]');dragTarget?.classList.remove('drop-highlight');dragTarget=null;if(!slot)return;event.preventDefault();const id=event.dataTransfer.getData('text/plain');if(slot.dataset.dropSlot!==undefined)swapLineup(Number(slot.dataset.dropSlot),id);else swapPlayers(id,slot.dataset.dropPlayer)});
 root.addEventListener('keydown',event=>{if((event.key==='Enter'||event.key===' ')&&event.target.matches('.shirt-slot[role="button"],.player-card[role="button"],.designer-hit[role="button"]')){event.preventDefault();event.target.click()}});
 root.addEventListener('pointerdown',event=>{if(event.target.closest('.slot-tool'))return;const card=event.target.closest('.player-card[data-player],.shirt-slot[data-player]');if(!card?.dataset.player)return;activeDrag={id:card.dataset.player,x:event.clientX,y:event.clientY,moved:false}});
 document.addEventListener('pointermove',event=>{
@@ -558,14 +602,14 @@ document.addEventListener('pointermove',event=>{
  activeDrag.moved=true;
  if(!dragGhost){dragGhost=document.createElement('div');dragGhost.className='touch-drag-ghost';dragGhost.innerHTML=shirt(player(activeDrag.id));document.body.appendChild(dragGhost)}
  dragGhost.style.left=`${event.clientX}px`;dragGhost.style.top=`${event.clientY}px`;
- const slot=document.elementFromPoint(event.clientX,event.clientY)?.closest('[data-drop-slot]');
+ const slot=document.elementFromPoint(event.clientX,event.clientY)?.closest('[data-drop-slot],[data-drop-player]');
  if(slot!==dragTarget){dragTarget?.classList.remove('drop-highlight');dragTarget=slot;dragTarget?.classList.add('drop-highlight')}
 });
 document.addEventListener('pointerup',()=>{
  if(!activeDrag)return;
  const slot=dragTarget,id=activeDrag.id,moved=activeDrag.moved;
  dragGhost?.remove();dragGhost=null;dragTarget?.classList.remove('drop-highlight');dragTarget=null;activeDrag=null;
- if(moved){suppressDragClick=true;setTimeout(()=>suppressDragClick=false,80);if(slot)swapLineup(Number(slot.dataset.dropSlot),id)}
+ if(moved){suppressDragClick=true;setTimeout(()=>suppressDragClick=false,80);if(slot){if(slot.dataset.dropSlot!==undefined)swapLineup(Number(slot.dataset.dropSlot),id);else swapPlayers(id,slot.dataset.dropPlayer)}}
 });
 
 render();
