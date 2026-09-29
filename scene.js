@@ -2,23 +2,17 @@ import {SECTIONS,STANDS,normaliseLayout,defaultLayout} from './stadium-model.js'
 import {groundsStand} from './grounds-geometry.js';
 // Fixed site plots share the stadium grid. No stadium translation or rotation is exposed.
 const SITE={
- // Ground-plane axes follow the two paved edges of each fixed build plot.
- // The art is hand painted, so each location has its own calibrated frame.
- city:{art:'top-city-redevelopment-v2',origin:[410,1190],east:[8.5,5.9],south:[-8.9,5.9]},
- harbour:{art:'top-city-redevelopment-v2',origin:[410,1190],east:[8.5,5.9],south:[-8.9,5.9]},
- civic:{art:'top-civic-quarter-v2',origin:[420,1145],east:[8.55,5.0],south:[-8.75,5.0]},
- riverside:{art:'top-riverside-quarter-v2',origin:[415,1130],east:[8.5,5.7],south:[-8.7,5.45]},
- gardens:{art:'top-civic-gardens-v2',origin:[420,1350],east:[8.75,5.6],south:[-8.9,5.45]},
- rail:{art:'top-rail-district-v2',origin:[410,1225],east:[8.65,5.85],south:[-8.9,5.6]},
- university:{art:'mid-university-district-v2',origin:[410,1160],east:[8.6,5.0],south:[-8.75,5.05]},
- oldtown:{art:'mid-market-town-v2',origin:[410,1160],east:[7.8,5.0],south:[-8.05,5.15]}
+ town:{art:'clubline-town',origin:[430,1210],east:[7.2,4.2],south:[-7.35,4.2]},
+ riverside:{art:'clubline-riverside',origin:[425,1210],east:[7.2,4.2],south:[-7.35,4.2]},
+ beach:{art:'clubline-beach',origin:[427,1250],east:[7.2,4.2],south:[-7.35,4.2]},
+ rural:{art:'clubline-rural',origin:[420,1156],east:[7.2,4.2],south:[-7.35,4.2]}
 };
 const ART_WIDTH=830,ART_HEIGHT=1895,SCENE_WIDTH=1100,SCENE_HEIGHT=ART_HEIGHT*SCENE_WIDTH/ART_WIDTH;
 const at=(x,y,z=0)=>({x,y,z}),mix=(a,b,t)=>at(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t,a.z+(b.z-a.z)*t);
 const safe=s=>String(s??'').replace(/[&<>"']/g,'');
 export const stadiumProfile=club=>({name:defaultLayout(club).name});
-export function sceneSvg(club,site='city',crowd=false,evening=false,close=false,layout=null,selection=null,motion=null){
- const map=SITE[site]||SITE.city,model=normaliseLayout(layout,club),colour=/^#[0-9a-f]{6}$/i.test(club?.colour||'')?club.colour:'#a03948';
+export function sceneSvg(club,site='town',crowd=false,evening=false,close=false,layout=null,selection=null,motion=null){
+ const map=SITE[site]||SITE.town,model=normaliseLayout(layout,club),colour=/^#[0-9a-f]{6}$/i.test(club?.colour||'')?club.colour:'#a03948';
  const px=SCENE_WIDTH/ART_WIDTH,py=SCENE_HEIGHT/ART_HEIGHT,zStep=2.55*px;
  // All game objects use the same two ground-plane vectors. This keeps the
  // pitch, tiers, designer hit regions and match animation in one site frame.

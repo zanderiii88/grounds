@@ -1,13 +1,18 @@
-# Clubline — Release 1.14.0
+# Clubline 1.16.0 — Approved maps and mobile framing
 
-Copy **all** ZIP contents into the root of your GitHub Pages repository, including `sw.js`, `assets`, `data` and the HTML/JS/CSS files. Use **Check for updates** in the installed app if it still shows the previous version.
+Upload the contents of this folder to your existing GitHub Pages repository, replacing the previous game files. Keep index.html at the repository root. On the phone, use Check for updates, then Load update if offered.
 
-## This pass
+## Included
+- Only the four approved locations: Town Quarter, Riverside City, Beach Resort and Woodland Station.
+- Fixed pitch-centred stadium placement, shared projection and scale; no movement or rotation controls.
+- Eight prerendered showcase scenes: each location by day and evening, with gentle pan and crossfade. Incoming images decode before replacing the previous scene.
+- Compact centred start controls, leaving the stadium visible below on portrait screens.
+- Persistent career status bar: logo, league position, date/time, balance and fixtures.
+- Prominent age in player cards, profiles, bench and reserve lists.
+- Existing careers on retired maps migrate to Town Quarter.
 
-- Centered the compact start menu over the portrait scenes, leaving the stadium visible below it.
-- Calibrated the two ground-plane axes separately for each of the seven painted plots. The pitch, stands, roofs, designer selection regions and match sprites all share the same fixed projection.
-- Increased the visual footprint within the paved plots and checked full-size stand configurations against surrounding roads and buildings.
-- Added visible raked aisles, tier edge rails, concourse openings, facade entrance bays and roof structural lines to the editable GROUNDS-based modules. Full roofs now reveal more of the lower seating bowl.
-- Regenerated the 14 start-screen frames from this same live stadium renderer.
+## Validation
+JavaScript syntax checks passed. All 12 clubs render valid scene geometry on all four maps. Season creation, age displays and retired-map save migration passed programmatic checks. Rendered showcase artwork inspected. Browser layout testing could not be completed because the browser download failed; mobile touch and pinned-bar layout require device verification.
 
-The maps are painted assets and their street edges are not mathematically exact throughout. The site calibration fits the build plots visually; a future art pass could make every surrounding road line perfectly parallel. Night scenes still use graded daytime art.
+## Known issue and queued work
+The rural plot boundary angles remain imperfect and are accepted for now; correction is queued for a later art pass. No additional maps were added. Youth intake, squad limits, player conversations and development reports are queued for the following gameplay release.
