@@ -1,7 +1,24 @@
+// Structural stand catalogue approved through the Clubline previews.
+export function groundsStand(id){
+ const original=legacyGroundsStand(id);if(!original)return original;
+ if(['grass','terrace3','terrace5','bleacher3','bleacher5'].includes(id)){
+  const t=original.tiers[0];return {...original,partialFrontV:t.startV+(t.rows*t.rowPitch)*.45};
+ }
+ const variants={s1:[1,8,1.52,.53,0,false],s2:[1,8,3.04,.53,0,false],l1:[1,11,1.52,.58,0,false],l2:[1,11,2.62,.58,0,false],d1:[2,8,1.52,.53,13.1,false],d2:[2,8,1.52,.73,10.2,true],d3:[2,8,2.05,.53,17.0,false],d4:[2,8,2.05,.73,13.3,true],d5:[2,10,1.68,.60,17.5,false],d6:[2,10,1.78,.73,14.0,true],t1:[3,8,1.52,.53,13.1,false],t2:[3,8,1.52,.73,10.2,true]};
+ const [count,rows,rake,pitch,lift,overhang]=variants[id]||variants.s1;
+ const tiers=Array.from({length:count},(_,i)=>{const startV=overhang?2.0-i*.65:.42+i*(rows*pitch+.65);return {rows,startV,rowPitch:pitch,tread:pitch-.06,startZ:1.5+i*lift,rise:rake+i*.14};});
+ const depth=Math.max(...tiers.map(t=>t.startV+t.rows*t.rowPitch))+.35;
+ const wallH=Math.max(...tiers.map(t=>t.startZ+(t.rows-1)*t.rise))+.45;
+ const decks=tiers.slice(1).map((upper,i)=>({style:overhang?'overhang':'setback',frontV:overhang?upper.startV:tiers[i].startV+tiers[i].rows*tiers[i].rowPitch,backV:upper.startV,baseZ:upper.startZ-1.15,topZ:upper.startZ-.18}));
+ const spec={...original,tiers,decks,depth,wallH,roofRearV:depth+.12,roofFrontZ:wallH+1,roofRearZ:wallH+1.8,partialFrontV:tiers.at(-1).startV+2.0};
+ // Preserve the approved rake, tier spacing and depth. Map plots must fit the engine.
+ return spec;
+}
+
 // Tier, deck and roof dimensions transcribed from GROUNDS standSpec.
 // Keep the original height and depth adjustments so double and triple bowls
 // preserve their staggered deck profiles.
-export function groundsStand(id){
+function legacyGroundsStand(id){
  if(id==='empty')return null;
  if(['grass','terrace3','terrace5','bleacher3','bleacher5'].includes(id)){
   const cfg={grass:[1,1.25,.10,.10],terrace3:[3,.43,.32,.40],terrace5:[5,.43,.36,.44],bleacher3:[3,.50,.65,.62],bleacher5:[5,.50,.65,.62]}[id];

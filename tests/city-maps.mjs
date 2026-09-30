@@ -1,0 +1,9 @@
+import assert from 'node:assert/strict';import fs from 'node:fs';import {SITES} from '../sites.js';import {sceneSvg} from '../scene.js';import {groundsStand} from '../grounds-geometry.js';import {STANDS,defaultLayout,SECTIONS} from '../stadium-model.js';
+const club=JSON.parse(fs.readFileSync(new URL('../data/league.json',import.meta.url))).clubs[0],cities=SITES.filter(s=>s.plot);assert.equal(cities.length,6);assert.equal(SITES.length,12);
+const depth=Math.max(...Object.keys(STANDS).map(id=>groundsStand(id)?.depth||0));assert(depth<=14.79+1e-6,'Measured maximum stand depth');
+const bounds=[[2.21,2.21],[69.79,2.21],[69.79,57.79],[2.21,57.79]];
+function inside(p,poly){return poly.every((a,i)=>{const b=poly[(i+1)%4];return ((b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]))/Math.hypot(b[0]-a[0],b[1]-a[1])>=15})}
+const layout=defaultLayout(club);for(const section of SECTIONS)layout.sections[section.id]={stand:'t1',roof:'continuous',rear:'hospitality',finish:'metal'};
+for(const s of cities){assert(s.night);assert.equal(s.scale,cities[0].scale);assert(Math.abs(s.east[1]/s.east[0]-4.2/7.2)<1e-12);assert(Math.abs(s.south[1]/s.south[0]+4.2/7.35)<1e-12);for(const [x,y] of bounds)assert(inside([s.origin[0]+(x-36)*s.east[0]+(y-30)*s.south[0],s.origin[1]+(x-36)*s.east[1]+(y-30)*s.south[1]],s.plot),'Maximum ground clearance '+s.id);
+for(const evening of [false,true]){const art=new URL('../assets/sites/'+s.art+'-'+(evening?'evening':'day')+'.webp',import.meta.url);assert(fs.statSync(art).size>10000);const svg=sceneSvg(club,s.id,true,evening,'match',layout,null,{phase:'live',ambient:true,homeCount:11,awayCount:11});assert(svg.includes(s.art+'-'+(evening?'evening':'day')+'.webp'));assert(!/NaN|undefined|Infinity/.test(svg));assert.equal((svg.match(/data-player-route=/g)||[]).length,22);}}
+console.log('Six day/night city assets, fixed shared scale/axis directions, maximum clear plots and finite live overlays passed');

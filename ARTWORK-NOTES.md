@@ -16,3 +16,12 @@ Placement centres in 830×1895 artwork:
 - Tyne Quarter: [415,1230]
 
 All sites share the engine ground vectors. Image-generated geometry is visually checked against the maximum engine stadium; these backgrounds are artwork rather than a collision/navigation model.
+
+## Release 1.22.0 check
+
+All 28 startup composites were regenerated. Seven approved backgrounds and placement centres are unchanged. Maximum layouts use 14.79-unit triple-setback stands, 2.6-unit hospitality rear blocks and a .4-unit access allowance. The rectangular envelope extends from ground x=2.21 to69.79 and y=2.21 to57.79. Its projected width is about 894 pixels, exceeding the 830-pixel artwork. All sites need further maximum-footprint plot work; neither axes nor clearance are certified. Diagnostic yellow guides appear only in the separate review images.
+
+
+## Release 1.23.0 city artwork
+
+See CITY-MAP-NOTES.md. Six city day/night maps are integrated, using natural image proportions and shared stadium scale. This supersedes the former Granite Harbour artwork and its earlier placement audit. Five cities are added; other approved maps remain available.

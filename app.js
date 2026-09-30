@@ -1,13 +1,14 @@
-import {pitchPlayers} from './stadium-life.js?v=1.20.0';
-import {syncStadiumLife,disposeStadiumLife} from './match-life.js?v=1.20.0';
-import {ensureMatchStats,recordPossession,recordShot,possessionPercent} from './match-stats.js?v=1.20.0';
-import {constructionQuote,startConstruction,advanceConstruction,usableCapacity} from './construction.js?v=1.20.0';
-import {SITES as SITE_CATALOGUE,SHOWCASE_SITES} from './sites.js?v=1.20.0';
-import {initialiseDevelopment,promoteProspect,developmentDay,rolloverDevelopment,squadSpace,canRegister,youthLevel,estimatedStars} from './development.js?v=1.20.0';
-import {sceneSvg,stadiumProfile} from './scene.js?v=1.20.0';
-import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.20.0';
+import {playerValue,blankTransferFilters,searchLeaguePlayers} from './transfer-search.js?v=1.23.0';
+import {pitchPlayers} from './stadium-life.js?v=1.23.0';
+import {syncStadiumLife,disposeStadiumLife} from './match-life.js?v=1.23.0';
+import {ensureMatchStats,recordPossession,recordShot,possessionPercent} from './match-stats.js?v=1.23.0';
+import {constructionQuote,startConstruction,advanceConstruction,usableCapacity} from './construction.js?v=1.23.0';
+import {SITES as SITE_CATALOGUE,SHOWCASE_SITES} from './sites.js?v=1.23.0';
+import {initialiseDevelopment,promoteProspect,developmentDay,rolloverDevelopment,squadSpace,canRegister,youthLevel,estimatedStars} from './development.js?v=1.23.0';
+import {sceneSvg,stadiumProfile} from './scene.js?v=1.23.0';
+import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.23.0';
 
-const APP_VERSION='1.20.0';
+const APP_VERSION='1.23.0';
 const SAVE_KEY='clubline-career-r1';
 const SITES=SITE_CATALOGUE.map(s=>[s.id,s.name,s.limit]);
 const availableSites=c=>SITES.filter(([, ,limit])=>c.capacity<=limit);
@@ -43,7 +44,7 @@ let editing=null,selectedStand='N4',selectedStands=new Set(['N4']),opponentOpen=
 let saveWarning='',source,career=null,view='title',section='hub',sub='lineup',setup={clubId:'C01',site:'town',names:{},colour:null},selectedPlayer=null,selectedSlot=null,instructionPlayer=null,statsScope='club',statsSort='goals',statsDescending=true,match=null,timer=null,notice='',updateMessage='',availableVersion=null,checkingUpdate=false;
 const root=document.getElementById('app');
 
-try {source=await (await fetch('./data/league.json?v=1.20.0',{cache:'no-store'})).json();}
+try {source=await (await fetch('./data/league.json?v=1.23.0',{cache:'no-store'})).json();}
 catch(error){root.innerHTML='<main class="app-shell"><div class="shell-content"><h1>Clubline</h1><p>Could not load the league data. Open the game through a web server or GitHub Pages.</p></div></main>';throw error;}
 const originalLeague=structuredClone(source);
 const ambitiousIds=new Set(source.clubs.map(c=>source.players.filter(p=>p.clubId===c.id).sort((a,b)=>a.overall-b.overall).slice(0,6).sort((a,b)=>b.potential-a.potential)[0]?.id));
@@ -53,7 +54,8 @@ const club=id=>source.clubs.find(c=>c.id===id);
 const player=id=>source.players.find(p=>p.id===id);
 const owner=id=>career?.owners?.[id]||player(id)?.clubId;
 const squadPlayers=id=>source.players.filter(p=>owner(p.id)===id&&!career?.players?.[p.id]?.retired&&!career?.players?.[p.id]?.unregistered);
-const transferValue=p=>Math.round((p.overall-55)**2*4500+Math.max(0,p.potential-p.overall)*22000);
+const transferValue=playerValue;
+let transferFilters=blankTransferFilters(),transferLimit=50;
 const myClub=()=>club(career?.clubId||setup.clubId);
 const clubName=id=>career?.names?.[id]||setup.names?.[id]||club(id)?.name||id;
 const myColour=()=>career?.colour||setup.colour||myClub()?.colour||'#e5484f';
@@ -119,7 +121,7 @@ function newCareer(){
  source=structuredClone(originalLeague);
  postMatchTable=false;archivedReport=null;benchExpanded=true;reservesExpanded=false;tickerIndex=0;career=null;
  const c=club(setup.clubId),choice=bestLineup(c.id,c.formation);
- career={version:1,clubId:c.id,names:{...setup.names},colour:setup.colour||c.colour,site:setup.site,construction:[],date:'2026-08-13',time:'09:00',balance:c.budget*5,formation:c.formation,style:c.style,order:'Standard',lineup:choice.lineup,bench:choice.bench,players:Object.fromEntries(source.players.map(p=>[p.id,{fitness:p.fitness,form:[],happiness:64+(p.number*7)%25,ambitious:ambitiousIds.has(p.id),instruction:'Standard',reason:'Content with their squad role.'}])),stats:{},loans:{},owners:{},transferList:[],offers:[],stadium:defaultLayout(c),schedule:scheduleSeason(),reports:[],news:[],medical:{prevention:0,recovery:0},ui:{benchExpanded:true,reservesExpanded:false},kit:{home:'solid',away:'stripes'}};
+ career={version:1,clubId:c.id,names:{...setup.names},colour:setup.colour||c.colour,site:setup.site,construction:[],date:'2026-08-13',time:'09:00',balance:c.budget*5,formation:c.formation,style:c.style,order:'Standard',lineup:choice.lineup,bench:choice.bench,players:Object.fromEntries(source.players.map(p=>[p.id,{fitness:p.fitness,form:[],happiness:64+(p.number*7)%25,ambitious:ambitiousIds.has(p.id),instruction:'Standard',reason:'Content with their squad role.'}])),stats:{},loans:{},owners:{},transferList:[],hotList:[],offers:[],stadium:defaultLayout(c),schedule:scheduleSeason(),reports:[],news:[],medical:{prevention:0,recovery:0},ui:{benchExpanded:true,reservesExpanded:false},kit:{home:'solid',away:'stripes'}};
  initialiseDevelopment(career,source);developmentDay(career,source,nextFixture());view='career';section='hub';sub='lineup';const saved=save();render();
  if(!saved)toast('The season is open, but this device could not save it. Free storage before reloading.');
  }catch(error){
@@ -141,7 +143,7 @@ function save(){
   return false;
  }
 }
-function load(){try{const saved=JSON.parse(localStorage.getItem(SAVE_KEY));if(saved?.career?.version===1){postMatchTable=false;career=saved.career;career.construction??=[];advanceConstruction(career);source=structuredClone(originalLeague);initialiseDevelopment(career,source);career.ui??={benchExpanded:true,reservesExpanded:false};benchExpanded=career.ui.benchExpanded;reservesExpanded=career.ui.reservesExpanded;career.owners??={};career.transferList??=[];career.offers??=[];career.stats??={};career.loans??={};career.medical??={prevention:0,recovery:0};career.medical.prevention??=0;career.medical.recovery??=0;for(const p of source.players){const state=career.players[p.id]??(career.players[p.id]={fitness:p.fitness,form:[]});state.happiness??=70;state.ambitious??=ambitiousIds.has(p.id);state.instruction??='Standard';state.reason??='Content with their squad role.';if(state.injuryDays&&!state.injuryType)state.injuryType='Knock'}career.stadium=normaliseLayout(career.stadium,club(career.clubId));if(!SITES.some(([id])=>id===career.site))career.site='town';match=saved.match||null;if(match)match.kickoff??='15:00';return true}}catch{}return false}
+function load(){try{const saved=JSON.parse(localStorage.getItem(SAVE_KEY));if(saved?.career?.version===1){postMatchTable=false;career=saved.career;career.construction??=[];advanceConstruction(career);source=structuredClone(originalLeague);initialiseDevelopment(career,source);career.ui??={benchExpanded:true,reservesExpanded:false};benchExpanded=career.ui.benchExpanded;reservesExpanded=career.ui.reservesExpanded;career.owners??={};career.transferList??=[];career.hotList=Array.isArray(career.hotList)?career.hotList:[];career.offers??=[];career.stats??={};career.loans??={};career.medical??={prevention:0,recovery:0};career.medical.prevention??=0;career.medical.recovery??=0;for(const p of source.players){const state=career.players[p.id]??(career.players[p.id]={fitness:p.fitness,form:[]});state.happiness??=70;state.ambitious??=ambitiousIds.has(p.id);state.instruction??='Standard';state.reason??='Content with their squad role.';if(state.injuryDays&&!state.injuryType)state.injuryType='Knock'}career.stadium=normaliseLayout(career.stadium,club(career.clubId));if(!SITES.some(([id])=>id===career.site))career.site='town';match=saved.match||null;if(match)match.kickoff??='15:00';return true}}catch{}return false}
 const hasSave=()=>{try{return JSON.parse(localStorage.getItem(SAVE_KEY))?.career?.version===1}catch{return false}};
 function nextFixture(){if(!career)return null;for(const round of career.schedule){const f=round.fixtures.find(x=>(x.home===career.clubId||x.away===career.clubId)&&x.homeGoals===null);if(f)return {...f,date:round.date,round}}return null}
 function allResults(){return career.schedule.flatMap(r=>r.fixtures.filter(f=>f.homeGoals!==null).map(f=>({...f,date:r.date})))}
@@ -257,11 +259,27 @@ function statisticsSection(){
  const head=([key,label])=>`<th><button class="stat-sort ${statsSort===key?'active':''}" data-action="stats-sort" data-sort="${key}" aria-label="Sort by ${label}">${label}${statsSort===key?(statsDescending?' ↓':' ↑'):''}</button></th>`;
  return `<div class="stats-intro"><p>Season player statistics. Appearances include starts and substitute appearances; goalkeeper goals conceded count while they play.</p><div class="tabs"><button class="btn ${statsScope==='club'?'selected':''}" data-action="stats-scope" data-scope="club">Your club</button><button class="btn ${statsScope==='league'?'selected':''}" data-action="stats-scope" data-scope="league">Premier Division</button></div></div><div class="table-wrap"><table class="league-table player-stats"><thead><tr><th>Player</th><th>Club</th>${columns.map(head).join('')}</tr></thead><tbody>${entries.map(({p,s})=>`<tr class="${owner(p.id)===career.clubId?'mine':''}"><td><b>${html(p.name)}</b><small>${p.primary}</small></td><td>${html(clubName(owner(p.id)))}</td><td>${s.appearances||0}</td><td>${s.starts||0}</td><td>${s.minutes||0}</td><td>${s.goals||0}</td><td>${s.assists||0}</td><td>${s.ratedMinutes?(s.ratingTotal/s.ratedMinutes).toFixed(1):'—'}</td><td>${p.primary==='GK'?(s.conceded||0):'—'}</td><td>${p.primary==='GK'?(s.cleanSheets||0):'—'}</td></tr>`).join('')}</tbody></table></div>`;
 }
+function transferResults(){
+ const found=searchLeaguePlayers(source.players,career,transferFilters),rows=found.slice(0,transferLimit);
+ return {count:found.length,markup:rows.map(p=>{const own=owner(p.id)===career.clubId,loan=!!career.loans[p.id];return `<div class="transfer-row league-player-row" data-result-player="${p.id}"><label class="hot-list-check"><input type="checkbox" data-hot-player="${p.id}" aria-label="Hot list: ${html(p.name)}" ${career.hotList.includes(p.id)?'checked':''}><span>Hot list</span></label><span><b>${html(p.name)}</b><small>${html(clubName(owner(p.id)))} · Age ${p.age} · ${p.primary} · ${p.overall} OVR</small><small>${fmtMoney(transferValue(p))} · ${career.transferList.includes(p.id)?'Transfer listed':'Not listed'}${loan?' · On loan':''}</small></span><div class="league-player-actions">${own?'<small>Your player</small>':loan?'<small>On loan</small>':`<button class="btn slim" data-action="inquire" data-id="${p.id}">Inquire</button><button class="btn slim primary" data-action="bid" data-id="${p.id}">Bid</button>`}</div></div>`}).join('')||'<div class="empty-note">No players match these filters.</div>'};
+}
+function transferSearchPanel(){
+ const f=transferFilters,results=transferResults();
+ const number=(key,label)=>`<label class="field">${label}<input class="input" type="number" min="0" step="${key.startsWith('value')?'1000':'1'}" data-transfer-filter="${key}" value="${html(f[key])}"></label>`;
+ const options=(items,value)=>items.map(([id,label])=>`<option value="${id}" ${value===id?'selected':''}>${label}</option>`).join('');
+ return `<section class="league-search"><h3>League player search</h3><p class="muted">Search every registered player in the division. Tick players to save them to your hot list.</p><div class="transfer-filters"><label class="field">Name<input class="input" type="search" data-transfer-filter="name" value="${html(f.name)}" placeholder="Player name"></label><label class="field">Transfer status<select class="select" data-transfer-filter="listed">${options([['all','All players'],['listed','Transfer listed'],['unlisted','Not listed']],f.listed)}</select></label><label class="field">Position<select class="select" data-transfer-filter="position">${options([['all','Any position'],['GK','Goalkeeper'],['defence','Defence'],['midfield','Midfield'],['attack','Attack'],...['LB','CB','RB','DM','CM','AM','LW','RW','ST'].map(pos=>[pos,pos])],f.position)}</select></label>${number('valueMin','Minimum value (£)')}${number('valueMax','Maximum value (£)')}${number('ageMin','Minimum age')}${number('ageMax','Maximum age')}${number('ratingMin','Minimum rating')}${number('ratingMax','Maximum rating')}<label class="field">Sort by<select class="select" data-transfer-filter="sort">${options([['rating','Highest rating'],['value','Highest value'],['age','Youngest'],['name','Name A–Z']],f.sort)}</select></label></div><div class="transfer-search-tools"><label class="hot-only"><input type="checkbox" data-transfer-filter="hotOnly" ${f.hotOnly?'checked':''}>Show hot list only</label><button class="btn slim ghost" data-action="reset-transfer-filters">Clear filters</button><span class="muted" id="transfer-result-count">${results.count} players</span></div><div class="transfer-list" id="league-search-results">${results.markup}</div><button class="btn slim" data-action="more-transfer-results" ${results.count<=transferLimit?'hidden':''}>Show more players</button></section>`;
+}
+function refreshTransferResults(){
+ const target=root.querySelector('#league-search-results');if(!target)return;
+ const results=transferResults();target.innerHTML=results.markup;root.querySelector('#transfer-result-count').textContent=`${results.count} players`;
+ root.querySelector('[data-action="more-transfer-results"]').hidden=results.count<=transferLimit;
+}
+function handleTransferFilter(el){if(!el.dataset.transferFilter)return false;transferFilters[el.dataset.transferFilter]=el.type==='checkbox'?el.checked:el.value;transferLimit=50;refreshTransferResults();return true}
 function transferProfile(p){const state=playerState(p.id),stats=career.stats[p.id]||{},form=state.form||[];return `${p.primary} · ${p.overall} OVR · ${ratingRole(p)} · ${stats.starts||0} starts / ${stats.appearances||0} apps · Form ${form.length?(form.reduce((a,b)=>a+b,0)/form.length).toFixed(1):'—'} · ${MOODS[moodLevel(p.id)][1]} · ${html(state.reason||'Content with their squad role.')} · Contract ${p.contract||1} years · Wage ${fmtMoney(p.wage)}/week`}
 function transfersSection(){
- const listed=source.players.filter(p=>owner(p.id)!==career.clubId&&!career.loans[p.id]&&!playerState(p.id).retired).filter(p=>career.transferList.includes(p.id)||p.overall<72).sort((a,b)=>b.overall-a.overall).slice(0,35);
+ career.hotList??=[];
  const my=squadPlayers(career.clubId).sort((a,b)=>b.overall-a.overall);
- return `<p>Scout the division, inquire about availability, and negotiate a fee. Clubs can accept, reject or counter an offer.</p><h3>Transfer proposals</h3><div class="list">${career.offers.filter(o=>o.status==='new'||o.status==='counter').map(o=>`<div class="transfer-row"><span><b>${html(player(o.id).name)}</b><small>${o.incoming?'Your bid to '+html(clubName(o.clubId)):html(clubName(o.clubId))+' bid'} · ${fmtMoney(o.fee)} ${o.status==='counter'?'counteroffer':'offer'}</small><small class="proposal-profile">${transferProfile(player(o.id))}</small></span><button class="btn slim primary" data-action="accept-offer" data-id="${o.id}" data-club="${o.clubId}">Accept</button><button class="btn slim" data-action="counter-offer" data-id="${o.id}" data-club="${o.clubId}">${o.incoming?'Wait':'Counter'}</button><button class="btn slim ghost" data-action="reject-offer" data-id="${o.id}" data-club="${o.clubId}">Reject</button></div>`).join('')||'<div class="empty-note">No proposals waiting.</div>'}</div><h3>Your squad · ${my.length} players</h3><div class="transfer-list">${my.map(p=>`<div class="transfer-row"><span><b>${html(p.name)}</b><small>${p.primary} · ${p.overall} OVR · value ${fmtMoney(transferValue(p))}</small></span><button class="btn slim ${career.transferList.includes(p.id)?'selected':''}" data-action="list-player" data-id="${p.id}">${career.transferList.includes(p.id)?'Listed ✓':'List'}</button></div>`).join('')}</div><h3>Market</h3><div class="transfer-list">${listed.map(p=>`<div class="transfer-row"><span><b>${html(p.name)}</b><small>${html(clubName(owner(p.id)))} · ${p.primary} · ${p.overall} OVR · ${fmtMoney(transferValue(p))}</small></span><button class="btn slim" data-action="inquire" data-id="${p.id}">Inquire</button><button class="btn slim primary" data-action="bid" data-id="${p.id}">Bid</button></div>`).join('')}</div>`;
+ return `<p>Scout the division, inquire about availability, and negotiate a fee. Clubs can accept, reject or counter an offer.</p><h3>Transfer proposals</h3><div class="list">${career.offers.filter(o=>o.status==='new'||o.status==='counter').map(o=>`<div class="transfer-row"><span><b>${html(player(o.id).name)}</b><small>${o.incoming?'Your bid to '+html(clubName(o.clubId)):html(clubName(o.clubId))+' bid'} · ${fmtMoney(o.fee)} ${o.status==='counter'?'counteroffer':'offer'}</small><small class="proposal-profile">${transferProfile(player(o.id))}</small></span><button class="btn slim primary" data-action="accept-offer" data-id="${o.id}" data-club="${o.clubId}">Accept</button><button class="btn slim" data-action="counter-offer" data-id="${o.id}" data-club="${o.clubId}">${o.incoming?'Wait':'Counter'}</button><button class="btn slim ghost" data-action="reject-offer" data-id="${o.id}" data-club="${o.clubId}">Reject</button></div>`).join('')||'<div class="empty-note">No proposals waiting.</div>'}</div><h3>Your squad · ${my.length} players</h3><div class="transfer-list">${my.map(p=>`<div class="transfer-row"><span><b>${html(p.name)}</b><small>${p.primary} · ${p.overall} OVR · value ${fmtMoney(transferValue(p))}</small></span><button class="btn slim ${career.transferList.includes(p.id)?'selected':''}" data-action="list-player" data-id="${p.id}">${career.transferList.includes(p.id)?'Listed ✓':'List'}</button></div>`).join('')}</div>${transferSearchPanel()}`;
 }
 function shirt(p,compact=false){return `<span class="shirt ${compact?'shirt-small':''}" style="--shirt:${p?.primary==='GK'?'#d3a548':myColour()}"><b>${p?html(p.number):'–'}</b></span>`}
 function playerPanel(){
@@ -616,6 +634,8 @@ root.addEventListener('click',event=>{
 
  else if(action==='sub'){sub=el.dataset.sub;instructionPlayer=null;render()}
  else if(action==='open-offers'){section='squad';sub='transfers';render()}
+ else if(action==='reset-transfer-filters'){transferFilters=blankTransferFilters();transferLimit=50;render()}
+ else if(action==='more-transfer-results'){transferLimit+=50;refreshTransferResults()}
  else if(action==='list-player'){const id=el.dataset.id;if(career.transferList.includes(id))career.transferList=career.transferList.filter(x=>x!==id);else{career.transferList.push(id);career.players[id].request=null}save();render()}
  else if(action==='player-instructions'||action==='player-happiness'||action==='focus-player'){instructionPlayer=el.dataset.player;instructionAnchorType=el.closest?.('.profile-row')?'profile-row':el.closest?.('.player-card')?'player-card':'shirt-slot';section='squad';if(sub!=='profiles')sub='lineup';render()}
  else if(action==='close-player-panel'){instructionPlayer=null;render()}
@@ -632,7 +652,7 @@ root.addEventListener('click',event=>{
  else if(action==='stats-scope'){statsScope=el.dataset.scope;render()}
  else if(action==='stats-sort'){statsDescending=statsSort===el.dataset.sort?!statsDescending:true;statsSort=el.dataset.sort;render()}
  else if(action==='inquire'){const p=player(el.dataset.id);toast(`${clubName(owner(p.id))} value ${p.name} around ${fmtMoney(transferValue(p))}.`)}
- else if(action==='bid'){const p=player(el.dataset.id),fee=Math.round(transferValue(p)*1.1/10000)*10000;if(career.balance<fee){toast(`You need ${fmtMoney(fee)} to make this bid.`);return}if(!canRegister(career,source,player(id))){toast('All 24 senior squad places are occupied.');return}if(squadPlayers(owner(p.id)).length<=18){toast('That club needs to keep enough players for its matchday squad.');return}if(Math.random()<.65||career.transferList.includes(p.id)){resolveTransfer(p.id,career.clubId,fee);toast(`${p.name} joins your club for ${fmtMoney(fee)}.`)}else{career.offers.push({id:p.id,clubId:owner(p.id),fee:Math.round(fee*1.2/10000)*10000,status:'counter',incoming:true});career.news.push({date:career.date,text:`${clubName(owner(p.id))} countered your bid for ${p.name}.`});save();render();toast('The selling club has countered your offer.')}}
+ else if(action==='bid'){const p=player(el.dataset.id),fee=Math.round(transferValue(p)*1.1/10000)*10000;if(career.balance<fee){toast(`You need ${fmtMoney(fee)} to make this bid.`);return}if(!canRegister(career,source,p)){toast('All 24 senior squad places are occupied.');return}if(squadPlayers(owner(p.id)).length<=18){toast('That club needs to keep enough players for its matchday squad.');return}if(Math.random()<.65||career.transferList.includes(p.id)){resolveTransfer(p.id,career.clubId,fee);toast(`${p.name} joins your club for ${fmtMoney(fee)}.`)}else{career.offers.push({id:p.id,clubId:owner(p.id),fee:Math.round(fee*1.2/10000)*10000,status:'counter',incoming:true});career.news.push({date:career.date,text:`${clubName(owner(p.id))} countered your bid for ${p.name}.`});save();render();toast('The selling club has countered your offer.')}}
  else if(['accept-offer','counter-offer','reject-offer'].includes(action)){const id=el.dataset.id,clubId=el.dataset.club,o=career.offers.find(x=>x.id===id&&x.clubId===clubId&&(x.status==='new'||x.status==='counter'));if(!o)return;if(action==='reject-offer'){o.status='rejected';save();render();return}if(action==='counter-offer'){if(o.incoming){toast('The selling club is waiting on your decision.');return}o.fee=Math.round(o.fee*1.2/10000)*10000;o.status='pending';save();render();toast(`Counter proposal sent: ${fmtMoney(o.fee)}.`);return}if(o.incoming){if(career.balance<o.fee){toast('Your club cannot afford that fee.');return}if(!canRegister(career,source,player(id))){toast('All 24 senior squad places are occupied.');return}resolveTransfer(id,career.clubId,o.fee)}else{if(squadPlayers(career.clubId).length<=18){toast('Keep at least 18 players in your squad.');return}resolveTransfer(id,clubId,o.fee)}}
  else if(action==='medical-invest'){const kind=el.dataset.kind,level=career.medical[kind],cost=(level+1)*(kind==='prevention'?150000:120000);if(!['prevention','recovery'].includes(kind)||level>=3||career.balance<cost)return;career.balance-=cost;career.medical[kind]++;career.news.push({date:career.date,text:`Medical ${kind} funded to level ${career.medical[kind]} for ${fmtMoney(cost)}.`});save();render()}
  else if(action==='toggle-squad-list'){if(el.dataset.list==='bench')benchExpanded=!benchExpanded;else reservesExpanded=!reservesExpanded;career.ui={benchExpanded,reservesExpanded};save();render()}
@@ -661,8 +681,11 @@ root.addEventListener('click',event=>{
  else if(action==='match-replace')substitute(Number(el.dataset.index));
  else if(action==='close-report'){match=null;postMatchTable=true;save();render()}
 });
+root.addEventListener('input',event=>{if(event.target.matches('[data-transfer-filter]'))handleTransferFilter(event.target)});
 root.addEventListener('change',event=>{
  const el=event.target;
+ if(handleTransferFilter(el))return;
+ if(el.dataset.hotPlayer){const id=el.dataset.hotPlayer;career.hotList??=[];career.hotList=el.checked?[...new Set([...career.hotList,id])]:career.hotList.filter(x=>x!==id);save();refreshTransferResults();return}
  if(el.dataset.stadiumField){if(!editing)return;for(const id of selectedStands){editing.sections[id][el.dataset.stadiumField]=el.value;if(editing.sections[id].stand==='empty')editing.sections[id].roof='none'}render()}
  else if(el.dataset.squadFormation!==undefined){setFormation(el.value)}
  else if(el.dataset.squadStyle!==undefined){career.style=el.value;save();render()}
