@@ -1,14 +1,14 @@
-import {playerValue,blankTransferFilters,searchLeaguePlayers} from './transfer-search.js?v=1.24.0';
-import {pitchPlayers} from './stadium-life.js?v=1.24.0';
-import {syncStadiumLife,disposeStadiumLife} from './match-life.js?v=1.24.0';
-import {ensureMatchStats,recordPossession,recordShot,possessionPercent} from './match-stats.js?v=1.24.0';
-import {constructionQuote,startConstruction,advanceConstruction,usableCapacity} from './construction.js?v=1.24.0';
-import {SITES as SITE_CATALOGUE,SHOWCASE_SITES} from './sites.js?v=1.24.0';
-import {initialiseDevelopment,promoteProspect,developmentDay,rolloverDevelopment,squadSpace,canRegister,youthLevel,estimatedStars} from './development.js?v=1.24.0';
-import {sceneSvg,stadiumProfile} from './scene.js?v=1.24.0';
-import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.24.0';
+import {playerValue,blankTransferFilters,searchLeaguePlayers} from './transfer-search.js?v=1.25.0';
+import {pitchPlayers} from './stadium-life.js?v=1.25.0';
+import {syncStadiumLife,disposeStadiumLife} from './match-life.js?v=1.25.0';
+import {ensureMatchStats,recordPossession,recordShot,possessionPercent} from './match-stats.js?v=1.25.0';
+import {constructionQuote,startConstruction,advanceConstruction,usableCapacity} from './construction.js?v=1.25.0';
+import {SITES as SITE_CATALOGUE,SHOWCASE_SITES} from './sites.js?v=1.25.0';
+import {initialiseDevelopment,promoteProspect,developmentDay,rolloverDevelopment,squadSpace,canRegister,youthLevel,estimatedStars} from './development.js?v=1.25.0';
+import {sceneSvg,stadiumProfile} from './scene.js?v=1.25.0';
+import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.25.0';
 
-const APP_VERSION='1.24.0';
+const APP_VERSION='1.25.0';
 const SAVE_KEY='clubline-career-r1';
 const SITES=SITE_CATALOGUE.map(s=>[s.id,s.name,s.limit]);
 const availableSites=c=>SITES.filter(([, ,limit])=>c.capacity<=limit);
@@ -44,7 +44,7 @@ let editing=null,selectedStand='N4',selectedStands=new Set(['N4']),opponentOpen=
 let saveWarning='',source,career=null,view='title',section='hub',sub='lineup',setup={clubId:'C01',site:'aberdeen',names:{},colour:null},selectedPlayer=null,selectedSlot=null,instructionPlayer=null,statsScope='club',statsSort='goals',statsDescending=true,match=null,timer=null,notice='',updateMessage='',availableVersion=null,checkingUpdate=false;
 const root=document.getElementById('app');
 
-try {source=await (await fetch('./data/league.json?v=1.24.0',{cache:'no-store'})).json();}
+try {source=await (await fetch('./data/league.json?v=1.25.0',{cache:'no-store'})).json();}
 catch(error){root.innerHTML='<main class="app-shell"><div class="shell-content"><h1>Clubline</h1><p>Could not load the league data. Open the game through a web server or GitHub Pages.</p></div></main>';throw error;}
 const originalLeague=structuredClone(source);
 const ambitiousIds=new Set(source.clubs.map(c=>source.players.filter(p=>p.clubId===c.id).sort((a,b)=>a.overall-b.overall).slice(0,6).sort((a,b)=>b.potential-a.potential)[0]?.id));

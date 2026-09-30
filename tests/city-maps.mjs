@@ -11,3 +11,11 @@ assert.deepEqual(SITES.map(s=>s.id),['aberdeen','liverpool','manchester','cardif
 const welsh={...club,id:'C10'};for(const id of ['NW','NE','SW','SE'])assert.equal(defaultLayout(welsh).sections[id].stand,'s1','Welsh corners remain single-tier');
 for(const s of SITES){assert.equal(s.background[2],0,'Background verticals stay upright');const normal=sceneSvg(club,s.id,false,false,true),max=sceneSvg(club,s.id,false,false,true,layout);const box=svg=>svg.match(/viewBox="([^"]+)"/)[1].split(' ').map(Number);assert(box(normal)[2]<box(max)[2],'Camera follows actual layout '+s.id);assert(normal.includes('preserveAspectRatio="xMidYMid meet"'));}
 console.log('Only six city choices, single-tier Welsh corners, upright map correction and adaptive layout camera passed');
+
+// Figure glyphs follow projection changes, preserving their size relative to stands.
+for(const site of SITES){assert.equal(site.artWidth,1200);const k=(site.scale*830/site.artWidth)/0.6137143383204945;const svg=sceneSvg(club,site.id,true,false,'match',null,null,{phase:'live',ambient:true,homeCount:11,awayCount:11});assert(svg.includes('scale('+4*k+')'));assert(svg.includes('scale('+2.2*k+')'));assert(svg.includes('r="'+4.4*k+'"'));assert(svg.includes('<g transform="scale('+k+')"><g class="fan-body"'));}
+console.log('Player, ball, pedestrian and supporter proportions preserved across all maps');
+
+// Plot/apron edges are generated from the same two axes as every stand.
+for(const site of SITES)for(const key of ['plot','apron']){const poly=site[key];for(let i=0;i<4;i++){const a=poly[i],b=poly[(i+1)%4],dx=b[0]-a[0],dy=b[1]-a[1],axis=i%2?site.south:site.east;assert(Math.abs(dx*axis[1]-dy*axis[0])<1e-8,site.id+' '+key+' edge '+i);}assert(Math.abs(poly[0][0]+poly[2][0]-poly[1][0]-poly[3][0])<1e-8);assert(Math.abs(poly[0][1]+poly[2][1]-poly[1][1]-poly[3][1])<1e-8);}
+console.log('All four plot and apron edges exactly parallel to engine axes in every city');
