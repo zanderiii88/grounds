@@ -1,14 +1,14 @@
-import {playerValue,blankTransferFilters,searchLeaguePlayers} from './transfer-search.js?v=1.23.0';
-import {pitchPlayers} from './stadium-life.js?v=1.23.0';
-import {syncStadiumLife,disposeStadiumLife} from './match-life.js?v=1.23.0';
-import {ensureMatchStats,recordPossession,recordShot,possessionPercent} from './match-stats.js?v=1.23.0';
-import {constructionQuote,startConstruction,advanceConstruction,usableCapacity} from './construction.js?v=1.23.0';
-import {SITES as SITE_CATALOGUE,SHOWCASE_SITES} from './sites.js?v=1.23.0';
-import {initialiseDevelopment,promoteProspect,developmentDay,rolloverDevelopment,squadSpace,canRegister,youthLevel,estimatedStars} from './development.js?v=1.23.0';
-import {sceneSvg,stadiumProfile} from './scene.js?v=1.23.0';
-import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.23.0';
+import {playerValue,blankTransferFilters,searchLeaguePlayers} from './transfer-search.js?v=1.24.0';
+import {pitchPlayers} from './stadium-life.js?v=1.24.0';
+import {syncStadiumLife,disposeStadiumLife} from './match-life.js?v=1.24.0';
+import {ensureMatchStats,recordPossession,recordShot,possessionPercent} from './match-stats.js?v=1.24.0';
+import {constructionQuote,startConstruction,advanceConstruction,usableCapacity} from './construction.js?v=1.24.0';
+import {SITES as SITE_CATALOGUE,SHOWCASE_SITES} from './sites.js?v=1.24.0';
+import {initialiseDevelopment,promoteProspect,developmentDay,rolloverDevelopment,squadSpace,canRegister,youthLevel,estimatedStars} from './development.js?v=1.24.0';
+import {sceneSvg,stadiumProfile} from './scene.js?v=1.24.0';
+import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.24.0';
 
-const APP_VERSION='1.23.0';
+const APP_VERSION='1.24.0';
 const SAVE_KEY='clubline-career-r1';
 const SITES=SITE_CATALOGUE.map(s=>[s.id,s.name,s.limit]);
 const availableSites=c=>SITES.filter(([, ,limit])=>c.capacity<=limit);
@@ -41,10 +41,10 @@ let lastScrollSection=null;
 let dateFlashUntil=0,postMatchTable=false,benchExpanded=true,reservesExpanded=false,tickerTimer=null,tickerIndex=0;
 let dragGhost=null,dragTarget=null,activeDrag=null,suppressDragClick=false,autoResumeTimer=null;
 let editing=null,selectedStand='N4',selectedStands=new Set(['N4']),opponentOpen=false,instructionAnchorType='shirt-slot',fixtureCursor=null,reportIndex=null;
-let saveWarning='',source,career=null,view='title',section='hub',sub='lineup',setup={clubId:'C01',site:'town',names:{},colour:null},selectedPlayer=null,selectedSlot=null,instructionPlayer=null,statsScope='club',statsSort='goals',statsDescending=true,match=null,timer=null,notice='',updateMessage='',availableVersion=null,checkingUpdate=false;
+let saveWarning='',source,career=null,view='title',section='hub',sub='lineup',setup={clubId:'C01',site:'aberdeen',names:{},colour:null},selectedPlayer=null,selectedSlot=null,instructionPlayer=null,statsScope='club',statsSort='goals',statsDescending=true,match=null,timer=null,notice='',updateMessage='',availableVersion=null,checkingUpdate=false;
 const root=document.getElementById('app');
 
-try {source=await (await fetch('./data/league.json?v=1.23.0',{cache:'no-store'})).json();}
+try {source=await (await fetch('./data/league.json?v=1.24.0',{cache:'no-store'})).json();}
 catch(error){root.innerHTML='<main class="app-shell"><div class="shell-content"><h1>Clubline</h1><p>Could not load the league data. Open the game through a web server or GitHub Pages.</p></div></main>';throw error;}
 const originalLeague=structuredClone(source);
 const ambitiousIds=new Set(source.clubs.map(c=>source.players.filter(p=>p.clubId===c.id).sort((a,b)=>a.overall-b.overall).slice(0,6).sort((a,b)=>b.potential-a.potential)[0]?.id));
@@ -143,7 +143,7 @@ function save(){
   return false;
  }
 }
-function load(){try{const saved=JSON.parse(localStorage.getItem(SAVE_KEY));if(saved?.career?.version===1){postMatchTable=false;career=saved.career;career.construction??=[];advanceConstruction(career);source=structuredClone(originalLeague);initialiseDevelopment(career,source);career.ui??={benchExpanded:true,reservesExpanded:false};benchExpanded=career.ui.benchExpanded;reservesExpanded=career.ui.reservesExpanded;career.owners??={};career.transferList??=[];career.hotList=Array.isArray(career.hotList)?career.hotList:[];career.offers??=[];career.stats??={};career.loans??={};career.medical??={prevention:0,recovery:0};career.medical.prevention??=0;career.medical.recovery??=0;for(const p of source.players){const state=career.players[p.id]??(career.players[p.id]={fitness:p.fitness,form:[]});state.happiness??=70;state.ambitious??=ambitiousIds.has(p.id);state.instruction??='Standard';state.reason??='Content with their squad role.';if(state.injuryDays&&!state.injuryType)state.injuryType='Knock'}career.stadium=normaliseLayout(career.stadium,club(career.clubId));if(!SITES.some(([id])=>id===career.site))career.site='town';match=saved.match||null;if(match)match.kickoff??='15:00';return true}}catch{}return false}
+function load(){try{const saved=JSON.parse(localStorage.getItem(SAVE_KEY));if(saved?.career?.version===1){postMatchTable=false;career=saved.career;career.construction??=[];advanceConstruction(career);source=structuredClone(originalLeague);initialiseDevelopment(career,source);career.ui??={benchExpanded:true,reservesExpanded:false};benchExpanded=career.ui.benchExpanded;reservesExpanded=career.ui.reservesExpanded;career.owners??={};career.transferList??=[];career.hotList=Array.isArray(career.hotList)?career.hotList:[];career.offers??=[];career.stats??={};career.loans??={};career.medical??={prevention:0,recovery:0};career.medical.prevention??=0;career.medical.recovery??=0;for(const p of source.players){const state=career.players[p.id]??(career.players[p.id]={fitness:p.fitness,form:[]});state.happiness??=70;state.ambitious??=ambitiousIds.has(p.id);state.instruction??='Standard';state.reason??='Content with their squad role.';if(state.injuryDays&&!state.injuryType)state.injuryType='Knock'}career.stadium=normaliseLayout(career.stadium,club(career.clubId));if(career.clubId==='C10'&&!career.cornerRevision){for(const id of ['NW','NE','SW','SE']){const x=career.stadium.sections[id];if(x.stand==='d1'&&x.roof==='continuous'&&x.rear==='compact'&&x.finish==='metal')x.stand='s1'}career.cornerRevision=124;}if(!SITES.some(([id])=>id===career.site))career.site='aberdeen';match=saved.match||null;if(match)match.kickoff??='15:00';return true}}catch{}return false}
 const hasSave=()=>{try{return JSON.parse(localStorage.getItem(SAVE_KEY))?.career?.version===1}catch{return false}};
 function nextFixture(){if(!career)return null;for(const round of career.schedule){const f=round.fixtures.find(x=>(x.home===career.clubId||x.away===career.clubId)&&x.homeGoals===null);if(f)return {...f,date:round.date,round}}return null}
 function allResults(){return career.schedule.flatMap(r=>r.fixtures.filter(f=>f.homeGoals!==null).map(f=>({...f,date:r.date})))}
@@ -608,7 +608,7 @@ root.addEventListener('click',event=>{
  else if(action==='register-senior'){const p=player(el.dataset.id);if(!p||!career.players[p.id].unregistered)return;if(!canRegister(career,source,p)){toast('Free an appropriate squad place first, for example by arranging a loan.');return}career.players[p.id].unregistered=false;save();render()}
  else if(action==='new-season'){if(nextFixture()||match||postMatchTable)return;const year=Number(career.seasonStart.slice(0,4))+1;rolloverDevelopment(career,source,year+'-08-13');advanceConstruction(career);career.schedule=scheduleSeason(year);career.reports=[];career.offers=[];career.time='09:00';career.transferList=career.transferList.filter(id=>!career.players[id]?.retired);const picks=bestLineup(career.clubId,career.formation);career.lineup=picks.lineup;career.bench=picks.bench;developmentDay(career,source,nextFixture());section='squad';sub='youth';save();render()}
  else if(action==='archived-report'){archivedReport=career.archives[Number(el.dataset.season)]?.reports[Number(el.dataset.report)];render()}
- else if(action==='new-game'){setup={clubId:'C01',site:'town',names:{},colour:null};view='setup';render()}
+ else if(action==='new-game'){setup={clubId:'C01',site:'aberdeen',names:{},colour:null};view='setup';render()}
  else if(action==='continue'){if(load()){view='career';render()}}
  else if(action==='check-update')checkForUpdates();
  else if(action==='load-update'&&availableVersion){const url=new URL(location.href);url.searchParams.set('update',availableVersion);url.searchParams.set('t',Date.now());location.assign(url.href)}
@@ -619,7 +619,7 @@ root.addEventListener('click',event=>{
  else if(action==='calendar-fixture'){fixtureCursor=Number(el.dataset.index);if(clubFixtures()[fixtureCursor].homeGoals!==null)reportIndex=fixtureCursor;else opponentOpen=true;render()}
  else if(action==='open-report'){reportIndex=Number(el.dataset.index);opponentOpen=false;render()}
  else if(action==='close-history'){reportIndex=null;archivedReport=null;render()}
- else if(action==='choose-club'){setup.clubId=el.dataset.id;setup.colour=null;if(!availableSites(club(setup.clubId)).some(x=>x[0]===setup.site))setup.site='town';render()}
+ else if(action==='choose-club'){setup.clubId=el.dataset.id;setup.colour=null;if(!availableSites(club(setup.clubId)).some(x=>x[0]===setup.site))setup.site='aberdeen';render()}
  else if(action==='rename-all'){setup.showNames=!setup.showNames;render()}
  else if(action==='colour'){setup.colour=el.dataset.colour;render()}
  else if(action==='site'){if(availableSites(club(setup.clubId)).some(x=>x[0]===el.dataset.site))setup.site=el.dataset.site;render()}

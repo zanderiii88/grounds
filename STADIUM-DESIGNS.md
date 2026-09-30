@@ -28,3 +28,8 @@ Release 1.22.0 retains the original modular anchors and club layouts. Standard a
 - [Principality Stadium roof facts](https://www.principalitystadium.wales/information/facts-and-figures/)
 - [Brentford FC on its new stadium](https://www.brentfordfc.com/en/news/article/our-new-home-makes-a-buzz_265435)
 - [Irish FA on Windsor Park’s three replacement stands](https://www.irishfa.com/national-football-stadium-at-windsor-park/stadium-redevelopment-project-2014-2016)
+
+
+## 1.24.0 corner correction
+
+Cwmderyn uses standard single-tier corner sections to suit its single-tier sides. Corner geometry remains independent of adjacent stands.

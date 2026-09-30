@@ -34,7 +34,7 @@ const patterns=[
  {sides:['l2','s1','d2','s1'],corners:'empty',finish:'brick',roof:'truss',open:[]},
  {sides:['l1','s1','s2','s1'],corners:'empty',finish:'metal',roof:'cantilever',open:[]},
  {sides:['s2','s2','s2','s2'],corners:'empty',finish:'brick',roof:'truss',open:[]},
- {sides:['l1','s1','l1','s1'],corners:'d1',finish:'metal',roof:'continuous',open:[]},
+ {sides:['l1','s1','l1','s1'],corners:'s1',finish:'metal',roof:'continuous',open:[]},
  {sides:['s1','l1','s1','l1'],corners:'empty',finish:'brick',roof:'cantilever',open:['E4']},
  {sides:['s1','s1','s1','s1'],corners:'empty',finish:'brick',roof:'full',open:['W4','E4']}
 ];

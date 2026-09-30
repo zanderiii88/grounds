@@ -1,9 +1,9 @@
-# City maps — 1.23.0
+# City maps — 1.24.0
 
-Aberdeen (Granite Harbour), Liverpool, Manchester, Cardiff, Dublin and Birmingham have day and evening artwork. Aberdeen replaces the previous map; five cities are new selections. Six other approved locations remain available. No specialised courtyards were added.
+The six new city day/night pairs are the complete location catalogue. Stadium anchors and stand dimensions remain fixed. All use the same proportional stadium scale and engine axis directions; the maximum t1/hospitality ground envelope remains inside each corrected empty plot with margin.
 
-All six new maps share the same stadium projection scale (0.61371434), preserve the engine east/south axis directions and upright verticals, and keep one fixed anchor per location. Stadium stand dimensions, capacity and rotation are unchanged. The actual maximum t1/hospitality ground envelope fits inside all six measured clear plots with margin. Original artwork proportions are preserved rather than stretching the city to a standard height. Day/evening pairs use the same fixed anchor.
+The background SVG image is corrected around the pitch anchor with x unchanged and y'=c(x-originX)+d(y-originY)+originY. The two average plot-edge slopes map to east 4.2/7.2 and south -4.2/7.35. Vertical image lines remain upright. This changes displayed map registration, not the stadium engine. Individual generated-road deviations are not certified as exact.
 
-Visual limitation: generated road and plot edges have residual angle drift. This release certifies maximum ground-envelope containment for the six city plots, not exact alignment of every building/street. The six retained older locations still have their previous maximum-footprint limitations. Full physical-phone behaviour needs user testing.
+Camera frames follow the actual layout bounds. Floodlights, pedestrian route extents and selection volumes do not determine stadium zoom. Close views use meet to keep the actual stadium visible; menu frames include more scenery. Existing figure glyph sizes and their proportion to the stadium are retained.
 
-Source imagery was generated with the built-in image tool using the exact plot guide and city-specific architecture briefs; night versions requested lighting-only changes to each approved day scene.
+Source artwork generated with the built-in image tool; night versions used lighting-only edits. Source buildings, streets and material choices are retained. No courtyards or traffic were added.
