@@ -149,8 +149,7 @@ export function sceneSvg(club,site='town',crowd=false,evening=false,close=false,
     }
     if(crowd&&i%2===0)for(let u=.28;u<L;u+=.44){
      const q=project(point(u,v+.08,z+.18)),seed=i*17+Math.round(u*19)+s.id.charCodeAt(0),jump=motion?.scoringTeam===0;
-     const animate=jump?`<animateTransform attributeName="transform" type="translate" values="0 0;0 -${1.3+seed%3*.35};0 0" dur="${.48+seed%7*.07}s" begin="-${seed%17*.053}s" repeatCount="indefinite"/>`:'';
-     bowl.push(`<g class="stand-fan" transform="translate(${q.x.toFixed(1)} ${q.y.toFixed(1)})"><g>${animate}<rect x="-.55" y="-.2" width="1.1" height="1.35" rx=".2" fill="${seed%4===0?colour:['#b9d0d5','#e1d9b5','#536979'][seed%3]}"/><circle cy="-.5" r=".5" fill="${seed%3?'#e8c3a1':'#a47758'}"/></g></g>`);
+     bowl.push(`<g class="stand-fan" transform="translate(${q.x.toFixed(1)} ${q.y.toFixed(1)})"><g class="fan-body" style="--jump-duration:${.48+seed%7*.07}s;--jump-delay:-${seed%17*.053}s"><rect x="-1.15" y="-.5" width="2.3" height="2.8" rx=".2" fill="${seed%4===0?colour:['#b9d0d5','#e1d9b5','#536979'][seed%3]}"/><circle cy="-1.15" r=".9" fill="${seed%3?'#e8c3a1':'#a47758'}"/></g></g>`);
     }
    }
    if(!corner){
@@ -162,6 +161,8 @@ export function sceneSvg(club,site='town',crowd=false,evening=false,close=false,
     }
     bowl.push(localEdge([[.04,endV,endZ+.14],[L-.04,endV,endZ+.14]],'#c4c9c1',.6));
    }
+   const front=spec.tiers[ti];
+   panel(bowl,[[0,front.startV,Math.max(0,front.startZ-.55)],[L,front.startV,Math.max(0,front.startZ-.55)],[L,front.startV,front.startZ],[0,front.startV,front.startZ]],mat[1]);
    const d=spec.decks[ti];
    if(d){
     if(d.style==='setback'){
@@ -184,6 +185,8 @@ export function sceneSvg(club,site='town',crowd=false,evening=false,close=false,
     }
    }
   }
+  const lastTier=spec.tiers.at(-1),seatEnd=lastTier.startV+lastTier.rows*lastTier.rowPitch,seatHeight=lastTier.startZ+(lastTier.rows-1)*lastTier.rise;
+  if(D>seatEnd)panel(bowl,[[0,seatEnd,seatHeight],[L,seatEnd,seatHeight],[L,D,spec.wallH],[0,D,spec.wallH]],mat[1]);
   // Only the part of an end profile taller than its neighbour is exposed.
   // Draw the thin stepped cheek instead of a full rectangular wall across the bowl.
   const profile=(sp,v)=>{
@@ -202,11 +205,12 @@ export function sceneSvg(club,site='town',crowd=false,evening=false,close=false,
    const endCorner={N:i<0?'NW':'NE',S:i<0?'SW':'SE',W:i<0?'NW':'SW',E:i<0?'NE':'SE'}[s.side];return model.sections[endCorner];
   };
   for(const u of [0,L]){
-   const other=groundsStand(adjacent(u)?.stand),endDepth=corner?endpoint(u).depth:D;
+   const neighbour=adjacent(u),endOfSide=!corner&&(u===0&&s.i===0||u===L&&s.i===(['N','S'].includes(s.side)?7:3));
+   const other=endOfSide&&neighbour?.stand!=='empty'?spec:groundsStand(neighbour?.stand),endDepth=corner?endpoint(u).depth:D;
    const toPhysical=v=>corner?v*endDepth/D:v;
-   const otherV=v=>other?toPhysical(v)*other.depth/endDepth:0;
+   const otherV=v=>other?toPhysical(v):0;
    const cuts=[0,D,...spec.tiers.flatMap(t=>Array.from({length:t.rows+1},(_,i)=>t.startV+i*t.rowPitch)),...spec.decks.flatMap(d=>[d.frontV,d.backV])];
-   if(other){for(const t of other.tiers)for(let i=0;i<=t.rows;i++)cuts.push((t.startV+i*t.rowPitch)/other.depth*D);for(const d of other.decks)cuts.push(d.frontV/other.depth*D,d.backV/other.depth*D)}
+   if(other){for(const t of other.tiers)for(let i=0;i<=t.rows;i++)cuts.push((t.startV+i*t.rowPitch)*(corner?D/endDepth:1));for(const d of other.decks)cuts.push(d.frontV*(corner?D/endDepth:1),d.backV*(corner?D/endDepth:1))}
    const sorted=[...new Set(cuts.filter(v=>v>=0&&v<=D).map(v=>Math.round(v*10000)/10000))].sort((a,b)=>a-b);
    for(let i=0;i<sorted.length-1;i++){
     const v=sorted[i],next=sorted[i+1],middle=(v+next)/2;
@@ -217,7 +221,7 @@ export function sceneSvg(club,site='town',crowd=false,evening=false,close=false,
     const bottom=covered/heightScale,top=selfH/heightScale;
     ends.push(localFace([[u,v,bottom],[u,next,bottom],[u,next,top],[u,v,top]],mat[1]));
    }
-   if(!other&&rear)ends.push(localFace([[u,D,0],[u,D+rear,0],[u,D+rear,spec.wallH],[u,D,spec.wallH]],mat[1]));
+   if(rear&&(!other||({compact:0,concourse:1.2,amenities:2,hospitality:2.6}[adjacent(u)?.rear]||0)<rear))ends.push(localFace([[u,D,0],[u,D+rear,0],[u,D+rear,spec.wallH],[u,D,spec.wallH]],mat[1]));
   }
   if(cfg.roof!=='none'){
    // Full canopies cover the bowl; truss and cantilever roofs expose the
@@ -233,13 +237,13 @@ export function sceneSvg(club,site='town',crowd=false,evening=false,close=false,
     return {front:roofFront(a.cfg,a.spec||spec)*(1-t)+roofFront(b.cfg,b.spec||spec)*t,back:mix('roofRearV')+rearDepth(a)*(1-t)+rearDepth(b)*t,fz:mix('roofFrontZ'),rz:mix('roofRearZ')+.15}};
     const cornerRoof=(u,back=false,offset=0)=>{const e=roofEnd(u);return world(s,u,back?e.back:e.front,(back?e.rz:e.fz)+offset)};
     for(let k=0;k<segments;k++){const a=k*L/segments,b=(k+1)*L/segments;
-     roof.push(poly([cornerRoof(a),cornerRoof(b),cornerRoof(b,true),cornerRoof(a,true)],tint,`stroke="#94a9ad" stroke-width=".28" opacity="${near?'.9':'.96'}"`));
+     roof.push(poly([cornerRoof(a),cornerRoof(b),cornerRoof(b,true),cornerRoof(a,true)],tint,`stroke="#94a9ad" stroke-width=".28" opacity="1"`));
      roof.push(poly([cornerRoof(a,false,-.22),cornerRoof(b,false,-.22),cornerRoof(b),cornerRoof(a)],'#98aaab'));
      roof.push(path([cornerRoof(a),cornerRoof(a,true)],'#92a6ad',.42));
     }
     if(evening)roof.push(path(Array.from({length:segments+1},(_,k)=>cornerRoof(k*L/segments,false,-.2)),'#fff0b1',1.35));
    }else{
-    panel(roof,[[0,v0,fz],[L,v0,fz],[L,v1,rz],[0,v1,rz]],tint,`stroke="#94a9ad" stroke-width=".32" opacity="${near?'.9':'.96'}"`);
+    panel(roof,[[0,v0,fz],[L,v0,fz],[L,v1,rz],[0,v1,rz]],tint,`stroke="#94a9ad" stroke-width=".32" opacity="1"`);
     panel(roof,[[0,v0,fz-.22],[L,v0,fz-.22],[L,v0,fz],[0,v0,fz]],'#98aaab');
     for(let u=1;u<L;u++)roof.push(localEdge([[u,v0,fz+.01],[u,v1,rz+.01]],'#91a5ad',.44));
     roof.push(localEdge([[.03,v1,rz+.04],[L-.03,v1,rz+.04]],mat[2],.7));
@@ -256,7 +260,7 @@ export function sceneSvg(club,site='town',crowd=false,evening=false,close=false,
  }
  const ordered=SECTIONS.map(s=>({s,depth:(()=>{const q=world(s,s.bays/2,3,0);return q.x+q.y})()})).sort((a,b)=>a.depth-b.depth);
  const closed=id=>works.some(job=>job.sections[id]);
- const layer=near=>{const list=ordered.filter(x=>(x.depth>=66)===near);return [...list.filter(x=>!closed(x.s.id)),...list.filter(x=>closed(x.s.id))].map(x=>sectionSvg(x.s)).join('')};
+ const layer=near=>{const list=ordered.filter(x=>(['S','E'].includes(x.s.side)||x.s.id==='SE')===near);return [...list.filter(x=>!closed(x.s.id)),...list.filter(x=>closed(x.s.id))].map(x=>sectionSvg(x.s)).join('')};
  const far=layer(false),near=layer(true);
  const lights=[[16,15],[56,15],[56,45],[16,45]].map(([x,y],i)=>{const p=project(at(x,y,15)),q=project(at(x,y));return `<path d="M${q.x},${q.y}L${p.x},${p.y}" stroke="#77878b" stroke-width="1.1"/><rect x="${p.x-3.2}" y="${p.y-1.5}" width="6.4" height="2.8" fill="${evening?'#fff3ad':'#aab7b5'}"/>`}).join('');
  const hull=points=>{const sorted=points.sort((a,b)=>a.x-b.x||a.y-b.y),cross=(a,b,c)=>(b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x),lo=[],hi=[];for(const p of sorted){while(lo.length>1&&cross(lo.at(-2),lo.at(-1),p)<=0)lo.pop();lo.push(p)}for(const p of [...sorted].reverse()){while(hi.length>1&&cross(hi.at(-2),hi.at(-1),p)<=0)hi.pop();hi.push(p)}return lo.slice(0,-1).concat(hi.slice(0,-1))};
@@ -266,7 +270,7 @@ export function sceneSvg(club,site='town',crowd=false,evening=false,close=false,
  const depth=side=>Math.max(3,...specs.filter(x=>x.s.side===side).map(x=>{const next=works.find(j=>j.sections[x.s.id])?.sections[x.s.id],sp=next?groundsStand(next.stand):null,rear=c=>({compact:0,concourse:1.2,amenities:2,hospitality:2.6}[c?.rear]||0);return Math.max((x.sp?.depth||0)+rear(x.cfg),(sp?.depth||0)+rear(next));}))+1.1;
  const pedestrians=motion?.ambient?exteriorPeople(project,motion.phase||'idle',{left:20-depth('W'),right:52+depth('E'),top:20-depth('N'),bottom:40+depth('S')}):{far:'',near:''};
  const crowdMotion='';
- const art=`assets/sites/${map.art}-${evening&&map.night?'evening':'day'}.webp?v=1.19.0`,cy=map.origin[1]*py;
- const viewBox=close==='menu'?`0 ${(cy-410).toFixed(1)} 1100 840`:close==='menu-mobile'?`0 0 1100 ${SCENE_HEIGHT.toFixed(1)}`:close?`0 ${(cy-380).toFixed(1)} 1100 760`:`0 ${(cy-480).toFixed(1)} 1100 960`;
+ const art=`assets/sites/${map.art}-${evening&&map.night?'evening':'day'}.webp?v=1.20.0`,cy=map.origin[1]*py;
+ const viewBox=close==='match'?`${(map.origin[0]*px-455).toFixed(1)} ${(cy-340).toFixed(1)} 910 600`:close==='menu'?`0 ${(cy-410).toFixed(1)} 1100 840`:close==='menu-mobile'?`0 0 1100 ${SCENE_HEIGHT.toFixed(1)}`:close?`0 ${(cy-380).toFixed(1)} 1100 760`:`0 ${(cy-480).toFixed(1)} 1100 960`;
  return `<svg xmlns="http://www.w3.org/2000/svg" class="${close==='menu'?'desktop-scene':close==='menu-mobile'?'mobile-scene':''} ${motion?.scoringTeam===0?'goal-scene':''} ${motion?'crowd-motion':''}" viewBox="${viewBox}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}"><image href="${art}" x="0" y="0" width="${SCENE_WIDTH}" height="${SCENE_HEIGHT.toFixed(1)}" preserveAspectRatio="none" ${evening&&!map.night?'style="filter:brightness(.60) saturate(.9)"':''}/>${pedestrians.far}${far}${field.join('')}${athletes}${near}${lights}${pedestrians.near}${crowdMotion}${targets}</svg>`;
 }

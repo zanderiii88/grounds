@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {ensureMatchStats,recordPossession,recordShot,possessionPercent} from '../match-stats.js';
+const m={},s=ensureMatchStats(m);assert.equal(ensureMatchStats(m),s);assert.equal(possessionPercent(s),50);
+for(let minute=1;minute<=10;minute++)recordPossession(s,minute,0,'Balanced',true,()=>minute<=5?0:1);
+assert.equal(possessionPercent(s),50);assert.equal(possessionPercent(s,5),65);
+recordShot(s,true,true);recordShot(s,true,false);recordShot(s,false,true);assert.deepEqual(s.home,{shots:2,onTarget:1,yellow:0,red:0});assert.equal(s.away.onTarget,1);
+const loaded=JSON.parse(JSON.stringify(m));assert.equal(possessionPercent(ensureMatchStats(loaded),5),65);
+const extreme={possession:[]};for(const diff of [-1000,1000])recordPossession(extreme,1,diff,'Possession',true,()=>.5);assert(extreme.possession.every(x=>x.home>=25&&x.home<=75));
+const old={minute:30,home:'H',events:[{type:'goal',team:'H'},{type:'chance',team:'A',text:'Saved by the keeper.'},{type:'yellow',team:'A'}]};const recovered=ensureMatchStats(old);assert.equal(recovered.home.onTarget,1);assert.equal(recovered.away.shots,1);assert.equal(recovered.possession.length,0);assert.equal(recovered.possessionStartMinute,31);
+console.log('Rolling five-minute possession, full-match averages, shot classification, empty state, bounds and save persistence passed');
