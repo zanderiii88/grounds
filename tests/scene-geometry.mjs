@@ -19,3 +19,11 @@ two.sections.N1.stand='s1';two.sections.W1.stand='s2';
 assert.equal(independentCorner(one),independentCorner(two),'Corner mesh must not morph to neighbours');
 assert(sceneSvg(clubs[1],'town').includes('data-structure="rear-return"'),'Exposed rear concourses must have closed returns');
 console.log('Independent corner geometry and solid rear returns passed');
+
+// Different rear depths change the canopy profile even when stand/roof match.
+const roofJoins=defaultLayout(clubs[0]);for(const section of SECTIONS)roofJoins.sections[section.id]={stand:'d1',roof:'truss',rear:'concourse',finish:'metal'};
+const roofSection=svg=>svg.match(/<g data-section="N2"[^>]*>[\s\S]*?<\/g>/)[0];
+assert(!roofSection(sceneSvg(clubs[0],'dublin',false,false,true,roofJoins)).includes('roof-end-cap'));
+roofJoins.sections.N1.rear='hospitality';
+assert(roofSection(sceneSvg(clubs[0],'dublin',false,false,true,roofJoins)).includes('roof-end-cap'),'Roof ends must close where rear building depth changes');
+console.log('Canopies close at adjacent rear-depth changes without adding walls across seating');

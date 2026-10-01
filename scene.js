@@ -224,7 +224,7 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
     panel(roof,[[0,v0,fz-thickness],[L,v0,fz-thickness],[L,v0,fz],[0,v0,fz]],roofStyle.edge);
     for(const u of [0,L]){
      const neighbour=adjacent(u);
-     if(neighbour?.stand!==cfg.stand||neighbour?.roof!==cfg.roof)roof.push(localFace([[u,v0,fz-thickness],[u,v1,rz-thickness],[u,v1,rz],[u,v0,fz]],roofStyle.edge,`stroke="#627a85" stroke-width=".25"`));
+     if(neighbour?.stand!==cfg.stand||neighbour?.roof!==cfg.roof||neighbour?.rear!==cfg.rear)roof.push(localFace([[u,v0,fz-thickness],[u,v1,rz-thickness],[u,v1,rz],[u,v0,fz]],roofStyle.edge,`data-structure="roof-end-cap" stroke="#627a85" stroke-width=".25"`));
      // The roof visibly meets the rear structural spine.
      roof.push(localEdge([[u,v1,spec.wallH],[u,v1,rz-thickness]],'#536a76',1.1));
     }
@@ -261,20 +261,26 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
  const depth=side=>Math.max(3,...specs.filter(x=>x.s.side===side).map(x=>{const next=works.find(j=>j.sections[x.s.id])?.sections[x.s.id],sp=next?groundsStand(next.stand):null,rear=c=>({compact:0,concourse:1.2,amenities:2,hospitality:2.6}[c?.rear]||0);return Math.max((x.sp?.depth||0)+rear(x.cfg),(sp?.depth||0)+rear(next));}))+1.1;
  const pedestrians=motion?.ambient?exteriorPeople(project,motion.phase||'idle',{left:20-depth('W'),right:52+depth('E'),top:20-depth('N'),bottom:40+depth('S')},figureScale):{far:'',near:''};
  const crowdMotion='';
- const art=`assets/sites/${map.art}-${evening&&map.night?'evening':'day'}.webp?v=1.25.0`,cy=map.origin[1]*py;
+ const art=`assets/sites/${map.art}-${evening&&map.night?'evening':'day'}.webp?v=1.26.0`,cy=map.origin[1]*py;
  // Frame the actual layout, not the entire maximum plot. Zoom moves map,
  // stadium and people together, preserving their relative proportions.
  const fw=stadiumFrame.right-stadiumFrame.left,fh=stadiumFrame.bottom-stadiumFrame.top,cx=(stadiumFrame.left+stadiumFrame.right)/2,fy=(stadiumFrame.top+stadiumFrame.bottom)/2;
  const fitted=`${(stadiumFrame.left-24).toFixed(1)} ${(stadiumFrame.top-24).toFixed(1)} ${(fw+48).toFixed(1)} ${(fh+48).toFixed(1)}`;
- const menuWidth=Math.max(640,fw+80),mobileHeight=menuWidth*1895/830;
+ const menuWidth=Math.max(640,fw+80);
  const backgroundTop=map.background?Math.max(map.background[5],map.background[5]+map.background[1]*ART_WIDTH)*px:0;
- const mobileTop=Math.max(backgroundTop,fy-mobileHeight*.70);
- const viewBox=close==='menu-mobile'?`${(cx-menuWidth/2).toFixed(1)} ${mobileTop.toFixed(1)} ${menuWidth.toFixed(1)} ${mobileHeight.toFixed(1)}`:close==='menu'?`${(cx-menuWidth/2).toFixed(1)} ${(fy-menuWidth*.40).toFixed(1)} ${menuWidth.toFixed(1)} ${(menuWidth*1069/1400).toFixed(1)}`:close?fitted:`${(cx-450).toFixed(1)} ${(fy-400).toFixed(1)} 900 900`;
+ const backgroundBottom=map.background?(map.background[5]+map.background[3]*ART_HEIGHT+Math.min(0,map.background[1]*ART_WIDTH))*px:SCENE_HEIGHT;
+ // Portrait title crops stay inside the painted city, even for large grounds.
+ const mobileWidth=Math.min(menuWidth,(backgroundBottom-backgroundTop)*830/1895),mobileHeight=mobileWidth*1895/830;
+ const mobileTop=Math.min(backgroundBottom-mobileHeight,Math.max(backgroundTop,fy-mobileHeight*.70));
+ const mobileLeft=Math.max(0,Math.min(SCENE_WIDTH-mobileWidth,cx-mobileWidth/2));
+ const designerWidth=Math.max(800,fw+120,(fh+220)*1.28),designerHeight=designerWidth/1.28;
+ const designerFrame=`${(cx-designerWidth/2).toFixed(1)} ${(fy-designerHeight*.62).toFixed(1)} ${designerWidth.toFixed(1)} ${designerHeight.toFixed(1)}`;
+ const viewBox=close==='designer'?designerFrame:close==='menu-mobile'?`${mobileLeft.toFixed(1)} ${mobileTop.toFixed(1)} ${mobileWidth.toFixed(1)} ${mobileHeight.toFixed(1)}`:close==='menu'?`${(cx-menuWidth/2).toFixed(1)} ${(fy-menuWidth*.40).toFixed(1)} ${menuWidth.toFixed(1)} ${(menuWidth*1069/1400).toFixed(1)}`:close?fitted:`${(cx-450).toFixed(1)} ${(fy-400).toFixed(1)} 900 900`;
  const backgroundTransform=map.background?`transform="matrix(${map.background.map((v,i)=>i>=4?v*px:v).join(' ')})"`:'';
 
  const groundPolygon=points=>points.map(([x,y])=>`${(x*px).toFixed(2)},${(y*py).toFixed(2)}`).join(' ');
  const pavingId=`apron-paving-${map.id}-${evening?'night':'day'}`;
  const paving=`<defs><pattern id="${pavingId}" width="1" height="1" patternUnits="userSpaceOnUse" patternTransform="matrix(${map.east[0]*px} ${map.east[1]*py} ${map.south[0]*px} ${map.south[1]*py} ${map.origin[0]*px} ${map.origin[1]*py})"><rect width="1" height="1" fill="${evening?'#686773':'#c7baa4'}"/><path d="M0 1V0H1" fill="none" stroke="${evening?'#7b7781':'#a99f8e'}" stroke-width=".035"/></pattern></defs>`;
- const apron=map.apron?`${paving}<g data-engine-apron="true"><polygon points="${groundPolygon(map.apron)}" fill="url(#${pavingId})"/><polygon points="${groundPolygon(map.plot)}" fill="${evening?'#75717a':'#cdbfa8'}" stroke="${evening?'#465463':'#7a8990'}" stroke-width="${16*px}" stroke-linejoin="miter"/></g>`:'';
+ const apron=map.apron?`${paving}<g data-engine-apron="true"><polygon points="${groundPolygon(map.apron)}" fill="url(#${pavingId})"/></g>`:'';
  return `<svg xmlns="http://www.w3.org/2000/svg" class="${close==='menu'?'desktop-scene':close==='menu-mobile'?'mobile-scene':''} ${motion?.scoringTeam===0?'goal-scene':''} ${motion?'crowd-motion':''}" viewBox="${viewBox}" preserveAspectRatio="${close&&close!=='menu'&&close!=='menu-mobile'?'xMidYMid meet':'xMidYMid slice'}" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}">${preview?'':`<image ${backgroundTransform} href="${art}" x="0" y="0" width="${SCENE_WIDTH}" height="${SCENE_HEIGHT.toFixed(1)}" preserveAspectRatio="none" ${evening&&!map.night?'style="filter:brightness(.60) saturate(.9)"':''}/>`}${preview?'':apron}${pedestrians.far}${far}${preview?'':field.join('')}${athletes}${near}${preview?'':lights}${pedestrians.near}${crowdMotion}${targets}</svg>`;
 }
