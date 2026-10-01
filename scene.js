@@ -244,8 +244,8 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
     if(evening)roof.push(localEdge([[.08,v0,fz-thickness],[L-.08,v0,fz-thickness]],'#fff0b1',1.35));
    }
   }
-  if(near){for(const [key,parts] of Object.entries({farEnds,support,bowl,back,facade,ends,roof}))nearLayers[key].push(`<g ${key==='bowl'?`data-section="${s.id}"`:''} data-stand-layer="${key}" data-stand-type="${cfg.stand}">${parts.join('')}</g>`);return '';}
-  const surfaces=near?[...farEnds,...support,...bowl,...back,...facade,...ends,...roof]:[...back,...support,...facade,...farEnds,...bowl,...ends,...roof];
+  if(near){for(const [key,parts] of Object.entries({farEnds,support,bowl,back,facade,ends,roof}))nearLayers[key].push(`<g ${key==='bowl'?`data-section="${s.id}"`:''} data-fan-occluder="${['back','facade','ends','roof'].includes(key)}" data-stand-layer="${key}" data-stand-type="${cfg.stand}">${parts.join('')}</g>`);return '';}
+  const surfaces=[...back,...support,...facade,...farEnds,...bowl,`<g data-fan-occluder="true">${ends.join('')}${roof.join('')}</g>`];
   return `<g data-section="${s.id}" data-stand-type="${cfg.stand}" aria-label="${s.id}: ${safe(base.label)}">${surfaces.join('')}</g>`;
  }
  const ordered=SECTIONS.map(s=>({s,depth:(()=>{const q=world(s,s.bays/2,3,0);return q.x+q.y})()})).sort((a,b)=>a.depth-b.depth);
@@ -261,7 +261,7 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
  const depth=side=>Math.max(3,...specs.filter(x=>x.s.side===side).map(x=>{const next=works.find(j=>j.sections[x.s.id])?.sections[x.s.id],sp=next?groundsStand(next.stand):null,rear=c=>({compact:0,concourse:1.2,amenities:2,hospitality:2.6}[c?.rear]||0);return Math.max((x.sp?.depth||0)+rear(x.cfg),(sp?.depth||0)+rear(next));}))+1.1;
  const pedestrians=motion?.ambient?exteriorPeople(project,motion.phase||'idle',{left:20-depth('W'),right:52+depth('E'),top:20-depth('N'),bottom:40+depth('S')},figureScale):{far:'',near:''};
  const crowdMotion='';
- const art=`assets/sites/${map.art}-${evening&&map.night?'evening':'day'}.webp?v=1.29.0`,cy=map.origin[1]*py;
+ const art=`assets/sites/${map.art}-${evening&&map.night?'evening':'day'}.webp?v=1.30.0`,cy=map.origin[1]*py;
  // Frame the actual layout, not the entire maximum plot. Zoom moves map,
  // stadium and people together, preserving their relative proportions.
  const fw=stadiumFrame.right-stadiumFrame.left,fh=stadiumFrame.bottom-stadiumFrame.top,cx=(stadiumFrame.left+stadiumFrame.right)/2,fy=(stadiumFrame.top+stadiumFrame.bottom)/2;

@@ -11,15 +11,17 @@ export function exteriorPeople(project,phase,bounds,figureScale=1){
  const colours=['#bc6845','#437a92','#d8ba73','#754a79','#6f987a','#c3cbd0','#283e63'];
  const glyph=(i)=>`<g transform="scale(${2.2*figureScale})"><ellipse cy="0" rx="1.4" ry=".5" fill="#14252b66"/><g class="walker-body" transform="translate(0 -2.7)" style="--walk-delay:-${i%9*.1}s"><path d="M-.7 1L-.9 2.5M.7 1L.9 2.5" stroke="#27353d" stroke-width=".7"/><rect x="-1" y="-1.1" width="2" height="2.4" rx=".4" fill="${colours[i%colours.length]}"/><circle cy="-1.8" r=".7" fill="#e2ba95"/></g></g>`;
  for(let i=0;i<n;i++){
-  const side=i%4,rng=random(107+i*61),centre=.10+rng()*.80,span=.06+rng()*.14,worldPoints=[],approach=(phase==='prematch'||phase==='postmatch')&&i%3===0;
-  // Friends share a neighbourhood, while changing depth and direction individually.
+  const side=i%4,rng=random(107+i*61),centre=.10+random(107+Math.floor(i/12)*733+side*61)()*.80+(i%3-1)*.007,span=.06+rng()*.14,worldPoints=[],approach=(phase==='prematch'||phase==='postmatch')&&i%3===0;
+  const stallVisit=phase==='prematch'&&!approach&&i%5===0;
+  // Small groups meet at stalls, then wander away through the clear circulation band.
   for(let k=0;k<6;k++)worldPoints.push(position(side,Math.max(.06,Math.min(.94,centre+(rng()-.5)*span*2)),.22+rng()*(matchday?.63:1.18)));
+  if(stallVisit){const stop=centre<.5?.27:.73;worldPoints[2]=position(side,stop,.82);worldPoints[3]=position(side,stop+.009,.87);}
   if(approach){const entrance=centre<.33?.18:centre>.67?.82:.5;for(let k=2;k<6;k++)worldPoints[k]=position(side,centre+(entrance-centre)*(k-1)/4,.65-(k-1)*.30);if(phase==='postmatch')worldPoints.reverse();}
   const points=worldPoints.map(project);
   const start={x:(points[5].x+points[0].x)/2,y:(points[5].y+points[0].y)/2};
   let route=`M0,0`;
   points.forEach((q,k)=>{const r=points[(k+1)%points.length];route+=`Q${(q.x-start.x).toFixed(2)},${(q.y-start.y).toFixed(2)} ${((q.x+r.x)/2-start.x).toFixed(2)},${((q.y+r.y)/2-start.y).toFixed(2)}`});
-  const group=`<g class="stadium-walker" data-exterior-role="visitor" data-walk-side="${side}" data-walk-points='${JSON.stringify(worldPoints)}' data-walk-kind="${approach?phase==='prematch'?'arrival':'departure':'wander'}" transform="translate(${start.x.toFixed(2)} ${start.y.toFixed(2)})"><g><animateMotion path="${route}Z" dur="${35+i%11*4}s" begin="-${i*3.73}s" keyPoints="0;.18;.18;.52;.76;.76;1" keyTimes="0;.16;.23;.50;.70;.79;1" calcMode="linear" repeatCount="indefinite"/>${approach?`<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;.08;.65;.82;1" dur="${35+i%11*4}s" begin="-${i*3.73}s" repeatCount="indefinite"/>`:""}${glyph(i)}</g></g>`;
+  const group=`<g class="stadium-walker" data-exterior-role="visitor" data-walk-side="${side}" data-walk-points='${JSON.stringify(worldPoints)}' data-stall-visit="${stallVisit}" data-walk-kind="${approach?phase==='prematch'?'arrival':'departure':'wander'}" transform="translate(${start.x.toFixed(2)} ${start.y.toFixed(2)})"><g><animateMotion path="${route}Z" dur="${35+i%11*4}s" begin="-${i*3.73}s" keyPoints="0;.18;.18;.52;.76;.76;1" keyTimes="${stallVisit?'0;.12;.20;.44;.61;.85;1':'0;.16;.23;.50;.70;.79;1'}" calcMode="linear" repeatCount="indefinite"/>${approach?`<animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;.08;.65;.82;1" dur="${35+i%11*4}s" begin="-${i*3.73}s" repeatCount="indefinite"/>`:""}${glyph(i)}</g></g>`;
   (side===0||side===3?far:near).push(group);
  }
  if(matchday){
@@ -42,7 +44,7 @@ export function exteriorPeople(project,phase,bounds,figureScale=1){
  return {far:far.join(''),near:near.join('')};
 }
 export function pitchPlayers(project,colour,awayColour,motion,figureScale=1){
- const hex=s=>[1,3,5].map(i=>parseInt((s||'#ffffff').slice(i,i+2),16));const a=hex(colour),b=hex(awayColour),similar=a.reduce((n,v,i)=>n+Math.abs(v-b[i]),0)<150;const teamColours=[colour,similar?'#eee5d7':awayColour||'#eee5d7'];
+ const hex=s=>[1,3,5].map(i=>parseInt((s||'#ffffff').slice(i,i+2),16));const a=hex(colour),b=hex(awayColour),similar=a.reduce((n,v,i)=>n+Math.abs(v-b[i]),0)<150;const teamColours=[colour,similar?(a.reduce((n,v)=>n+v,0)>530?'#283657':'#eee5d7'):awayColour||'#eee5d7'];
  const attack=[[28,26],[37,31],[44,34],[38,25],[27,29],[32,36],[28,26]];
  const routes=[0,1].map(team=>Array.from({length:11},(_,i)=>{
   if(i===0)return attack.map((_,k)=>at(team?49:23,30+Math.sin(k*Math.PI/3)*1.8,.25));
@@ -53,9 +55,9 @@ export function pitchPlayers(project,colour,awayColour,motion,figureScale=1){
  for(let team=0;team<2;team++)for(let i=0;i<(team?motion.awayCount??11:motion.homeCount??11);i++){
   const route=routes[team][i],q=project(route[0]),scoring=motion.scoringTeam===team;
   const routeData=JSON.stringify(route.map(project)),cornerData=JSON.stringify(project(at(team?49:23,team?38:22,.25)));
-  out+=`<g data-player-route='${routeData}' data-corner='${cornerData}' data-team="${team}" data-index="${i}" class="pitch-player ${team?'away':'home'}" transform="translate(${q.x.toFixed(1)} ${q.y.toFixed(1)})"><g transform="scale(${2.2*figureScale})"><ellipse cy="0" rx="1.4" ry=".5" fill="#14252b66"/><g transform="translate(0 -2.7)"><rect x="-1.05" y="-1.1" width="2.1" height="2.4" rx=".3" fill="${i===0?(team?'#9281c3':'#d8ae4a'):teamColours[team]}"/><path class="player-legs" d="M-.7 1L-.9 2.5M.7 1L.9 2.5" stroke="#27353d" stroke-width=".7"/><circle cy="-1.8" r=".7" fill="${i%3?'#e2ba95':'#a47557'}"/></g></g></g>`;
+  out+=`<g data-player-route='${routeData}' data-corner='${cornerData}' data-team="${team}" data-index="${i}" class="pitch-player ${team?'away':'home'}" transform="translate(${q.x.toFixed(1)} ${q.y.toFixed(1)})"><g transform="scale(${2.2*figureScale})"><ellipse cy="0" rx="1.4" ry=".5" fill="#14252b66"/><g transform="translate(0 -2.7)"><rect x="-1.05" y="-1.1" width="2.1" height="2.4" rx=".3" stroke="#152c35" stroke-width=".22" fill="${i===0?(team?'#9281c3':'#d8ae4a'):teamColours[team]}"/><path class="player-legs" d="M-.7 1L-.9 2.5M.7 1L.9 2.5" stroke="#27353d" stroke-width=".7"/><circle cy="-1.8" r=".7" fill="${i%3?'#e2ba95':'#a47557'}"/></g></g></g>`;
  }
  const ballRoute=Array.from({length:7},(_,k)=>routes[k%2][1+(k*3)%Math.max(1,((k%2?motion.awayCount:motion.homeCount)??11)-1)][k]);ballRoute[6]=ballRoute[0];const q=project(ballRoute[0]);
- out+=`<circle class="visible-match-ball" data-foot-offset="${0}" cx="0" cy="0" r="${2.2*figureScale}" fill="#fff" stroke="#17252d" stroke-width="${.75*figureScale}" transform="translate(${q.x} ${q.y})"/>`;
+ out+=`<circle class="visible-match-ball" data-foot-offset="${0}" cx="0" cy="0" r="${2.2*figureScale}" fill="#fff8d8" stroke="#17252d" stroke-width="${.75*figureScale}" transform="translate(${q.x} ${q.y})"/>`;
  return `<g class="pitch-action" ${motion.paused&&!Number.isInteger(motion.scoringTeam)?'data-paused="true"':''}>${out}</g>`;
 }

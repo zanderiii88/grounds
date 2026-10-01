@@ -1,5 +1,5 @@
-const CACHE='clubline-pwa-v1.29.0';
-const CORE=['./stadium-surface.js?v=1.29.0','./transfer-search.js?v=1.29.0','./stadium-life.js?v=1.29.0','./match-life.js?v=1.29.0','./match-stats.js?v=1.29.0','./','./index.html','./app.js?v=1.29.0','./style.css?v=1.29.0','./data/league.json?v=1.29.0','./development.js?v=1.29.0','./scene.js?v=1.29.0','./stadium-model.js?v=1.29.0','./grounds-geometry.js','./sites.js','./sites.js?v=1.29.0','./stadium-life.js','./construction.js?v=1.29.0','./stadium-model.js'];
+const CACHE='clubline-pwa-v1.30.0';
+const CORE=['./stadium-surface.js?v=1.30.0','./transfer-search.js?v=1.30.0','./stadium-life.js?v=1.30.0','./match-life.js?v=1.30.0','./match-stats.js?v=1.30.0','./','./index.html','./app.js?v=1.30.0','./style.css?v=1.30.0','./data/league.json?v=1.30.0','./development.js?v=1.30.0','./scene.js?v=1.30.0','./stadium-model.js?v=1.30.0','./grounds-geometry.js','./sites.js','./sites.js?v=1.30.0','./stadium-life.js','./construction.js?v=1.30.0','./stadium-model.js'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE.map(url=>new Request(url,{cache:'reload'})))).then(()=>self.skipWaiting()));
 });

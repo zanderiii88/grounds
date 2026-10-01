@@ -1,4 +1,4 @@
-# Current artwork — 1.29.0
+# Current artwork — 1.30.0
 
 Six approved settings remain: Aberdeen / Granite Harbour, Liverpool, Manchester, Cardiff, Dublin and Birmingham, each by day and evening. The approved artwork and stadium scale are retained. No new cities, traffic, stalls or courtyard artwork are added.
 
@@ -9,3 +9,6 @@ Approved branding and modular stadium families remain. All 24 startup scenes are
 Matchday stalls, vendors and pedestrians are SVG engine objects aligned to the same projection. They are not baked into city art. The existing 24 static startup composites are retained; this release adds activity to the live career/match scenes. No traffic is added.
 
 The stand structure is rendered from the same geometry into transparent cached surfaces in career/match views. Dynamic supporters and football remain overlays; the designer remains editable SVG. No map or branding artwork is replaced.
+
+## 1.30 supporter occlusion
+Cached stand meshes use separate raster alpha masks from opaque roof/end-wall surfaces. Near exterior walls also occlude supporters. Animated supporter glyphs remain SVG, with existing celebrations. Maps, stadium families, scale and branding are unchanged.
