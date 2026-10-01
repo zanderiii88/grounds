@@ -1,14 +1,14 @@
-import {playerValue,blankTransferFilters,searchLeaguePlayers} from './transfer-search.js?v=1.27.0';
-import {pitchPlayers} from './stadium-life.js?v=1.27.0';
-import {syncStadiumLife,disposeStadiumLife} from './match-life.js?v=1.27.0';
-import {ensureMatchStats,recordPossession,recordShot,possessionPercent} from './match-stats.js?v=1.27.0';
-import {constructionQuote,startConstruction,advanceConstruction,usableCapacity} from './construction.js?v=1.27.0';
-import {SITES as SITE_CATALOGUE,SHOWCASE_SITES} from './sites.js?v=1.27.0';
-import {initialiseDevelopment,promoteProspect,developmentDay,rolloverDevelopment,squadSpace,canRegister,youthLevel,estimatedStars} from './development.js?v=1.27.0';
-import {sceneSvg,stadiumProfile} from './scene.js?v=1.27.0';
-import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.27.0';
+import {playerValue,blankTransferFilters,searchLeaguePlayers} from './transfer-search.js?v=1.28.0';
+import {pitchPlayers} from './stadium-life.js?v=1.28.0';
+import {syncStadiumLife,disposeStadiumLife} from './match-life.js?v=1.28.0';
+import {ensureMatchStats,recordPossession,recordShot,possessionPercent} from './match-stats.js?v=1.28.0';
+import {constructionQuote,startConstruction,advanceConstruction,usableCapacity} from './construction.js?v=1.28.0';
+import {SITES as SITE_CATALOGUE,SHOWCASE_SITES} from './sites.js?v=1.28.0';
+import {initialiseDevelopment,promoteProspect,developmentDay,rolloverDevelopment,squadSpace,canRegister,youthLevel,estimatedStars} from './development.js?v=1.28.0';
+import {sceneSvg,stadiumProfile} from './scene.js?v=1.28.0';
+import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.28.0';
 
-const APP_VERSION='1.27.0';
+const APP_VERSION='1.28.0';
 const SAVE_KEY='clubline-career-r1';
 const SITES=SITE_CATALOGUE.map(s=>[s.id,s.name,s.limit]);
 const availableSites=c=>SITES.filter(([, ,limit])=>c.capacity<=limit);
@@ -46,7 +46,7 @@ const careerPanelStates=new Map(),careerPanelNodes=new Map();
 let saveWarning='',source,career=null,view='title',section='hub',sub='lineup',setup={clubId:'C01',site:'aberdeen',names:{},colour:null},selectedPlayer=null,selectedSlot=null,instructionPlayer=null,statsScope='club',statsSort='goals',statsDescending=true,match=null,timer=null,notice='',updateMessage='',availableVersion=null,checkingUpdate=false;
 const root=document.getElementById('app');
 
-try {source=await (await fetch('./data/league.json?v=1.27.0',{cache:'no-store'})).json();}
+try {source=await (await fetch('./data/league.json?v=1.28.0',{cache:'no-store'})).json();}
 catch(error){root.innerHTML='<main class="app-shell"><div class="shell-content"><h1>Clubline</h1><p>Could not load the league data. Open the game through a web server or GitHub Pages.</p></div></main>';throw error;}
 const originalLeague=structuredClone(source);
 const ambitiousIds=new Set(source.clubs.map(c=>source.players.filter(p=>p.clubId===c.id).sort((a,b)=>a.overall-b.overall).slice(0,6).sort((a,b)=>b.potential-a.potential)[0]?.id));
@@ -191,7 +191,8 @@ function updateHappiness(){
 }
 function attentionList(){const unhappy=squadPlayers(career.clubId).filter(p=>career.players[p.id]?.request||moodLevel(p.id)<=1||career.players[p.id]?.injuryDays>0),offers=career.offers.filter(o=>o.status==='new'||o.status==='counter');return `<div class="glass panel attention"><span class="eyebrow">Today / Pay attention</span>${offers.length?`<button class="attention-item" data-action="open-offers">${offers.length} transfer proposal${offers.length===1?'':'s'} to review →</button>`:''}${unhappy.slice(0,3).map(p=>`<button class="attention-item" data-action="focus-player" data-player="${p.id}">${html(p.name)} · ${html(career.players[p.id].injuryDays?`Injured ${injuryLength(career.players[p.id].injuryDays)} — ${career.players[p.id].injuryType||'Knock'}`:career.players[p.id].reason)} →</button>`).join('')}${!offers.length&&!unhappy.length?'<span class="muted">No urgent squad matters today.</span>':''}</div>`}
 function toast(message){notice=message;document.querySelector('.toast')?.remove();const div=document.createElement('div');div.className='toast';div.textContent=message;document.body.appendChild(div);setTimeout(()=>div.remove(),3500)}
-function scene(current,site,open=false,crowd=false,evening=false,wide=false){const layout=career?.clubId===current.id?career.stadium:null;const active=career?.clubId===current.id,motion=active?{ambient:true,phase:match?.home===career.clubId&&['choice','confirm'].includes(match.phase)?'prematch':match?.home===career.clubId&&match.phase==='live'?'live':'idle'}:null;return `<div class="scene ${open?'open':''} ${wide?'menu-scene':''}">${sceneSvg(current,site,crowd,evening,wide?'menu':active?'career':open,layout,null,motion,active?career.construction||[]:[])}${wide?sceneSvg(current,site,crowd,evening,'menu-mobile',layout):''}</div>`}
+function stadiumPhase(){if(match?.home===career?.clubId)return match.phase==='live'?'live':match.phase==='report'?'postmatch':'prematch';if(career?.reports?.some(r=>r.home&&r.date===career.date))return 'postmatch';const next=career?nextFixture():null;return next?.home===career?.clubId&&next?.date===career?.date?'prematch':'idle';}
+function scene(current,site,open=false,crowd=false,evening=false,wide=false){const layout=career?.clubId===current.id?career.stadium:null,active=career?.clubId===current.id,phase=active?stadiumPhase():'idle',motion=active?{ambient:true,phase}:null;return `<div class="scene ${open?'open':''} ${wide?'menu-scene':''}">${sceneSvg(current,site,crowd,evening,wide?'menu':active?'career':open,layout,null,motion,active?career.construction||[]:[])}${wide?sceneSvg(current,site,crowd,evening,'menu-mobile',layout):''}</div>`;}
 function logo(small=false){return `<img class="logo ${small?'small':''}" src="assets/clubline-logo.svg?v=${APP_VERSION}" alt="Clubline">`}
 function titleView(){const shot=menuScenes[titleSceneIndex],c=shot.club,paint=career?.clubId===c.id?career.colour:c.colour;return `<div class="app-shell title-screen" style="--club:${paint}"><div class="title-backdrop">${menuFrame(titleSceneIndex)}</div><div class="menu-scene-label" data-menu-scene-label>${html(c.name)} · ${html(c.ground)} · ${html(SITES.find(x=>x[0]===shot.site)?.[1])} · ${shot.evening?'Evening':'Day'}</div><div class="shell-content"><div class="menu-hero"><div class="hero-copy glass">${logo()}<p class="title-tagline">Your club. Your call.</p><div class="hero-actions"><button class="btn primary arrow wide" data-action="new-game">New career</button>${hasSave()?'<button class="btn wide" data-action="continue">Continue</button>':''}</div><small>12 clubs · Premier Division · 22 fixtures</small><div class="update-area"><button class="btn ghost slim" data-action="check-update" ${checkingUpdate?'disabled':''}>${checkingUpdate?'Checking…':'↻ Check for updates'}</button><span class="build-label">v${APP_VERSION}</span>${availableVersion?'<button class="btn slim primary" data-action="load-update">Load update</button>':''}${updateMessage?`<p role="status">${html(updateMessage)}</p>`:''}</div></div></div></div></div>`}
 async function checkForUpdates(){
@@ -380,7 +381,7 @@ function render(){
  const scrollTop=lastScrollSection===scrollKey?(area?.scrollTop||0):(careerPanelStates.get(section)?.sub===sub?careerPanelStates.get(section).scrollTop:0)||0;
  clearInterval(tickerTimer);tickerTimer=null;clearInterval(timer);timer=null;clearTimeout(titleSceneTimer);titleSceneTimer=null;
  if(view==='career'){
-  const key=JSON.stringify([career.clubId,career.site,myColour(),career.stadium,career.construction,match?.home===career.clubId,match?.kickoff>='17:30',match?.home===career.clubId?match.phase:'idle']);
+  const key=JSON.stringify([career.clubId,career.site,myColour(),career.stadium,career.construction,match?.home===career.clubId,match?.kickoff>='17:30',stadiumPhase()]);
   const screen=root.querySelector('.career-screen'),template=document.createElement('template');template.innerHTML=dashboard(screen&&careerSceneKey===key?'<div class="scene"></div>':undefined);const next=template.content.firstElementChild;
   if(screen){
    const oldScene=screen.querySelector(':scope>.scene'),newScene=next.querySelector(':scope>.scene');
@@ -580,7 +581,7 @@ function finishMatch(){
  match.phase='report';match.paused=true;career.time='17:15';save();
 }
 
-function awayPitchSvg(){const project=p=>({x:12+(p.x-22)*376/28,y:9+(p.y-21)*127/18});return `<svg viewBox="0 0 400 145" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Animated away match pitch"><rect width="400" height="145" fill="#276d4a"/><path d="M12 9H388V136H12ZM200 9V136M200 53a20 20 0 1 0 0 40a20 20 0 1 0 0 -40M12 45H52V100H12M388 45H348V100H388" stroke="#d9efdf" fill="none" stroke-width="1.4"/>${pitchPlayers(project,club(match.home)?.colour,myColour(),{homeCount:match.oppLineup?.filter(Boolean).length??11,awayCount:match.lineup.filter(Boolean).length})}</svg>`}
+function awayPitchSvg(){const host=club(match.home),site=SHOWCASE_SITES[Math.max(0,source.clubs.findIndex(c=>c.id===host.id))%SHOWCASE_SITES.length];return sceneSvg(host,site,true,match.kickoff>='17:30','match',null,null,{ambient:true,phase:'live',paused:match.paused,awayColour:myColour(),homeCount:match.oppLineup?.filter(Boolean).length??11,awayCount:match.lineup.filter(Boolean).length});}
 
 function liveMatchBody(includeStage=true){const home=match.home===career.clubId,last=match.flash,decision=match.paused&&['red','injury'].includes(match.pauseReason),score=`${match.homeGoals} : ${match.awayGoals}`;
  const stage=!includeStage?'':home?sceneSvg({...myClub(),colour:myColour()},career.site,true,match.kickoff>='17:30','match',career.stadium,null,{ambient:true,phase:'live',paused:match.paused,awayColour:club(match.away)?.colour,homeCount:match.lineup.filter(Boolean).length,awayCount:match.oppLineup?.filter(Boolean).length||11,scoringTeam:last?.type==='goal'?(last.team===match.home?0:1):null},career.construction||[]):awayPitchSvg();
@@ -615,7 +616,7 @@ function matchOverlay(){
  if(match.phase==='report'){
   const report=career.reports.at(-1);body=`<span class="eyebrow">Full-time / ${fmtDate(report.date)}</span><h2>Match report card</h2><div class="scoreline"><span>${html(clubName(match.home))}</span><strong>${match.homeGoals} : ${match.awayGoals}</strong><span>${html(clubName(match.away))}</span></div>${reportHeadline(report)}${reportStatistics(report)}<div class="report-grid"><div><small>Attendance</small><strong>${report.attendance.toLocaleString('en-GB')}</strong></div><div><small>Ticket sales</small><strong>${fmtMoney(report.tickets)}</strong></div><div><small>Food & drink</small><strong>${fmtMoney(report.concessions)}</strong></div><div><small>Club shop</small><strong>${fmtMoney(report.shop)}</strong></div></div><p>Gross revenue: ${fmtMoney(report.tickets+report.concessions+report.shop)} · Operational costs: ${fmtMoney(report.operating)} · Net club match income: ${fmtMoney(report.income)}</p><div class="match-columns"><div><h3>Your players</h3><div class="report-list list">${report.performances.sort((a,b)=>(b.rating||0)-(a.rating||0)).map(x=>`<div class="row"><span><b>${html(player(x.id).name)}</b><br><small>${player(x.id).primary} · ${x.minutes} min · ${x.goals?x.goals+' goal'+(x.goals>1?'s':'')+' · ':''}${x.assists?x.assists+' assist'+(x.assists>1?'s':'')+' · ':''}${x.cards?'Card · ':''}${x.injuryDays?'Injured · ':''}Fit ${x.fitness}%</small></span><strong>${x.rating??'—'}</strong></div>`).join('')}</div></div><div><h3>Key moments</h3><div class="commentary">${report.events.filter(e=>['goal','yellow','red','injury','chance'].includes(e.type)).map(e=>`<div class="comment ${e.type}"><small>${clockLabel(e.minute)}</small><br>${html(e.text)}</div>`).join('')||'<div class="muted">A quiet game.</div>'}</div></div></div><div class="modal-actions"><button class="btn primary arrow" data-action="close-report">Continue career</button></div>`;
  }
- return `<div class="overlay" role="dialog" aria-modal="true" aria-label="Matchday"><div class="modal ${match.phase==='live'?'live-modal':''}">${home&&match.phase!=='live'?`<div class="match-ground" aria-label="Crowd at ${html(myClub().ground)}">${sceneSvg({...myClub(),colour:myColour()},career.site,true,match.kickoff>='17:30',true,career.stadium,null,{ambient:true,phase:['choice','confirm'].includes(match.phase)?'prematch':'idle'},career.construction||[])}<span>${html(myClub().ground)} · ${usableCapacity(career,myClub()).toLocaleString('en-GB')} seats</span></div>`:''}<div class="modal-head"><div style="flex:1">${body}</div></div></div></div>`;
+ return `<div class="overlay" role="dialog" aria-modal="true" aria-label="Matchday"><div class="modal ${match.phase==='live'?'live-modal':''}">${home&&match.phase!=='live'?`<div class="match-ground" aria-label="Crowd at ${html(myClub().ground)}">${sceneSvg({...myClub(),colour:myColour()},career.site,true,match.kickoff>='17:30',true,career.stadium,null,{ambient:true,phase:match.phase==='report'?'postmatch':'prematch'},career.construction||[])}<span>${html(myClub().ground)} · ${usableCapacity(career,myClub()).toLocaleString('en-GB')} seats</span></div>`:''}<div class="modal-head"><div style="flex:1">${body}</div></div></div></div>`;
 }
 
 function swapPlayers(a,b){let target=career.lineup.indexOf(b)>=0?career.lineup.indexOf(b):career.bench.indexOf(b)>=0?11+career.bench.indexOf(b):-1;let incoming=a;if(target<0){target=career.lineup.indexOf(a)>=0?career.lineup.indexOf(a):career.bench.indexOf(a)>=0?11+career.bench.indexOf(a):-1;incoming=b}if(target<0)return false;swapLineup(target,incoming);return true}

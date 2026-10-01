@@ -136,7 +136,7 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
     }
     if(crowd&&i%2===0)for(let u=.28;u<L;u+=.44){
      const q=project(point(u,v+.08,z+.18)),seed=i*17+Math.round(u*19)+s.id.charCodeAt(0),jump=motion?.scoringTeam===0;
-     bowl.push(`<g class="stand-fan" transform="translate(${q.x.toFixed(1)} ${q.y.toFixed(1)})"><g transform="scale(${figureScale})"><g class="fan-body" style="--jump-duration:${.48+seed%7*.07}s;--jump-delay:-${seed%17*.053}s"><rect x="-2.05" y="-.5" width="4.1" height="4.5" rx=".2" fill="${seed%4===0?colour:['#b9d0d5','#e1d9b5','#536979'][seed%3]}"/><circle cy="-1.5" r="1.35" fill="${seed%3?'#e8c3a1':'#a47758'}"/></g></g></g>`);
+     bowl.push(`<g class="stand-fan" transform="translate(${q.x.toFixed(1)} ${q.y.toFixed(1)})"><g transform="scale(${figureScale})"><g class="fan-body ${seed%7===0?'fan-idle':''}" style="--jump-duration:${.48+seed%7*.07}s;--jump-delay:-${seed%17*.053}s"><rect x="-2.5" y="-.5" width="5" height="4.8" rx=".2" fill="${seed%5<3?colour:['#819398','#a89977','#536979'][seed%3]}"/><circle cy="-1.7" r="1.6" fill="${seed%3?'#e8c3a1':'#a47758'}"/></g></g></g>`);
     }
    }
    if(!corner){
@@ -261,7 +261,7 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
  const depth=side=>Math.max(3,...specs.filter(x=>x.s.side===side).map(x=>{const next=works.find(j=>j.sections[x.s.id])?.sections[x.s.id],sp=next?groundsStand(next.stand):null,rear=c=>({compact:0,concourse:1.2,amenities:2,hospitality:2.6}[c?.rear]||0);return Math.max((x.sp?.depth||0)+rear(x.cfg),(sp?.depth||0)+rear(next));}))+1.1;
  const pedestrians=motion?.ambient?exteriorPeople(project,motion.phase||'idle',{left:20-depth('W'),right:52+depth('E'),top:20-depth('N'),bottom:40+depth('S')},figureScale):{far:'',near:''};
  const crowdMotion='';
- const art=`assets/sites/${map.art}-${evening&&map.night?'evening':'day'}.webp?v=1.27.0`,cy=map.origin[1]*py;
+ const art=`assets/sites/${map.art}-${evening&&map.night?'evening':'day'}.webp?v=1.28.0`,cy=map.origin[1]*py;
  // Frame the actual layout, not the entire maximum plot. Zoom moves map,
  // stadium and people together, preserving their relative proportions.
  const fw=stadiumFrame.right-stadiumFrame.left,fh=stadiumFrame.bottom-stadiumFrame.top,cx=(stadiumFrame.left+stadiumFrame.right)/2,fy=(stadiumFrame.top+stadiumFrame.bottom)/2;

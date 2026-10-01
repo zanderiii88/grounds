@@ -207,3 +207,16 @@ html,body{overscroll-behavior:none}
 .career-screen .results-ticker{bottom:var(--career-nav-height,60px)}
 .career-screen .advance-dock{display:none}
 @media(max-width:850px){.career-screen .bottom-nav{grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:33px 38px;gap:3px;padding:5px 8px calc(5px + env(safe-area-inset-bottom))}.career-screen .bottom-nav button{font-size:.68rem;padding:2px}.career-screen .bottom-nav .bottom-advance{grid-column:1/-1;font-size:.85rem}}
+/* Match scenes retain the complete stadium, including the opponent's ground. */
+.live-modal .live-stage{height:clamp(190px,40dvh,350px);background:#182b30}
+.fan-idle{animation:fan-idle 3.8s var(--jump-delay,0s) infinite ease-in-out}
+@keyframes fan-idle{0%,75%,100%{translate:0 0}35%{translate:.7px -.5px}}
+.walker-body{animation:walker-step .9s var(--walk-delay,0s) infinite alternate ease-in-out}
+@keyframes walker-step{to{translate:0 -.35px}}
+svg[data-match-paused="true"] .fan-body{animation-play-state:paused}
+@media(max-height:650px){.live-modal .live-stage{height:24dvh;min-height:95px}}
+@media(prefers-reduced-motion:reduce){.fan-idle,.walker-body{animation:none}.stadium-walker animateMotion{display:none}}
+.kicking-ball>g>path:last-of-type{transform-origin:0 2px;animation:boot-kick .35s ease-out infinite}
+@keyframes boot-kick{50%{transform:rotate(-22deg)}}
+svg[data-match-paused="true"] .kicking-ball>g>path{animation-play-state:paused}
+@media(prefers-reduced-motion:reduce){.kicking-ball>g>path{animation:none}}
