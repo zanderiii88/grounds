@@ -1,7 +1,7 @@
-# Current artwork — 1.26.0
+# Current artwork — 1.27.0
 
-The six settings are Aberdeen / Granite Harbour, Liverpool, Manchester, Cardiff, Dublin and Birmingham, each by day and evening. This release reuses the approved city artwork with a 45% larger stadium projection and continuous, aligned paving. No new city, traffic, stalls or specialised courtyard artwork is added.
+Six approved settings remain: Aberdeen / Granite Harbour, Liverpool, Manchester, Cardiff, Dublin and Birmingham, each by day and evening. The approved artwork and stadium scale are retained. No new cities, traffic, stalls or courtyard artwork are added.
 
-The visible grey plot boundary and inner rectangular surface are removed. Maximum upgrade bounds remain invisible. The paving layer uses the stadium engine's exact axes; distant generated-road and building angles may still need future refinement.
+The maximum-plot paving overlay is removed. Only the pitch surround and ground directly beneath existing modules or affected construction footprints are drawn. Empty corners receive no invented connector surface. Clear plots already painted into the raster artwork remain; generated roads/buildings can still deviate locally from the engine axes.
 
-Approved branding and modular stadium families remain. All 24 startup scenes are regenerated from actual engine composites, with portrait framing kept within the artwork.
+Approved branding and modular stadium families remain. All 24 startup scenes are regenerated from actual engine composites. The career stadium is framed within its permanently visible navigation rather than behind an automatically opened Home panel.

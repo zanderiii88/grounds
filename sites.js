@@ -1,4 +1,4 @@
-// Continuous paving and invisible maximum upgrade bounds share the stadium axes.
+// Invisible maximum upgrade bounds share the stadium axes; no plot overlay is painted.
 export const SITES=[
  {
   "id": "aberdeen",

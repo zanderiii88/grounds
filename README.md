@@ -1,18 +1,22 @@
-# Clubline 1.26.0 — Larger grounds and continuous paving
+# Clubline 1.27.0 — Stadium view
 
 Upload the release ZIP contents to your GitHub Pages repository. Nothing has been deployed.
 
 ## Changes
 
-- Stadiums are 45% larger relative to the city artwork, matching the approved engine preview. This changes the stadium/city relationship rather than magnifying both together. People, supporters, players and ball retain their proportion to the stadium.
-- The grey boxed boundary and contrasting inner rectangle have been removed. The ground sits on continuous paving. Maximum upgrade bounds remain invisible, with a clear apron drawn on the stadium's exact axes.
-- The stadium designer shows more surrounding location, with a responsive panel matching its camera shape. Stand selection and whole-side shortcuts continue to work.
-- Roof end caps now close where adjoining stands use different rear-building depths, even when their stand and roof options otherwise match.
-- All 24 desktop/mobile startup scenes are regenerated. Portrait title framing stays within the artwork so larger grounds do not introduce blank strips.
-- Six approved city settings remain, each by day and evening. Match persistence, construction, transfers and other existing gameplay are retained.
+- Removed the large opaque engine paving overlay from every location. A narrow pitch surround and ground beneath the actual stand modules remain. Empty corners and unused upgrade space no longer receive a whole-plot polygon. Construction uses the affected module footprint.
+- New careers and Continue open onto the stadium and setting. Home, Squad, Facilities, Finances and Organiser open as panels; pressing the active button again minimizes it. Switching panels remembers their subtab, scroll position and existing controls. Stadium designer drafts and selected stands survive minimizing or switching panels.
+- The career background remains mounted when panels open, close or ordinary game data changes. Existing persistent live match updates are retained. A changed stadium layout or matchday scene can legitimately require a new scene.
+- The stadium view is framed between the top bar and bottom ticker/navigation. Navigation and Advance remain visible on desktop as well as mobile. Quiet days show the next fixture in the ticker.
+- Stand selection is lighter on mobile and desktop, keeping the seating visible beneath its outline.
+- All 24 mobile/desktop day/evening startup composites have been regenerated from the actual engine without the oversized paving layer.
 
 ## Verification
 
-Reviewed all twelve club presets, all six maximum triple-tier/hospitality layouts by day and night, and exposed tier/concourse joins. Automated checks cover exact ground-axis alignment, maximum plot clearance, figure proportions, geometry and roof joins. Browser checks cover persistent match SVG/background, players/ball movement, pause/resume, goals, controls, substitutions, reports/history, designer taps and multi-selection, and anchored navigation at 390×844, 360×640 and 844×390.
+Browser checks cover stadium-first new/continued careers, all five panel toggles, retained transfer filters/scroll/designer selections, uninterrupted SVG time and scene identity during panel changes and Advance. Top/bottom controls and ticker placement were checked at 390×844, 360×640, 844×390 and 1400×900.
 
-Checked all 72 club/location portrait title camera bounds, twelve day/night asset renders, production syntax/references, asset counts and ZIP integrity. Physical-phone testing remains with the user. Some distant roads/buildings retain local generated-art angle irregularities; this release does not claim to resolve every visual defect in the engine.
+Live-match checks cover persistent SVG/background through goals, cards, injuries, pause/resume, speed, assistant controls, formation, substitutions and simulation; player movement, reports, table-to-Home return and historical statistics also pass. Designer taps and whole-side selection were checked at three phone-sized viewports.
+
+Logic checks cover construction, development, transfer search, match statistics, six day/night assets, engine axes, maximum footprint bounds, figure proportions, stand geometry, roof returns, sparse-ground surfaces and title camera bounds. Reviewed actual engine composites for twelve club presets and maximum layouts in all six locations by day/evening.
+
+Physical-phone scrolling, performance and animation behavior still need your test. Existing clear plots in the raster artwork remain visible; removing the engine overlay does not repaint the city. Local map angle/scale irregularities and remaining corner/stand details may need further refinement.
