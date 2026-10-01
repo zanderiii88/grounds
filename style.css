@@ -220,3 +220,13 @@ svg[data-match-paused="true"] .fan-body{animation-play-state:paused}
 @keyframes boot-kick{50%{transform:rotate(-22deg)}}
 svg[data-match-paused="true"] .kicking-ball>g>path{animation-play-state:paused}
 @media(prefers-reduced-motion:reduce){.kicking-ball>g>path{animation:none}}
+.notification-stack{position:fixed;z-index:18;left:14px;right:14px;bottom:calc(var(--career-bottom-height,110px) + 8px);display:grid;gap:5px;max-height:25dvh;overflow:auto;margin-left:auto;max-width:470px}
+.notification-stack button{display:flex;justify-content:space-between;gap:12px;padding:9px 12px;color:#fff;border:1px solid #ffb0ac;background:#aa3541f5;font:700 .8rem Arial;cursor:pointer;text-align:left}
+.notification-stack .notification-more{justify-content:center;background:#172a34;color:#e4edf0;border-color:#74848b;padding:6px}
+.match-exit-overlay{z-index:40;backdrop-filter:none}
+.overlay:has(.match-ground),.overlay:has(.live-modal){backdrop-filter:none;background:#071117ed}
+.crowd-motion circle{animation:none!important}
+.kicking-ball .player-legs{transform-origin:0 2px;animation:boot-kick .35s ease-out infinite}
+svg[data-scene-phase="prematch"] .pitch-action{display:none}
+@media(prefers-reduced-motion:reduce){.kicking-ball .player-legs{animation:none}}
+.career-screen.panel-open .dash-grid{margin-bottom:calc(var(--career-bottom-height,110px) + var(--career-notice-height,0px) + 12px);padding-bottom:20px;scroll-padding-bottom:12px}

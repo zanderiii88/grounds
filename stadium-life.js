@@ -46,16 +46,16 @@ export function pitchPlayers(project,colour,awayColour,motion,figureScale=1){
  const attack=[[28,26],[37,31],[44,34],[38,25],[27,29],[32,36],[28,26]];
  const routes=[0,1].map(team=>Array.from({length:11},(_,i)=>{
   if(i===0)return attack.map((_,k)=>at(team?49:23,30+Math.sin(k*Math.PI/3)*1.8,.25));
-  const baseX=i<=4?28:i<=7?34:42,baseY=24+(i%4)*4;
+  const baseX=i<=4?26:i<=7?34:44,baseY=[0,22.7,27.4,32.4,37.3,23.7,30,36.3,24,30,36][i];
   return attack.map(([x,y],k)=>{const frame=k===6?0:k,follow=.22+(i%3)*.1,ownX=team?72-baseX:baseX;return at(Math.max(24,Math.min(48,ownX+(x-36)*.48+Math.sin(frame*1.7+i)*1.5)),Math.max(22,Math.min(38,baseY+(y-baseY)*follow+Math.sin(frame+i)*.8)),.25)});
  }));
   let out='';
  for(let team=0;team<2;team++)for(let i=0;i<(team?motion.awayCount??11:motion.homeCount??11);i++){
   const route=routes[team][i],q=project(route[0]),scoring=motion.scoringTeam===team;
   const routeData=JSON.stringify(route.map(project)),cornerData=JSON.stringify(project(at(team?49:23,team?38:22,.25)));
-  out+=`<g data-player-route='${routeData}' data-corner='${cornerData}' data-team="${team}" data-index="${i}" class="pitch-player ${team?'away':'home'}" transform="translate(${q.x.toFixed(1)} ${q.y.toFixed(1)})"><g transform="scale(${4*figureScale})"><ellipse cy="3" rx="1.8" ry=".55" fill="#10252a77"/><path d="M-1.6 -.5L-2.3 .5L-1.5 1L-1.1 .6V1.9H1.1V.6L1.5 1L2.3 .5L1.6 -.5Z" fill="${i===0?(team?'#9281c3':'#d8ae4a'):teamColours[team]}" stroke="#172830" stroke-width=".35"/><path d="M-.7 1.8L-1 3M.7 1.8L1 3" stroke="#172830" stroke-width=".7"/><circle cy="-1.45" r=".8" fill="${i%3?'#e2bb98':'#a47557'}"/></g></g>`;
+  out+=`<g data-player-route='${routeData}' data-corner='${cornerData}' data-team="${team}" data-index="${i}" class="pitch-player ${team?'away':'home'}" transform="translate(${q.x.toFixed(1)} ${q.y.toFixed(1)})"><g transform="scale(${2.2*figureScale})"><ellipse cy="0" rx="1.4" ry=".5" fill="#14252b66"/><g transform="translate(0 -2.7)"><rect x="-1.05" y="-1.1" width="2.1" height="2.4" rx=".3" fill="${i===0?(team?'#9281c3':'#d8ae4a'):teamColours[team]}"/><path class="player-legs" d="M-.7 1L-.9 2.5M.7 1L.9 2.5" stroke="#27353d" stroke-width=".7"/><circle cy="-1.8" r=".7" fill="${i%3?'#e2ba95':'#a47557'}"/></g></g></g>`;
  }
  const ballRoute=Array.from({length:7},(_,k)=>routes[k%2][1+(k*3)%Math.max(1,((k%2?motion.awayCount:motion.homeCount)??11)-1)][k]);ballRoute[6]=ballRoute[0];const q=project(ballRoute[0]);
- out+=`<circle class="visible-match-ball" data-foot-offset="${10*figureScale}" cx="0" cy="0" r="${4.4*figureScale}" fill="#fff" stroke="#17252d" stroke-width="${1.4*figureScale}" transform="translate(${q.x} ${q.y})"/>`;
+ out+=`<circle class="visible-match-ball" data-foot-offset="${0}" cx="0" cy="0" r="${2.2*figureScale}" fill="#fff" stroke="#17252d" stroke-width="${.75*figureScale}" transform="translate(${q.x} ${q.y})"/>`;
  return `<g class="pitch-action" ${motion.paused&&!Number.isInteger(motion.scoringTeam)?'data-paused="true"':''}>${out}</g>`;
 }

@@ -13,7 +13,7 @@ for(const s of SITES){assert.equal(s.background[2],0,'Background verticals stay 
 console.log('Only six city choices, single-tier Welsh corners, upright map correction and adaptive layout camera passed');
 
 // Figure glyphs follow projection changes, preserving their size relative to stands.
-for(const site of SITES){assert.equal(site.artWidth,1200);const k=(site.scale*830/site.artWidth)/0.6137143383204945;const svg=sceneSvg(club,site.id,true,false,'match',null,null,{phase:'live',ambient:true,homeCount:11,awayCount:11});assert(svg.includes('scale('+4*k+')'));assert(svg.includes('scale('+2.2*k+')'));assert(svg.includes('r="'+4.4*k+'"'));assert(svg.includes('<g transform="scale('+k+')"><g class="fan-body '));}
+for(const site of SITES){assert.equal(site.artWidth,1200);const k=(site.scale*830/site.artWidth)/0.6137143383204945;const svg=sceneSvg(club,site.id,true,false,'match',null,null,{phase:'live',ambient:true,homeCount:11,awayCount:11});assert(svg.includes('class="player-legs"'));assert(svg.includes('scale('+2.2*k+')'));assert(svg.includes('r="'+2.2*k+'"'));assert(svg.includes('<g transform="scale('+k+')"><g class="fan-body '));}
 console.log('Player, ball, pedestrian and supporter proportions preserved across all maps');
 
 // Plot/apron edges are generated from the same two axes as every stand.

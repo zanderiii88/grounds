@@ -1,20 +1,20 @@
-# Clubline 1.28.0 — Matchday life
+# Clubline 1.29.0 — Navigation and stable stadium surfaces
 
-Upload these ZIP contents to your GitHub Pages repository. Nothing has been deployed.
+Upload the ZIP contents to your GitHub Pages repository. Nothing has been deployed.
 
 ## Changes
 
-- Ordinary days retain a small number of pedestrians. Local curved routes, different speeds, pauses and nearby wandering replace the shared rectangular perimeter laps.
-- Home matchdays add eight food/club-shop stalls, vendors, queues and much busier arrivals. Some visitors approach entrances and fade from view. During play the stalls remain but queues disappear and only six visitors plus vendors remain outside. After a home match, departures and smaller stall queues return until advancing to the next day.
-- Away watched games now show the opponent's modular stadium, city setting and supporters instead of the separate flat pitch. Home games retain your actual stadium and construction state. Both use evening scenes for late kickoffs.
-- The full-stadium live view has more space on portrait phones. Players follow coordinated attacking/defensive movement across the pitch. The visible ball has carry, kick/pass and receive phases near players' feet. Existing corner celebrations remain.
-- Supporters in visible seating are clearer, with varied clothing, scattered quiet movement and staggered reactions to home-team goals.
-- Stadium/background SVGs remain mounted during live events and controls. Ordinary career panel toggles continue to preserve their scene and panel state. Scale, branding, stadium structures and city artwork are retained.
+- Important notifications stack above the ticker. Transfer offers, injuries, player conversations, loan/transfer requests, youth/development reports and stadium updates have review links. Similar items combine; two groups show initially with a more button. Reviewed groups clear persistently. Notifications wait during matchday screens. Open career panels reserve space beneath their controls for the stack.
+- Android/browser Back follows the UI hierarchy: close details, return from subtabs/designer, minimize career sections, then return to the menu. During live matches Back pauses and offers Return to match or Main menu. Menu exit saves the paused match. The main menu allows normal browser departure.
+- Lineup confirmation preserves the mounted pre-match stadium preview rather than reconstructing it. Normal live events and controls continue to preserve the live SVG.
+- The immutable stand mesh is cached into two transparent images, made directly from the existing engine geometry. Far-stand supporters, exterior people, stalls, field and football remain separate SVG layers. This avoids repeatedly painting thousands of individual seat/wall faces during animation. The original geometry remains if caching fails; editable designer geometry is retained. This is a rendering optimization, not replacement stadium artwork.
+- Removed an obsolete rule animating every circle in stadium SVGs and removed blur behind match overlays.
+- Pitch players use the standard pedestrian proportions with home/away colours and alternate goalkeeper shirts. They are spread more widely across the field. The ball remains visible at ground/foot level with existing carry/pass/receive motion.
 
-## Verification
+## Verification and remaining checks
 
-Browser checks cover live home/away stadiums, supporter/stall/player presence, passing and kicking, player/ball movement, pauses, goals and automatic resume, substitutions, cards, injuries, assistant controls, simulation, reports/history, reduced motion and SVG persistence. Phone-sized layouts checked at 390×844, 360×640 and 844×390; career navigation also checked at 1400×900. Panel state and designer taps/selection checks pass.
+Browser checks cover notification placement, grouping and review, panel button accessibility, Back hierarchy, designer return, live-match Back/return/menu/save, continued paused matches, lineup preview identity and both cached stand layers. Existing home/away match tests cover movement, passing, goals, cards/injuries, pause/resume, speed, substitutions, assistant, simulation, reports/history and persistent SVGs. Career panel preservation and designer checks pass. Phone-sized layouts were checked at 390×844, 360×640 and 844×390; career controls also at 1400×900.
 
-Logic checks cover phase densities, stalls retained through kickoff, empty live queues, curved routes with pauses, arrivals/departures and clearance from the actual stand backs. Existing construction, development, transfers, statistics, geometry, six day/night settings, maximum footprints and camera checks pass. Actual engine composites were reviewed across the four activity phases.
+Logic checks cover construction, development, transfers, match statistics, activity phases, route clearance, six day/evening settings, geometry, figure proportions, maximum footprints and cameras. Production syntax, imports, assets, release version and ZIP integrity were checked.
 
-Physical-phone animation smoothness and performance still need your test. These are illustrative match animations, not a replay of every simulated action. Stalls are visual additions; existing concession finances remain. Pedestrians use the registered clear circulation area, not a city-wide road/path navigation system. Local raster-art alignment irregularities and remaining stand/corner details are unchanged.
+Android hardware Back behavior and the reported disappearing/repainting must be tested on your physical phone. Desktop Chromium checks do not establish that the Android issue is fully resolved. Scale, map artwork, branding and stand families are retained. Match movement remains illustrative rather than a precise replay of simulated events.

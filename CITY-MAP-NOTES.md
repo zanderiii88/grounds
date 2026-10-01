@@ -1,4 +1,4 @@
-# City maps — 1.28.0
+# City maps — 1.29.0
 
 Six day/evening pairs retain their fixed pitch anchors. Artwork coordinates use width 1200; the renderer projects into width 1100. Shared stadium scale remains 1.2615 (0.87 × 1.45), with east [7.2,4.2] and south [-7.35,4.2] multiplied by that scale. Modular dimensions and rotation are unchanged.
 
@@ -11,3 +11,5 @@ Figure glyphs multiply by (site.scale*830/site.artWidth)/0.6137143383204945 to p
 The designer includes city context using camera/panel aspect ratio 1.28. The career view frames its actual stadium within the space between fixed bars. Match views remain close. Mobile title crops stay within registered painted bounds; the largest grounds can crop at image edges. Startup images are rendered from the real engine.
 
 Exterior movement uses conservative rectangular circulation bounds beyond the deepest current/planned stand and rear on each side. Walkers follow different local quadratic curves within those clear bands, with entrance approaches on matchdays. Stalls sit further back than the primary walking lane. This does not create a city-wide pedestrian navigation mesh or resolve every raster-art angle irregularity. Away venues use a stable club-to-location assignment from the six approved settings.
+
+The stand structure is rendered from the same geometry into transparent cached surfaces in career/match views. Dynamic supporters and football remain overlays; the designer remains editable SVG. No map or branding artwork is replaced.
