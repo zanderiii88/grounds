@@ -1,4 +1,4 @@
-# Approved audio integration — 1.31.0
+# Approved audio integration — 1.33.0
 
 Music: menu-hip-hop, menu-french-electro, menu-fuzzy-rock (original procedural previews approved by the user).
 Effects: crowd-cheer, crowd-boo, advance-tick from preview 1.

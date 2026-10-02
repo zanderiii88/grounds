@@ -1,0 +1,6 @@
+import assert from 'node:assert/strict';
+import {scoutEstimate,scoutAdvice,reportDue,scoutingPrice,scoutUnits} from '../scouting.js';
+for(let overall=55;overall<=92;overall++){const p={id:'p'+overall,overall};let last=100;for(let level=0;level<4;level++){const a=scoutEstimate(p,level,'2026-08-15');assert.deepEqual(a,scoutEstimate(p,level,'2026-08-15'),'no reroll');assert(a.low<=overall&&a.high>=overall);assert(a.high-a.low<last);last=a.high-a.low;}assert.equal(scoutEstimate(p,0,'x',true).low,overall);}
+assert(reportDue('2026-08-12','2026-08-15'));assert(reportDue('2026-08-15','2026-08-15'));assert(!reportDue('2026-08-11','2026-08-15'));assert(!reportDue('2026-08-16','2026-08-15'));assert.equal(scoutingPrice(0),75000);assert.equal(scoutingPrice(2),225000);assert.match(scoutAdvice('High press','3-5-2').join(' '),/press high.*three-defender/s);console.log('PASS stable and bounded estimates, funded accuracy, known players, report timing and tactical suggestions');
+
+const units=scoutUnits([{id:"a",overall:90},{id:"b",overall:60},{id:"c",overall:70}], ["ST","CM","CB"],3,"x");assert.equal(units[0].name,"Attack");assert.equal(units.at(-1).name,"Midfield");assert.deepEqual(scoutUnits([],[],0,"x"),[]);

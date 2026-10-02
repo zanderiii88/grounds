@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {completeDisciplineFixture as finish,availableForMatch,resetSeasonCards,simulatedCards,SUBSTITUTION_LIMIT} from '../discipline.js';
+assert.equal(SUBSTITUTION_LIMIT,3);
+const c={players:{a:{seasonYellows:4},b:{seasonYellows:8},d:{suspensionMatches:1,injuryDays:10}}};
+finish(c,['a','b','d'],[{playerId:'a',type:'yellow'},{playerId:'b',type:'yellow'},{playerId:'b',type:'red',secondYellow:true}],'round1');
+assert.equal(c.players.a.seasonYellows,5);assert.equal(c.players.b.seasonYellows,10);assert.equal(c.players.a.suspensionMatches,1);assert.equal(c.players.b.suspensionMatches,1,'overlapping red and yellow ban is one fixture');assert.equal(c.players.d.suspensionMatches,0,'injured players serve bans');assert(!availableForMatch(c.players.a));
+finish(c,['a','b','d'],[],'round1');assert.equal(c.players.a.suspensionMatches,1,'completion is idempotent');
+finish(c,['a','b','d'],[],'round2');assert(availableForMatch(c.players.a));assert.equal(c.players.a.seasonYellows,5);
+finish(c,['a'],[{playerId:'a',type:'red'}],'round3');assert.equal(c.players.a.seasonYellows,5,'straight red adds no caution');resetSeasonCards(c);assert.equal(c.players.a.seasonYellows,0);assert.equal(c.players.a.suspensionMatches,1,'ban carries into new season');
+assert(availableForMatch({}),'old saves and newly promoted players default available');
+const events=simulatedCards(['a','b'],()=>0);assert.equal(events.filter(e=>e.type==='red').length,2);assert.equal(events.length,2,'dismissed players stop receiving events');
+console.log('PASS fixture-based bans, fifth/tenth yellows, second yellow, straight red, overlapping bans, injury, rollover and idempotence');

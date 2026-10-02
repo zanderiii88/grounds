@@ -1,0 +1,14 @@
+// Repeatable estimates: reopening or reloading a report cannot reroll player ratings.
+export const SCOUT_LEVELS=[{name:'Basic',spread:8},{name:'Local network',spread:5},{name:'Dedicated scouts',spread:3},{name:'Division specialists',spread:1}];
+export const scoutingPrice=level=>(level+1)*75000;
+const hash=s=>{let n=2166136261;for(const c of s){n^=c.charCodeAt(0);n=Math.imul(n,16777619)}return n>>>0};
+export function scoutEstimate(player,level,key,known=false){const spread=known?0:SCOUT_LEVELS[Math.max(0,Math.min(3,level||0))].spread,offset=spread?hash(`${key}:${player.id}`)%(spread+1)-Math.floor(spread/2):0,centre=player.overall+offset;return {low:Math.max(1,centre-spread),high:Math.min(99,centre+spread),centre,confidence:known?'Known':level>=2?'Higher confidence':'Limited confidence'};}
+export function scoutAdvice(style,formation){const styleNotes={
+ 'High press':'They may press high. Consider quicker forward passes and keep passing options available behind the ball.',
+ 'Possession':'They are likely to keep the ball. A compact midfield and counter attacks may create chances.',
+ 'Direct':'Expect early forward balls. Keep defensive cover and avoid leaving the centre exposed.',
+ 'Counter':'They may wait for turnovers. Keep cover when attacking and be cautious about committing both wide defenders.',
+ 'Balanced':'Expect a balanced approach. Contest midfield and adapt to the match rather than committing everyone forward.'
+};return [styleNotes[style]||styleNotes.Balanced,formation.startsWith('3-')?'Their three-defender shape may leave space wide; keep cover for their wingbacks.':formation.startsWith('5-')?'A five-defender shape may be hard to break centrally. Width and patient passing are options.':'Look for chances outside their central defenders, while keeping your own shape.'];}
+export function reportDue(today,fixtureDate){const days=(Date.parse(fixtureDate+'T12:00:00Z')-Date.parse(today+'T12:00:00Z'))/86400000;return days>=0&&days<=3;}
+export function scoutUnits(lineup,slots,level,key){const groups={Attack:[],Midfield:[],Defence:[]};lineup.forEach((p,i)=>{if(!p)return;const role=slots[i],group=['ST','LW','RW'].includes(role)?'Attack':['CM','AM','DM'].includes(role)?'Midfield':'Defence';groups[group].push(scoutEstimate(p,level,key).centre);});return Object.entries(groups).filter(([,ratings])=>ratings.length).map(([name,ratings])=>({name,rating:ratings.reduce((a,b)=>a+b,0)/ratings.length})).sort((a,b)=>b.rating-a.rating);}
