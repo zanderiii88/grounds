@@ -1,4 +1,4 @@
-# Current artwork — 1.33.0
+# Current artwork — 1.35.0
 
 Six approved settings remain: Aberdeen / Granite Harbour, Liverpool, Manchester, Cardiff, Dublin and Birmingham, each by day and evening. The approved artwork and stadium scale are retained. No new cities, traffic, stalls or courtyard artwork are added.
 

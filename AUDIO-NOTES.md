@@ -1,11 +1,9 @@
-# Approved audio integration — 1.33.0
+# Approved audio integration — 1.35.0
 
-Music: menu-hip-hop, menu-french-electro, menu-fuzzy-rock (original procedural previews approved by the user).
-Effects: crowd-cheer, crowd-boo, advance-tick from preview 1.
-Excluded: crowd ambience, upset groan, wordless chant. A natural stadium murmur may be sourced later.
+Seven original procedural arrangements approved in preview 3: Touchline, Floodlights, Away End, Kickoff 90, Turnstile Funk, Saturday Radio and Last Minute Winner. MP3 masters are approximately 2:51–3:03, 44.1 kHz stereo, with peak headroom and smoothed loop boundaries. Original synthesis, with no commercial recordings or samples. Track filenames retain the original first-three indexes to preserve saved selections.
 
-Settings: clubline-audio-settings, independent of release/career keys. musicMuted and effectsMuted are booleans; track is a bounded playlist index. No per-render audio objects, no report/reload replay of goal effects. Goal reactions follow the host supporters.
+Effects remain crowd-cheer, crowd-boo and advance-tick from preview 1. Rejected ambience, upset groan and chant are excluded.
 
-MP3 masters are derived from the preview WAV files. Music gain .22; effect gain .65. Sources have peak headroom. Two players limit overlapping effects while allowing music beneath them. Playback begins after a gesture and handles blocked playback without disrupting game logic.
+Stable device key: clubline-audio-settings. Settings include musicMuted, effectsMuted, track, playlist and mode (repeat, playlist or shuffle). Floodlights is the fresh-install default. Music off clears playlist selections; enabling music restores all tracks if none are selected. Selecting a track enables it and music. Shuffle avoids immediate repetition when multiple tracks are selected.
 
-Future refinements may include adjustable volumes and recorded crowd ambience after approval. Scouting and first-career guidance are separate pending notes.
+Two persistent Audio objects keep effects separate from music; volume .22/.65. Playback requires a user gesture. Hidden tabs pause both. Fast simulated minutes suppress event effects; watched goals cheer for the home side scoring and boo for conceding, regardless of the managed club. No audio replay from renders or reports.

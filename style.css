@@ -174,7 +174,7 @@ html,body{overscroll-behavior:none}
 .stat-team-head{display:flex;justify-content:space-between;gap:15px;font-size:.78rem;margin-bottom:8px}
 .stat-comparison{display:grid;grid-template-columns:1fr 1.5fr 1fr;text-align:center;align-items:center;padding:6px;border-top:1px solid #ffffff20;font-size:.82rem}
 .stat-comparison b{font-size:1rem}.report-highlight{padding:9px;background:#ffffff0b;font-size:.85rem}
-.celebrating-home .stand-fan .fan-body{animation:fan-jump var(--jump-duration,.6s) var(--jump-delay,0s) infinite ease-in-out}
+.celebrating-home .stand-fan .fan-body.fan-reactive{animation:fan-jump var(--jump-duration,.6s) var(--jump-delay,0s) infinite ease-in-out}
 @keyframes fan-jump{50%{transform:translateY(-2.8px)}}
 @media(max-height:650px){.live-stage{height:24dvh;min-height:95px}.live-head .scoreline{font-size:1rem!important}.live-toolbar .btn{min-height:25px;font-size:.59rem}.live-modal{padding:6px}.live-possession{padding:2px}.live-decisions summary{padding:5px}}
 @media(prefers-reduced-motion:reduce){.celebrating-home .fan-body{animation:none}}
@@ -266,3 +266,32 @@ svg[data-scene-phase="prematch"] .pitch-action{display:none}
 }
 .club-table-link{color:inherit;background:none;border:0;padding:4px 0;text-align:left;font:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer}.league-club{width:100%;color:inherit;background:#ffffff08;text-align:left;border:1px solid #ffffff25;cursor:pointer}.league-club small{display:block;margin-top:5px}.club-browser-overlay{z-index:40}.club-browser-modal{position:relative;width:min(620px,100%)}.scout-formation{background:#214735;border:1px solid #a6c6b766;padding:8px;margin:12px 0;display:grid;gap:8px}.scout-line{display:flex;justify-content:space-around;gap:4px}.scout-position{text-align:center;font-size:.65rem;color:#d8e6df;min-width:0;flex:1}.scout-position b,.scout-position small{display:block;overflow-wrap:anywhere}.scout-position b{font-size:.75rem;color:white}.scout-roster{display:grid;gap:4px;margin:8px 0}.scout-roster-row{display:flex;align-items:center;gap:9px;width:100%;border:1px solid #ffffff25;padding:8px;background:#ffffff08;color:inherit;text-align:left;cursor:pointer}.scout-roster-row>span:nth-child(2){flex:1;min-width:0}.scout-roster-row small{display:block;font-size:.73rem;margin-top:3px}.scout-roster-row>span:last-child{font-size:.7rem}.scout-profile{padding:12px;border:1px solid #a6c6b766;background:#142a31;margin:10px 0}.unavailable-text{color:#ffd99a}.scout-team-report details,.match-opponent{border:1px solid #ffffff35;padding:8px;margin:8px 0}.scout-team-report summary,.match-opponent>summary{cursor:pointer;font-weight:800;font-size:.83rem}.match-opponent{background:#183039}.scout-team-report p{font-size:.83rem;line-height:1.45}.scouting-finance{padding:10px 0;border-bottom:1px solid #ffffff30;margin-bottom:12px}
 .scout-roster-row small,.scout-position small,.league-club small{letter-spacing:normal;text-transform:none;font-weight:500;line-height:1.3}.scout-roster-row b{font-size:.85rem}.scout-team-report .scout-profile h3{font-size:1.2rem}
+
+/* Compact start controls leave the stadium visible on phones. */
+.title-screen .hero-copy{padding:18px 20px;width:min(520px,calc(100vw - 28px));}
+.title-screen .hero-copy .logo{max-width:100%;}
+.title-screen .title-tagline{font-size:1rem;margin:12px 0;}
+.title-screen .hero-actions .btn{min-height:42px;padding:8px 14px;font-size:1rem;}
+.title-screen .hero-copy>small{font-size:.63rem;margin:10px 0;display:block;}
+.title-screen .audio-controls.compact{padding:8px 0;margin:8px 0;border-bottom:0;}
+.title-screen .compact .audio-toggle-row{gap:6px;flex-wrap:nowrap;}
+.title-screen .compact .btn{font-size:.72rem;padding:5px 10px;min-height:30px;}
+.title-screen .update-area{margin-top:4px;padding-top:8px;}
+.title-screen .update-area .btn,.title-screen .build-label{font-size:.68rem;}
+.title-screen .update-area p{margin:4px 0;font-size:.7rem;}
+.title-options-overlay .modal{max-height:85dvh;overflow:auto;}
+.playlist-list{display:grid;gap:8px;margin:12px 0;}
+.playlist-list label,.preference-row,.notice-suppress{display:flex;align-items:center;gap:8px;}
+.playlist-list input,.preference-row input,.notice-suppress input{width:18px;height:18px;accent-color:#e74652;flex:none;}
+.preference-row{margin:10px 0;}.getting-started{margin:18px 0;}.getting-started summary{cursor:pointer;font-weight:800;}
+.notice-suppress{font-size:.67rem;grid-column:1/-1;padding-top:4px;}.notification-row{flex-wrap:wrap;}.notice-suppress{width:100%;}
+.status-red{color:#ff8383;}
+
+.season-expectations{margin:14px 0 8px;border:1px solid #ffffff30;background:#ffffff08;padding:10px;}
+.season-expectations>summary{cursor:pointer;font-weight:800;}.season-expectations>summary small{display:block;color:#b8c9cd;font-size:.73rem;margin-top:3px;}
+.objective-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:9px 0;border-bottom:1px solid #ffffff20;font-size:.83rem;}
+.objective-row>span{min-width:0;}.objective-row small{display:block;margin-top:4px;color:#c3d1d4;line-height:1.35;}
+.status-chip{display:inline-block;border:1px solid currentColor;padding:3px 6px;border-radius:3px;font-size:.7rem;white-space:nowrap;}.status-chip.good{color:#7cdeb0;}.status-chip.watch{color:#ffd179;}.status-chip.poor{color:#ff8b91;}.status-chip.neutral{color:#becbd1;}
+.confidence-grid{display:grid;align-items:start;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-bottom:14px;}
+.confidence-detail{background:#ffffff08;border:1px solid #ffffff24;padding:8px;}.confidence-detail summary{cursor:pointer;list-style:none;display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:space-between;font-size:.8rem;}.confidence-detail p{font-size:.78rem;line-height:1.45;}.season-review{margin:12px 0;padding:10px;background:#ffffff08;}
+@media(max-width:400px){.confidence-detail summary{display:grid;}.objective-row{font-size:.78rem;}}
