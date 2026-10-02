@@ -235,3 +235,16 @@ svg[data-scene-phase="prematch"] .pitch-action{display:none}
 .notification-row>span{flex:1 1 135px}
 .notification-actions{display:flex;gap:5px;margin-left:auto}
 .notification-stack .notification-actions button{min-height:40px;padding:7px 9px;background:#172a34;border-color:#cdb0b4;white-space:nowrap}
+
+.audio-controls{margin-top:14px;padding-top:12px;border-top:1px solid #53616a}
+.audio-controls h3{margin:0 0 12px}
+.audio-toggle-row,.audio-play-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0}
+.audio-toggle-row label{display:flex;align-items:center;gap:7px;padding:8px 4px;min-height:40px}
+.audio-toggle-row input{width:20px;height:20px;accent-color:#e74351}
+.audio-track-picker{display:grid;gap:6px;max-width:320px;margin:12px 0}
+.audio-track-picker select{width:100%;padding:10px;background:#152630;color:#fff;border:1px solid #7b8b94;font:inherit}
+.audio-play-row>span{flex:1 1 130px;font-size:.85rem;color:#cbd9df}
+.audio-controls.compact{margin-top:10px;padding-top:7px}
+.audio-controls.compact h3{display:none}
+.audio-controls.compact .btn{min-height:36px;padding:7px 10px;font-size:.78rem}
+.audio-controls.compact .audio-play-row>span{font-size:.75rem}

@@ -1,4 +1,4 @@
-# City maps — 1.30.0
+# City maps — 1.31.0
 
 Six day/evening pairs retain their fixed pitch anchors. Artwork coordinates use width 1200; the renderer projects into width 1100. Shared stadium scale remains 1.2615 (0.87 × 1.45), with east [7.2,4.2] and south [-7.35,4.2] multiplied by that scale. Modular dimensions and rotation are unchanged.
 
