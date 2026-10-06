@@ -8,8 +8,4 @@
 </defs>
 <rect width="512" height="512" rx="98" fill="url(#bg)"/>
 <path d="M396 111H196L90 213V323L191 408H332L356 344H220L158 290V238L226 174H375Z" fill="url(#steel)" stroke="#ecf9fa" stroke-width="3" filter="url(#shadow)"/>
-<path d="M72 386H308L346 317L381 335L444 218" fill="none" stroke="#60131f" stroke-width="28" stroke-linejoin="miter"/>
-<path d="M72 382H306L344 313L380 331L445 208" fill="none" stroke="url(#red)" stroke-width="18" stroke-linejoin="miter"/>
-<path d="M406 220L459 173L463 243L446 215Z" fill="url(#red)" stroke="#ff8490" stroke-width="2"/>
-<path d="M83 377H305L344 308L380 326" fill="none" stroke="#ff9ca5" stroke-width="3" opacity=".55"/>
-</svg>
+<path d="M72 373H301L340 300L376 318L432 214L406 220L459 173L463 243L449 226L384 345L348 327L312 391H72Z" fill="#60131f" transform="translate(2 4)"/><path d="M72 373H301L340 300L376 318L432 214L406 220L459 173L463 243L449 226L384 345L348 327L312 391H72Z" fill="url(#red)"/><path d="M73 374H301L340 301L376 319L433 213L408 219L458 175" fill="none" stroke="#ff9ca5" stroke-width="2" opacity=".65"/></svg>

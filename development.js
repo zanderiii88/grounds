@@ -32,7 +32,7 @@ export function generateIntake(c,league){
   const primary=pick(POS,rng),age=16+Math.floor(rng()*3),overall=Math.round(clamp(40+level*3+rng()*18+(age-16)*2,40,73));
   const exceptional=rng()<.004+level*.001,potential=Math.round(clamp(exceptional?90+rng()*4:overall+10+level*1.8+rng()*12,overall,exceptional?94:89));
   const secondary=SECOND[primary]||null,positions=Object.fromEntries(POS.map(pos=>[pos,pos===primary?overall:pos===secondary?Math.round(overall*.8):Math.round(overall*.45)]));
-  candidates.push({id:`Y${c.clubId}-${c.season}-${i}`,clubId:c.clubId,name,age,primary,secondary,overall,potential,positions,risk:1+Math.floor(rng()*4),fitness:95,contract:3,wage:120+overall*3,number:25+i,traits:[pick(TRAITS,rng)],personality:pick(PERSONAL,rng),academy:true,form:6.3+rng()*1.5,progress:0,intake:c.season,report:'New intake: assessment will improve as they play youth matches.'});
+  candidates.push({id:`Y${c.clubId}-${c.season}-${i}`,clubId:c.clubId,name,age,primary,secondary,overall,potential,positions,risk:1+Math.floor(rng()*4),fitness:95,contract:3,wage:(120+overall*3)*8,number:25+i,traits:[pick(TRAITS,rng)],personality:pick(PERSONAL,rng),academy:true,form:6.3+rng()*1.5,progress:0,intake:c.season,report:'New intake: assessment will improve as they play youth matches.'});
  }
  c.prospects=candidates.sort((a,b)=>(b.potential*.55+b.overall*.45)-(a.potential*.55+a.overall*.45)).slice(0,5);c.intakeSeason=c.season;
  c.news.push({date:c.date,kind:'youth',text:'Youth intake: your five leading prospects are ready for assessment in Squad → Youth.'});

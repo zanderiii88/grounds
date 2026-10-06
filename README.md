@@ -1,6 +1,22 @@
-# Clubline 1.35.0 — Season expectations and club confidence
+# Clubline 1.36.0 — Squad clarity and transfer decisions
 
 Upload the ZIP contents to your GitHub Pages repository. Nothing has been deployed.
+
+## New in 1.36
+
+- Starting XI shirts show surname (overall), coloured position and CND percentage. Information is top left and mood top right. The same summaries appear in match selection and touchline substitutions. Green ≥90%, yellow 80–89%, orange 75–79%, red <75%; effectiveness calculations are unchanged.
+- Squad → Squad list is a sortable table with All/XI/Bench/Reserves filters, condition, last-five performance form, age, appearances, goals and assists. Names remain visible while scrolling horizontally. Tap a name for the full card.
+- Drag from the shirt to move vertically and scroll near the panel edges. Dragging from the surrounding text still permits normal vertical scrolling. Gesture cancellation, leaving the app and rendering clear drag ghosts. Native mouse drag and tap swaps remain available; live dragging enforces the three-substitution limit and cannot replace a dismissed player.
+- Transfer proposals have full-width information followed by Accept / Review / Reject. Review shows value, role, wage, contract, form and own-squad positional cover. Counter-offers are entered inside Review. New bids and incoming acceptances show cash, payroll and a four-payroll illustration before confirmation. New bids can still be accepted or countered by the selling club.
+- Weekly wages increased eightfold, to £2,080–£9,120 for the initial senior squads. Opening reserves increased 2.5-fold, to £1.625m–£5.75m. Existing transfer valuations, match income, construction and investment costs are retained. This makes payroll meaningful against home-match income rather than merely increasing every price. Wages are processed on Mondays for registered players currently at the club; current loan handling is retained.
+- Existing careers are migrated once: positive cash ×2.5, saved generated-player/prospect wages ×8. Negative balances, agreed transfer offers and historical reports retain their amounts. A finance-rebalance news note explains the adjustment. Audio and notification preferences keep their stable keys. Contract negotiation remains a future pass.
+- Scouting has a distinct recommended formation, team style/order and individual-order suggestions with reasons and suitability reminders. Suggestions use available game settings and do not apply automatically.
+- Location labels: Granite Harbour, Dockside Quarter, Cottonmill Quarter, Dragonwater Quarter, Harpbridge Quarter and Foundry Quarter. Internal map identifiers and approved day/night artwork are retained.
+- The red trend arrow is now one continuous bevelled ribbon in the logo and C icon. Approved chrome lettering is retained; app icons regenerated.
+
+### Verification
+
+Browser checks passed for squad labels/table/filter/player details, stacked proposal controls, counter-offers, signing confirmation, vertical touch drag/edge scrolling/cancellation, scouting advice, once-only economy migration and live player details/substitution. Existing checks passed for mounted match SVG/background through events and controls, match statistics/reports, phone/landscape fit, career panel continuity, anchored bars, notifications and Android Back. Logic checks passed for scouting, disciplinary rules, youth/development, season objectives and transfer search. Physical-phone dragging, scrolling and frame rate still need testing. No deployment performed.
 
 ## Club browsing and scouting
 
@@ -18,7 +34,7 @@ Upload the ZIP contents to your GitHub Pages repository. Nothing has been deploy
 - Straight reds and second-yellow dismissals suspend the player for their next league fixture. Every five seasonal cautions also gives a one-match ban. The second caution counts; overlapping card penalties in one match give one fixture missed.
 - Bans apply across all twelve clubs, including simulated fixtures. Suspensions are served by fixtures, including while injured, and persist through saves. Unserved bans carry into the next season; seasonal yellow totals reset. Existing saves start disciplinary counters when upgraded; old match reports are not retrospectively punished.
 - Auto pick, bench selection, manual swaps and kickoff validation exclude injured or suspended players. Badges and notifications show suspensions; profiles show seasonal cautions.
-- Starting XI labels separate positional suitability from physical Condition. Suitability labels use green (90%+), amber (75–89%) and red (below 75%, 60% of overall effectiveness). Club shirt colours are retained. Organiser → Options includes a short League Rules section.
+- Starting XI labels separate positional suitability from physical Condition. Suitability labels use green (90%+), yellow (80–89%), orange (75–79%) and red (below 75%, 60% of overall effectiveness). Club shirt colours are retained. Organiser → Options includes a short League Rules section.
 
 ## Landscape
 

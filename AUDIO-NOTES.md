@@ -1,4 +1,4 @@
-# Approved audio integration — 1.35.0
+# Approved audio integration — 1.36.0
 
 Seven original procedural arrangements approved in preview 3: Touchline, Floodlights, Away End, Kickoff 90, Turnstile Funk, Saturday Radio and Last Minute Winner. MP3 masters are approximately 2:51–3:03, 44.1 kHz stereo, with peak headroom and smoothed loop boundaries. Original synthesis, with no commercial recordings or samples. Track filenames retain the original first-three indexes to preserve saved selections.
 

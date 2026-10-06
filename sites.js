@@ -108,7 +108,7 @@ export const SITES=[
    0,
    315.43935241643186
   ],
-  "name": "Liverpool Quarter",
+  "name": "Dockside Quarter",
   "scale": 1.2615,
   "night": true,
   "artPlot": [
@@ -182,7 +182,7 @@ export const SITES=[
    0,
    216.99958252885602
   ],
-  "name": "Manchester Quarter",
+  "name": "Cottonmill Quarter",
   "scale": 1.2615,
   "night": true,
   "artPlot": [
@@ -256,7 +256,7 @@ export const SITES=[
    0,
    287.4723559296563
   ],
-  "name": "Cardiff Quarter",
+  "name": "Dragonwater Quarter",
   "scale": 1.2615,
   "night": true,
   "artPlot": [
@@ -330,7 +330,7 @@ export const SITES=[
    0,
    308.3519194360233
   ],
-  "name": "Dublin Quarter",
+  "name": "Harpbridge Quarter",
   "scale": 1.2615,
   "night": true,
   "artPlot": [
@@ -404,7 +404,7 @@ export const SITES=[
    0,
    101.17453869626264
   ],
-  "name": "Birmingham Quarter",
+  "name": "Foundry Quarter",
   "scale": 1.2615,
   "night": true,
   "artPlot": [
