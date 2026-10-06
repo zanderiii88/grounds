@@ -1,6 +1,22 @@
-# Clubline 1.38.0 — Rotation and career backup
+# Clubline 1.39.0 — Compact workspaces
 
 Upload the ZIP contents to your GitHub Pages repository. Nothing has been deployed.
+
+## New in 1.39
+
+- Shared compact career controls: Menu expands Home / Squad / Facilities / Finances / Organiser. News opens important notifications with Review, Dismiss and reminder opt-outs. Advance remains visible. The scrolling ticker is shown on the stadium view and hidden while working in a panel.
+- A section dropdown replaces wrapped rows of sub-tabs. Panels have a close button to return to the stadium. Focus hides the header and main navigation while retaining a Restore bars control; Android Back restores bars before leaving the panel. Info expands full header information. Portrait uses short date/balance labels so amounts stay readable.
+- Landscape Starting XI fits all eleven shirts at the tested 844×390 viewport, with substitutes and tactics beside it. Overall ratings have their own fixed space so a long surname cannot hide the rating. Selection help is expandable. Touch swaps can cross columns; auto-scroll follows the scrollable column under the pointer and drag ghosts clear on cancellation/rotation.
+- Home puts actionable club news first with expandable board/development information. Facilities and its designer split stadium preview from editable controls. Organiser pairs tables/calendar/club browsing with fixture details. Finances retains summary and funding columns. Portrait restores stacked content; hidden sections retain their selections and column scroll positions are remembered across rotation.
+- Landscape club selection has one scrolling team list with sticky headings. The outer card does not scroll; FAC/YTH explanations and renaming advice beneath the table have been removed. Rename controls remain in the selected-club panel.
+- All twelve start scenes now have newly framed prerendered images in both orientations. The centre spot has a consistent anchor, with full stand/roof bounds inside the crop. The image sits below the menu in portrait and on the right in landscape. Fades and restrained motion remain; the original maps, stadium engine and logo are retained.
+- Wider scene artwork and career landscape scene-fit changes are deferred. This release does not add contracts, recruitment or other new management systems.
+
+### 1.39 verification and phone test
+
+Automated Chromium checks cover 320–390px portrait widths, 844×390 landscape, shared navigation/dropdowns/focus/Back, column scroll restoration, touch swaps/ghost cleanup, five career workspaces, stadium designer controls, notification access, compact tables, scouting, backup restoration and the live-match controls/rendering flow. All 24 title crops were checked against actual engine stadium bounds and fixed centre-spot anchors. Logic checks cover backups, cards, scouting, objectives, development, construction, match statistics and crowd budgets.
+
+Physical-phone rotation, frame rate, touch feel, browser chrome/safe areas and accessibility remain unverified. Please test Menu/News/Focus, swaps and rotating while a panel is open. Nothing has been deployed.
 
 ## New in 1.38
 
