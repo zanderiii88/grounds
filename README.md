@@ -1,6 +1,21 @@
-# Clubline 1.36.0 — Squad clarity and transfer decisions
+# Clubline 1.37.0 — Compact phone layouts
 
 Upload the ZIP contents to your GitHub Pages repository. Nothing has been deployed.
+
+## New in 1.37
+
+- Club selection uses a table with sticky headings. Attack, defence, capacity, facilities and youth fit together on a phone; style and starting funds appear under the club name. Wider screens show dedicated style/funds columns. Selected-club details and stadium preview are retained. Location buttons show names without the repeated 75k limit.
+- Starting XI has Shirts / Table controls, covering the XI, substitutes and reserves. The same saved view appears during lineup confirmation and live touchline decisions. Select a row/shirt then a destination to swap; tap the abbreviated name for full information. Drag the small shirts to swap. Injury and suspension markers remain visible. Actual slot suitability determines the position colour; condition and performance form are separate.
+- Compact Player / POS / OVR / CND / FORM tables fit phone widths down to 320px in automated checks. Names use first initial and surname, with full names in details and accessibility labels. Age and extra season statistics are expandable in Squad list. XI/bench order remains the actual selection order, rather than sorting formation slots.
+- Standings have narrower numeric columns, smaller type, shorter rows and sticky headings. P/W/D/L/GF/GA/Pts and club names fit together at the tested phone widths, including post-match standings. Season player statistics default to Player / Apps / G / A / AVG; full starts/minutes/goalkeeper records remain expandable and sortable. AVG is match performance, never base ability.
+- Formation/style/orders and auto-pick controls are in an expandable Tactics section. Its open state survives squad selection updates. Scouting leads with assessment, recommended plan, threats and absences; extra tactical analysis and expected/full rosters expand on demand. Player cards show condition/form near the top and expand attributes/positions.
+- Phone panels, headings, welcome information, tabs and notifications use less space. Review/Dismiss and reminder opt-out controls remain available; selection targets and main navigation are retained.
+- Icon investigation found stale v1.33.0 URLs in the manifest. It now references the revised continuous-arrow icons with fresh filenames and v1.37.0 URLs. Both PNG icons and SVG are included in the offline cache. Android controls when an already-installed launcher/splash icon refreshes; this cannot be verified by desktop Chromium.
+- Existing finance scale, league rules, stadium geometry/artwork, crowd behaviour and audio are retained. No deployment performed.
+
+### 1.37 verification
+
+Browser checks passed for sticky club headings, selected club, shorter location labels, core table widths at 320/360/390px and landscape, XI/bench swaps, player details, disclosures and saved view, pre-match/live tables, substitutions and retained stadium SVG, compact statistics and sorting, updated icon files/references. Existing match checks passed for events, pause/resume, tactics, substitutions, reports, anchored bars and screen fit. Scouting and notification/Android Back regression checks passed. Physical-phone scrolling, dragging and Android icon refresh remain to be tested.
 
 ## New in 1.36
 
