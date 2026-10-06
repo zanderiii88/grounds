@@ -1,0 +1,16 @@
+Clubline 1.38.0
+
+Upload the full ZIP contents for the simplest update. index.html must be at the repository root. No deployment has been performed.
+
+If updating an unchanged 1.37.0 release, these runtime files changed or were added:
+
+app.js
+career-backup.js
+index.html
+manifest.webmanifest
+scene.js
+style.css
+sw.js
+version.json
+
+All other runtime assets are byte-identical to the supplied 1.37.0 ZIP. Tests and README are optional for hosting. Keep existing artwork/audio.

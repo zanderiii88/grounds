@@ -1,6 +1,17 @@
-# Clubline 1.37.0 — Compact phone layouts
+# Clubline 1.38.0 — Rotation and career backup
 
 Upload the ZIP contents to your GitHub Pages repository. Nothing has been deployed.
+
+## New in 1.38
+
+- Phone landscape uses two independently scrolling columns for Starting XI/tactics/bench, club setup, scouting and finances. Portrait restores the usual stacked layout. Top and bottom bars stay compact and visible. Squad selections and disclosure states remain intact; column scroll positions are remembered per orientation.
+- Rotation reflows the mounted screen rather than replacing the stadium SVG or restarting match animation. Live match stadium/commentary/controls retain their existing landscape arrangement.
+- Options on the start screen and under Organiser now include Download backup and Restore from file. Restore validates and previews the JSON before replacement, keeps the previous save available to download, and pauses restored live matches. Device music, FX and notification preferences remain independent.
+- Backup files contain career data, not game artwork or audio. Keep backups somewhere safe before changing devices or clearing browser storage.
+
+### 1.38 verification
+
+Automated Chromium checks cover landscape columns, orientation scroll restoration, stadium node preservation, backup download/validation/cancel/restore, previous-save retention, live-match rotation and paused restoration. Compact phone tables, match controls, scouting and notifications were regression checked. Physical-phone rotation, performance and scrolling remain unverified. Nothing has been deployed.
 
 ## New in 1.37
 
