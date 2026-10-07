@@ -8,7 +8,16 @@ const at=(x,y,z=0)=>({x,y,z});
 const safe=s=>String(s??'').replace(/[&<>"']/g,'');
 export const stadiumProfile=club=>({name:defaultLayout(club).name});
 export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=false,layout=null,selection=null,motion=null,works=[],preview=false){
- const map=siteById(site),model=normaliseLayout(layout,club),colour=/^#[0-9a-f]{6}$/i.test(club?.colour||'')?club.colour:'#a03948';
+ const originalMap=siteById(site),model=normaliseLayout(layout,club),map={...originalMap},colour=/^#[0-9a-f]{6}$/i.test(club?.colour||'')?club.colour:'#a03948';
+ // Increase the whole stadium, including people, around its fixed centre spot.
+ // Ground corners must remain inside the original painted plot on both axes.
+ const rearSize=cfg=>({compact:0,concourse:1.2,amenities:2,hospitality:2.6}[cfg?.rear]||0);
+ const sideDepth=side=>Math.max(0,...SECTIONS.filter(s=>s.side===side||(s.corner&&s.id.includes(side))).map(s=>{const cfg=model.sections[s.id],future=works.find(j=>j.sections[s.id])?.sections[s.id];return Math.max((groundsStand(cfg.stand)?.depth||0)+rearSize(cfg),(groundsStand(future?.stand)?.depth||0)+rearSize(future))}));
+ const xs=[20-sideDepth('W'),52+sideDepth('E')],ys=[20-sideDepth('N'),40+sideDepth('S')];
+ const plot=map.plot,sign=Math.sign(plot.reduce((n,a,i)=>n+a[0]*plot[(i+1)%plot.length][1]-a[1]*plot[(i+1)%plot.length][0],0));
+ const footprintFits=k=>xs.every(x=>ys.every(y=>{const q=[map.origin[0]+((x-36)*originalMap.east[0]+(y-30)*originalMap.south[0])*k,map.origin[1]+((x-36)*originalMap.east[1]+(y-30)*originalMap.south[1])*k];return plot.every((a,i)=>{const b=plot[(i+1)%plot.length];return sign*((b[0]-a[0])*(q[1]-a[1])-(b[1]-a[1])*(q[0]-a[0]))/Math.hypot(b[0]-a[0],b[1]-a[1])>=1})}));
+ let stadiumScale=preview?1:1.5;while(!preview&&stadiumScale>.7&&!footprintFits(stadiumScale))stadiumScale=Math.max(.7,Math.round((stadiumScale-.01)*100)/100);
+ map.east=originalMap.east.map(v=>v*stadiumScale);map.south=originalMap.south.map(v=>v*stadiumScale);map.scale=originalMap.scale*stadiumScale;
  const ART_WIDTH=map.artWidth||830,ART_HEIGHT=map.artHeight||1895,SCENE_HEIGHT=ART_HEIGHT*SCENE_WIDTH/ART_WIDTH;
  const figureScale=((map.scale||1)*830/ART_WIDTH)/0.6137143383204945;
  const px=SCENE_WIDTH/ART_WIDTH,py=SCENE_HEIGHT/ART_HEIGHT,zStep=2.55*px*(map.scale||1);
@@ -295,19 +304,9 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
   }
  }
  const stadiumGround=`<g data-stadium-ground="current-layout">${ground.join('')}</g>`;
- // Title previews zoom only the city, anchored on the centre spot. Find the
- // strongest reduction that still leaves this ground footprint inside its plot.
- let titleMapScale=1;
- if(close==='menu'||close==='menu-mobile'){
-  const centre={x:map.origin[0]*px,y:map.origin[1]*px},plot=map.plot.map(([x,y])=>({x:x*px,y:y*px})),footprint=[...ground.join('').matchAll(/points="([^"]+)"/g)].flatMap(m=>m[1].split(' ').map(p=>{const [x,y]=p.split(',').map(Number);return {x,y}}));
-  const area=plot.reduce((n,p,i)=>n+p.x*plot[(i+1)%4].y-p.y*plot[(i+1)%4].x,0),sign=Math.sign(area);
-  const fits=k=>footprint.every(p=>plot.every((a,i)=>{const b=plot[(i+1)%4],ax=centre.x+(a.x-centre.x)*k,ay=centre.y+(a.y-centre.y)*k,bx=centre.x+(b.x-centre.x)*k,by=centre.y+(b.y-centre.y)*k;return sign*((bx-ax)*(p.y-ay)-(by-ay)*(p.x-ax))/Math.hypot(bx-ax,by-ay)>=1}));
-  titleMapScale=.88;while(titleMapScale<1&&!fits(titleMapScale))titleMapScale=Math.min(1,Math.round((titleMapScale+.01)*100)/100);
-  const original=backgroundTransform.match(/transform="([^"]+)"/)?.[1]||'';
-  backgroundTransform=`transform="translate(${centre.x*(1-titleMapScale)} ${centre.y*(1-titleMapScale)}) scale(${titleMapScale}) ${original}"`;
- }
+ const titleMapScale=1;
 
  const careerFrame=close==='career'?`data-career-frame="${cx} ${fy} ${fw} ${fh} ${backgroundTop} ${backgroundBottom}"`:'';
 
- return `<svg data-title-map-scale="${titleMapScale}" data-title-frame="${cx} ${fy} ${stadiumFrame.left} ${stadiumFrame.top} ${fw} ${fh}" data-scene-phase="${motion?.phase||'idle'}" xmlns="http://www.w3.org/2000/svg" ${careerFrame} class="${close==='menu'?'desktop-scene':close==='menu-mobile'?'mobile-scene':''} ${motion?.scoringTeam===0?'goal-scene':''} ${motion?'crowd-motion':''}" viewBox="${viewBox}" preserveAspectRatio="${close&&close!=='menu'&&close!=='menu-mobile'?'xMidYMid meet':'xMidYMid slice'}" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}">${preview?'':`<image ${backgroundTransform} href="${art}" x="0" y="0" width="${SCENE_WIDTH}" height="${SCENE_HEIGHT.toFixed(1)}" preserveAspectRatio="none" ${evening&&!map.night?'style="filter:brightness(.60) saturate(.9)"':''}/>`}${preview?'':stadiumGround}${pedestrians.far}<g data-stadium-layer="far">${far}</g>${preview?'':field.join('')}${athletes}<g data-stadium-layer="near">${near}</g>${preview?'':lights}${pedestrians.near}${crowdMotion}${targets}</svg>`;
+ return `<svg data-stadium-scale="${stadiumScale}" data-footprint-fits="${footprintFits(stadiumScale)}" data-title-map-scale="${titleMapScale}" data-title-frame="${cx} ${fy} ${stadiumFrame.left} ${stadiumFrame.top} ${fw} ${fh}" data-scene-phase="${motion?.phase||'idle'}" xmlns="http://www.w3.org/2000/svg" ${careerFrame} class="${close==='menu'?'desktop-scene':close==='menu-mobile'?'mobile-scene':''} ${motion?.scoringTeam===0?'goal-scene':''} ${motion?'crowd-motion':''}" viewBox="${viewBox}" preserveAspectRatio="${close&&close!=='menu'&&close!=='menu-mobile'?'xMidYMid meet':'xMidYMid slice'}" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}">${preview?'':`<image ${backgroundTransform} href="${art}" x="0" y="0" width="${SCENE_WIDTH}" height="${SCENE_HEIGHT.toFixed(1)}" preserveAspectRatio="none" ${evening&&!map.night?'style="filter:brightness(.60) saturate(.9)"':''}/>`}${preview?'':stadiumGround}${pedestrians.far}<g data-stadium-layer="far">${far}</g>${preview?'':field.join('')}${athletes}<g data-stadium-layer="near">${near}</g>${preview?'':lights}${pedestrians.near}${crowdMotion}${targets}</svg>`;
 }
