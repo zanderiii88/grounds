@@ -278,7 +278,7 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
  const designerWidth=Math.max(fw*1.15,fw+18,(fh+20)*1.28),designerHeight=designerWidth/1.28;
  const designerFrame=`${(cx-designerWidth/2).toFixed(1)} ${(fy-designerHeight/2).toFixed(1)} ${designerWidth.toFixed(1)} ${designerHeight.toFixed(1)}`;
  const viewBox=close==='designer'?designerFrame:close==='menu-mobile'?`${mobileLeft.toFixed(1)} ${mobileTop.toFixed(1)} ${mobileWidth.toFixed(1)} ${mobileHeight.toFixed(1)}`:close==='menu'?`${(cx-menuWidth/2).toFixed(1)} ${(fy-menuWidth*.40).toFixed(1)} ${menuWidth.toFixed(1)} ${(menuWidth*1069/1400).toFixed(1)}`:close?fitted:`${(cx-450).toFixed(1)} ${(fy-400).toFixed(1)} 900 900`;
- const backgroundTransform=map.background?`transform="matrix(${map.background.map((v,i)=>i>=4?v*px:v).join(' ')})"`:'';
+ let backgroundTransform=map.background?`transform="matrix(${map.background.map((v,i)=>i>=4?v*px:v).join(' ')})"`:'';
 
  // Ground exists only beneath the current modules and the narrow pitch surround.
  // No maximum-plot polygon is painted over the city image.
@@ -295,7 +295,19 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
   }
  }
  const stadiumGround=`<g data-stadium-ground="current-layout">${ground.join('')}</g>`;
+ // Title previews zoom only the city, anchored on the centre spot. Find the
+ // strongest reduction that still leaves this ground footprint inside its plot.
+ let titleMapScale=1;
+ if(close==='menu'||close==='menu-mobile'){
+  const centre={x:map.origin[0]*px,y:map.origin[1]*px},plot=map.plot.map(([x,y])=>({x:x*px,y:y*px})),footprint=[...ground.join('').matchAll(/points="([^"]+)"/g)].flatMap(m=>m[1].split(' ').map(p=>{const [x,y]=p.split(',').map(Number);return {x,y}}));
+  const area=plot.reduce((n,p,i)=>n+p.x*plot[(i+1)%4].y-p.y*plot[(i+1)%4].x,0),sign=Math.sign(area);
+  const fits=k=>footprint.every(p=>plot.every((a,i)=>{const b=plot[(i+1)%4],ax=centre.x+(a.x-centre.x)*k,ay=centre.y+(a.y-centre.y)*k,bx=centre.x+(b.x-centre.x)*k,by=centre.y+(b.y-centre.y)*k;return sign*((bx-ax)*(p.y-ay)-(by-ay)*(p.x-ax))/Math.hypot(bx-ax,by-ay)>=1}));
+  titleMapScale=.88;while(titleMapScale<1&&!fits(titleMapScale))titleMapScale=Math.min(1,Math.round((titleMapScale+.01)*100)/100);
+  const original=backgroundTransform.match(/transform="([^"]+)"/)?.[1]||'';
+  backgroundTransform=`transform="translate(${centre.x*(1-titleMapScale)} ${centre.y*(1-titleMapScale)}) scale(${titleMapScale}) ${original}"`;
+ }
+
  const careerFrame=close==='career'?`data-career-frame="${cx} ${fy} ${fw} ${fh} ${backgroundTop} ${backgroundBottom}"`:'';
 
- return `<svg data-title-frame="${cx} ${fy} ${stadiumFrame.left} ${stadiumFrame.top} ${fw} ${fh}" data-scene-phase="${motion?.phase||'idle'}" xmlns="http://www.w3.org/2000/svg" ${careerFrame} class="${close==='menu'?'desktop-scene':close==='menu-mobile'?'mobile-scene':''} ${motion?.scoringTeam===0?'goal-scene':''} ${motion?'crowd-motion':''}" viewBox="${viewBox}" preserveAspectRatio="${close&&close!=='menu'&&close!=='menu-mobile'?'xMidYMid meet':'xMidYMid slice'}" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}">${preview?'':`<image ${backgroundTransform} href="${art}" x="0" y="0" width="${SCENE_WIDTH}" height="${SCENE_HEIGHT.toFixed(1)}" preserveAspectRatio="none" ${evening&&!map.night?'style="filter:brightness(.60) saturate(.9)"':''}/>`}${preview?'':stadiumGround}${pedestrians.far}<g data-stadium-layer="far">${far}</g>${preview?'':field.join('')}${athletes}<g data-stadium-layer="near">${near}</g>${preview?'':lights}${pedestrians.near}${crowdMotion}${targets}</svg>`;
+ return `<svg data-title-map-scale="${titleMapScale}" data-title-frame="${cx} ${fy} ${stadiumFrame.left} ${stadiumFrame.top} ${fw} ${fh}" data-scene-phase="${motion?.phase||'idle'}" xmlns="http://www.w3.org/2000/svg" ${careerFrame} class="${close==='menu'?'desktop-scene':close==='menu-mobile'?'mobile-scene':''} ${motion?.scoringTeam===0?'goal-scene':''} ${motion?'crowd-motion':''}" viewBox="${viewBox}" preserveAspectRatio="${close&&close!=='menu'&&close!=='menu-mobile'?'xMidYMid meet':'xMidYMid slice'}" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}">${preview?'':`<image ${backgroundTransform} href="${art}" x="0" y="0" width="${SCENE_WIDTH}" height="${SCENE_HEIGHT.toFixed(1)}" preserveAspectRatio="none" ${evening&&!map.night?'style="filter:brightness(.60) saturate(.9)"':''}/>`}${preview?'':stadiumGround}${pedestrians.far}<g data-stadium-layer="far">${far}</g>${preview?'':field.join('')}${athletes}<g data-stadium-layer="near">${near}</g>${preview?'':lights}${pedestrians.near}${crowdMotion}${targets}</svg>`;
 }

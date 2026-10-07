@@ -8,7 +8,7 @@ const lerp=(a,b,t)=>({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t});
 const position=(route,time,offset=0)=>{const step=((time+offset)%24)/24*(route.length-1),i=Math.floor(step);return lerp(route[i],route[i+1],step-i)};
 export function disposeStadiumLife(){if(active){cancelAnimationFrame(active.frame);active=null}}
 export function syncStadiumLife(svg,state){
- if(active?.svg!==svg){disposeStadiumLife();active={svg,state,time:0,last:null,frame:null,goalKey:null,celebration:null,players:[...svg.querySelectorAll('[data-player-route]')].map(el=>({el,route:JSON.parse(el.dataset.playerRoute),corner:JSON.parse(el.dataset.corner),team:Number(el.dataset.team),index:Number(el.dataset.index)})),ball:svg.querySelector('.visible-match-ball')};schedule()}
+ if(active?.svg!==svg){disposeStadiumLife();active={svg,state,time:0,last:null,frame:null,goalKey:null,celebration:null,players:(state.hidePitch?[]:[...svg.querySelectorAll('[data-player-route]')]).map(el=>({el,route:JSON.parse(el.dataset.playerRoute),corner:JSON.parse(el.dataset.corner),team:Number(el.dataset.team),index:Number(el.dataset.index)})),ball:state.hidePitch?null:svg.querySelector('.visible-match-ball')};schedule()}
  active.state=state;
  for(const p of active.players)p.el.style.display=p.index<(p.team?state.awayCount:state.homeCount)?'':'none';
  if(state.goal&&active.goalKey!==state.goal.key){active.goalKey=state.goal.key;if(!reducedMotion.matches)active.celebration={elapsed:0,team:state.goal.team,starts:new Map(active.players.map(p=>[p,position(p.route,active.time,p.index*.13)]))}}
