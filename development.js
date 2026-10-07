@@ -1,3 +1,4 @@
+import {trainingDevelopmentFactor} from './training.js?v=1.44.0';
 // Career-owned youth and development data; saved with the existing career.
 const POS=['GK','LB','CB','RB','DM','CM','AM','LW','RW','ST'];
 const SECOND={LB:'CB',RB:'CB',CB:'DM',DM:'CM',CM:'AM',AM:'CM',LW:'RW',RW:'LW',ST:'AM'};
@@ -45,14 +46,15 @@ export function promoteProspect(c,league,id){
  c.players[id]={fitness:95,form:[],happiness:85,instruction:'Standard',reason:'Delighted to earn a first-team opportunity.'};
  c.news.push({date:c.date,kind:'youth',text:`${p.name} promoted to the first-team squad. Their confirmed overall is ${p.overall}.`});return null;
 }
-function persist(c,p){c.playerChanges[p.id]={age:p.age,overall:p.overall,potential:p.potential,positions:structuredClone(p.positions)}}
+function persist(c,p){c.playerChanges[p.id]={...(c.playerChanges[p.id]||{}),age:p.age,overall:p.overall,potential:p.potential,positions:structuredClone(p.positions)}}
 export function developmentDay(c,league,next){
  const days=elapsed(c.seasonStart,c.date),rng=seeded(c.clubId+':'+c.date+':progress');
  if(days>0&&days%7===0&&c.lastDevelopmentDay!==c.date){
+  const trainingFactor=trainingDevelopmentFactor(c,league,next);
   c.lastDevelopmentDay=c.date;
   for(const p of league.players.filter(x=>(c.owners[x.id]||x.clubId)===c.clubId&&!c.players[x.id]?.retired)){
    const state=c.players[p.id],form=state.form.slice(-5),average=form.length?form.reduce((a,b)=>a+b,0)/form.length:6.5;
-   const young=p.age<=24&&p.overall<p.potential;const change=young?(.04+(league.clubs.find(x=>x.id===c.clubId)?.facilities||1)*.01+Math.max(0,average-6.4)*.055+(form.length?.025:0)):p.age>=32?-.055-Math.max(0,6-average)*.035:0;
+   const young=p.age<=24&&p.overall<p.potential;const change=young?(state.injuryDays||state.unregistered?0:(.04+(league.clubs.find(x=>x.id===c.clubId)?.facilities||1)*.01+Math.max(0,average-6.4)*.055+(form.length?.025:0))*trainingFactor):p.age>=32?-.055-Math.max(0,6-average)*.035:0;
    state.developmentProgress=(state.developmentProgress||0)+change;
    if(Math.abs(state.developmentProgress)>=1){const delta=Math.sign(state.developmentProgress);p.overall=clamp(p.overall+delta,40,p.potential);for(const pos of POS)p.positions[pos]=pos===p.primary?p.overall:clamp(p.positions[pos]+delta,10,p.overall);state.developmentProgress-=delta;persist(c,p)}
    if(state.positionTrial){const pos=state.positionTrial,used=(state.trialMinutes||0)-(state.trialStartMinutes||0);if(used>=180){p.positions[pos]=Math.max(p.positions[pos],Math.min(Math.round(p.overall*.9),p.positions[pos]+1));state.trialStartMinutes=state.trialMinutes||0;persist(c,p)}}

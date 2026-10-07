@@ -1,9 +1,11 @@
-CLUBLINE 1.39.0 — Compact workspaces
+CLUBLINE 1.44.0 — COMPLETE RELEASE
 
-Upload the ZIP contents to your repository, with index.html at its root. Nothing has been deployed.
+Extract and upload ALL contents to the root of your existing GitHub Pages game repository, preserving folders. Do not upload the ZIP itself. No previous release files are needed. README.md and this text file are optional. Nothing has been deployed.
 
-If updating an unchanged 1.38.0 release, these runtime files changed or were added:
+Includes eight wide day/night locations and 32 regenerated framed start scenes. Device saves and audio/notification preferences use their existing storage keys.
 
+Changed/added files relative to 1.43.0:
+README.md
 app.js
 assets/menu/framing.json
 assets/menu/scene-0-framed-desktop.webp
@@ -14,6 +16,14 @@ assets/menu/scene-10-framed-desktop.webp
 assets/menu/scene-10-framed-mobile.webp
 assets/menu/scene-11-framed-desktop.webp
 assets/menu/scene-11-framed-mobile.webp
+assets/menu/scene-12-framed-desktop.webp
+assets/menu/scene-12-framed-mobile.webp
+assets/menu/scene-13-framed-desktop.webp
+assets/menu/scene-13-framed-mobile.webp
+assets/menu/scene-14-framed-desktop.webp
+assets/menu/scene-14-framed-mobile.webp
+assets/menu/scene-15-framed-desktop.webp
+assets/menu/scene-15-framed-mobile.webp
 assets/menu/scene-2-framed-desktop.webp
 assets/menu/scene-2-framed-mobile.webp
 assets/menu/scene-3-framed-desktop.webp
@@ -30,13 +40,27 @@ assets/menu/scene-8-framed-desktop.webp
 assets/menu/scene-8-framed-mobile.webp
 assets/menu/scene-9-framed-desktop.webp
 assets/menu/scene-9-framed-mobile.webp
+assets/sites/clubline-aberdeen-day.webp
+assets/sites/clubline-aberdeen-evening.webp
+assets/sites/clubline-birmingham-day.webp
+assets/sites/clubline-birmingham-evening.webp
+assets/sites/clubline-cardiff-day.webp
+assets/sites/clubline-cardiff-evening.webp
+assets/sites/clubline-dublin-day.webp
+assets/sites/clubline-dublin-evening.webp
+assets/sites/clubline-glasgow-day.webp
+assets/sites/clubline-glasgow-evening.webp
+assets/sites/clubline-liverpool-day.webp
+assets/sites/clubline-liverpool-evening.webp
+assets/sites/clubline-manchester-day.webp
+assets/sites/clubline-manchester-evening.webp
+assets/sites/clubline-newcastle-day.webp
+assets/sites/clubline-newcastle-evening.webp
+development.js
 index.html
 manifest.webmanifest
+recruitment.js
 scene.js
-style.css
+sites.js
 sw.js
 version.json
-
-All other runtime files are byte-identical to the supplied 1.38.0 ZIP. README, tests, scripts and notes are optional for hosting. Keep the existing artwork and audio; the new framed menu images are required.
-
-Phone test: Open Menu, choose Squad, use the screen dropdown, toggle Focus and restore it with Android Back. Open News to Review or Dismiss notifications. Rotate with a player selected or tactics open. Check all eleven shirts and overall ratings remain readable.
