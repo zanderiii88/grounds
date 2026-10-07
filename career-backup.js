@@ -8,6 +8,7 @@ export function parseBackup(text,league,formations,styles){
  if(data?.format!=='clubline-career-backup'||data.formatVersion!==1||!object(data.save)||!object(data.save.career))fail();
  const save=structuredClone(data.save),c=save.career,clubs=new Set(league.clubs.map(c=>c.id));
  if(c.version!==1||!clubs.has(c.clubId)||!Number.isFinite(c.balance)||!/^\d{4}-\d{2}-\d{2}$/.test(c.date)||!Number.isFinite(Date.parse(c.date))||!formations.includes(c.formation)||!styles.includes(c.style)||!object(c.players)||!object(c.stadium)||!Array.isArray(c.reports)||!Array.isArray(c.news)||!Array.isArray(c.schedule)||!c.schedule.length)fail();
+ for(const field of ['youthFunding','trainingFunding'])if(c[field]!==undefined&&(!Number.isInteger(c[field])||c[field]<0||c[field]>8))fail();
  const ids=new Set(league.players.map(p=>p.id));
  if(c.generatedPlayers!==undefined&&!Array.isArray(c.generatedPlayers))fail();for(const p of c.generatedPlayers||[]){if(!object(p)||typeof p.id!=='string'||ids.has(p.id)||typeof p.name!=='string'||!clubs.has(p.clubId)||!Number.isFinite(p.overall)||!Number.isFinite(p.wage)||!object(p.positions))fail();ids.add(p.id)}
  if(c.contracts!==undefined){if(!object(c.contracts))fail();for(const [id,t]of Object.entries(c.contracts))if(!ids.has(id)||!object(t)||typeof t.end!=='string'||!/^\d{4}-06-30$/.test(t.end)||!Number.isFinite(Date.parse(t.end)))fail();}
