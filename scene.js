@@ -263,20 +263,20 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
  const depth=side=>Math.max(3,...specs.filter(x=>x.s.side===side).map(x=>{const next=works.find(j=>j.sections[x.s.id])?.sections[x.s.id],sp=next?groundsStand(next.stand):null,rear=c=>({compact:0,concourse:1.2,amenities:2,hospitality:2.6}[c?.rear]||0);return Math.max((x.sp?.depth||0)+rear(x.cfg),(sp?.depth||0)+rear(next));}))+1.1;
  const pedestrians=motion?.ambient?exteriorPeople(project,motion.phase||'idle',{left:20-depth('W'),right:52+depth('E'),top:20-depth('N'),bottom:40+depth('S')},figureScale):{far:'',near:''};
  const crowdMotion='';
- const art=`assets/sites/${map.art}-${evening&&map.night?'evening':'day'}.webp?v=1.44.0`,cy=map.origin[1]*py;
+ const art=`assets/sites/${map.art}-${evening&&map.night?'evening':'day'}.webp?v=1.45.0`,cy=map.origin[1]*py;
  // Frame the actual layout, not the entire maximum plot. Zoom moves map,
  // stadium and people together, preserving their relative proportions.
  const fw=stadiumFrame.right-stadiumFrame.left,fh=stadiumFrame.bottom-stadiumFrame.top,cx=(stadiumFrame.left+stadiumFrame.right)/2,fy=(stadiumFrame.top+stadiumFrame.bottom)/2;
- const fitted=`${(stadiumFrame.left-24).toFixed(1)} ${(stadiumFrame.top-24).toFixed(1)} ${(fw+48).toFixed(1)} ${(fh+48).toFixed(1)}`;
- const menuWidth=Math.max(fw*1.35,fw+48);
+ const fitted=`${(stadiumFrame.left-9).toFixed(1)} ${(stadiumFrame.top-9).toFixed(1)} ${(fw+18).toFixed(1)} ${(fh+18).toFixed(1)}`;
+ const menuWidth=Math.max(fw*1.12,fw+18);
  const backgroundTop=map.background?Math.max(map.background[5],map.background[5]+map.background[1]*ART_WIDTH)*px:0;
  const backgroundBottom=map.background?(map.background[5]+map.background[3]*ART_HEIGHT+Math.min(0,map.background[1]*ART_WIDTH))*px:SCENE_HEIGHT;
  // Portrait title crops stay inside the painted city, even for large grounds.
  const mobileWidth=Math.min(menuWidth,(backgroundBottom-backgroundTop)*830/1895),mobileHeight=mobileWidth*1895/830;
  const mobileTop=Math.min(backgroundBottom-mobileHeight,Math.max(backgroundTop,fy-mobileHeight*.70));
  const mobileLeft=Math.max(0,Math.min(SCENE_WIDTH-mobileWidth,cx-mobileWidth/2));
- const designerWidth=Math.max(fw*1.4,fw+48,(fh+56)*1.28),designerHeight=designerWidth/1.28;
- const designerFrame=`${(cx-designerWidth/2).toFixed(1)} ${(fy-designerHeight*.62).toFixed(1)} ${designerWidth.toFixed(1)} ${designerHeight.toFixed(1)}`;
+ const designerWidth=Math.max(fw*1.15,fw+18,(fh+20)*1.28),designerHeight=designerWidth/1.28;
+ const designerFrame=`${(cx-designerWidth/2).toFixed(1)} ${(fy-designerHeight/2).toFixed(1)} ${designerWidth.toFixed(1)} ${designerHeight.toFixed(1)}`;
  const viewBox=close==='designer'?designerFrame:close==='menu-mobile'?`${mobileLeft.toFixed(1)} ${mobileTop.toFixed(1)} ${mobileWidth.toFixed(1)} ${mobileHeight.toFixed(1)}`:close==='menu'?`${(cx-menuWidth/2).toFixed(1)} ${(fy-menuWidth*.40).toFixed(1)} ${menuWidth.toFixed(1)} ${(menuWidth*1069/1400).toFixed(1)}`:close?fitted:`${(cx-450).toFixed(1)} ${(fy-400).toFixed(1)} 900 900`;
  const backgroundTransform=map.background?`transform="matrix(${map.background.map((v,i)=>i>=4?v*px:v).join(' ')})"`:'';
 
