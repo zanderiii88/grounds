@@ -4,6 +4,11 @@ export function groundsStand(id){
  if(['grass','terrace3','terrace5','bleacher3','bleacher5'].includes(id)){
   const t=original.tiers[0];return {...original,partialFrontV:t.startV+(t.rows*t.rowPitch)*.45};
  }
+ if(id==='h1'){
+  const tiers=[{rows:10,startV:.4,rowPitch:.6,tread:.54,startZ:1.3,rise:1.05},{rows:8,startV:2.15,rowPitch:.65,tread:.59,startZ:10.6,rise:1.35}];
+  const depth=7.7,wallH=20.5;
+  return {...original,id,tiers,depth,wallH,decks:[{style:'overhang',frontV:2.15,backV:2.15,baseZ:9.45,topZ:10.42}],partialFrontV:4.15,roofRearV:depth+.12,roofFrontZ:wallH+1,roofRearZ:wallH+1.8};
+ }
  const variants={s1:[1,8,1.52,.53,0,false],s2:[1,8,3.04,.53,0,false],l1:[1,11,1.52,.58,0,false],l2:[1,11,2.62,.58,0,false],d1:[2,8,1.52,.53,13.1,false],d2:[2,8,1.52,.73,10.2,true],d3:[2,8,2.05,.53,17.0,false],d4:[2,8,2.05,.73,13.3,true],d5:[2,10,1.68,.60,17.5,false],d6:[2,10,1.78,.73,14.0,true],t1:[3,8,1.52,.53,13.1,false],t2:[3,8,1.52,.73,10.2,true]};
  const [count,rows,rake,pitch,lift,overhang]=variants[id]||variants.s1;
  const tiers=Array.from({length:count},(_,i)=>{const startV=overhang?2.0-i*.65:.42+i*(rows*pitch+.65);return {rows,startV,rowPitch:pitch,tread:pitch-.06,startZ:1.5+i*lift,rise:rake+i*.14};});

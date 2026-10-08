@@ -1,5 +1,5 @@
-import {facilityLevel} from './club-investment.js?v=1.46.0';
-import {trainingDevelopmentFactor} from './training.js?v=1.44.0';
+import {facilityLevel} from './club-investment.js?v=1.49.0';
+import {trainingDevelopmentFactor} from './training.js?v=1.49.0';
 // Career-owned youth and development data; saved with the existing career.
 const POS=['GK','LB','CB','RB','DM','CM','AM','LW','RW','ST'];
 const SECOND={LB:'CB',RB:'CB',CB:'DM',DM:'CM',CM:'AM',AM:'CM',LW:'RW',RW:'LW',ST:'AM'};
@@ -16,7 +16,7 @@ export function estimatedStars(rating){return rating>=90?5:Math.min(4.5,Math.rou
 export function squadSpace(c,league){const active=league.players.filter(p=>(c.owners[p.id]||p.clubId)===c.clubId&&!c.players[p.id]?.retired&&!c.players[p.id]?.unregistered);const development=active.filter(p=>c.developmentIds.includes(p.id)&&p.age<20);return {senior:active.length-development.length,development:development.length,total:active.length}}
 export function canRegister(c,league,p){const s=squadSpace(c,league);return c.developmentIds.includes(p.id)&&p.age<20?s.development<5:s.senior<24}
 export function initialiseDevelopment(c,league){
- c.season??=1;c.seasonStart??='2026-08-13';c.youthFunding??=0;c.trainingFunding??=0;c.generatedPlayers??=[];c.playerChanges??={};c.developmentIds??=[];c.prospects??=[];c.developmentReports??=[];c.conversations??=[];c.archives??=[];
+ c.season??=1;c.seasonStart??=c.date||'1998-08-03';c.youthFunding??=0;c.trainingFunding??=0;c.generatedPlayers??=[];c.playerChanges??={};c.developmentIds??=[];c.prospects??=[];c.developmentReports??=[];c.conversations??=[];c.archives??=[];
  for(const p of c.generatedPlayers)if(!league.players.some(x=>x.id===p.id))league.players.push(structuredClone(p));
  for(const [id,changes]of Object.entries(c.playerChanges)){const p=league.players.find(x=>x.id===id);if(p)Object.assign(p,structuredClone(changes))}
  for(const p of league.players)c.players[p.id]??={fitness:p.fitness,form:[],happiness:70,instruction:'Standard',reason:'Content with their squad role.'};
@@ -34,7 +34,7 @@ export function generateIntake(c,league){
   const primary=pick(POS,rng),age=16+Math.floor(rng()*3),overall=Math.round(clamp(40+level*3+rng()*18+(age-16)*2,40,73));
   const exceptional=rng()<.004+level*.001,potential=Math.round(clamp(exceptional?90+rng()*4:overall+10+level*1.8+rng()*12,overall,exceptional?94:89));
   const secondary=SECOND[primary]||null,positions=Object.fromEntries(POS.map(pos=>[pos,pos===primary?overall:pos===secondary?Math.round(overall*.8):Math.round(overall*.45)]));
-  candidates.push({id:`Y${c.clubId}-${c.season}-${i}`,clubId:c.clubId,name,age,primary,secondary,overall,potential,positions,risk:1+Math.floor(rng()*4),fitness:95,contract:3,wage:(120+overall*3)*8,number:25+i,traits:[pick(TRAITS,rng)],personality:pick(PERSONAL,rng),academy:true,form:6.3+rng()*1.5,progress:0,intake:c.season,report:'New intake: assessment will improve as they play youth matches.'});
+  candidates.push({id:`Y${c.clubId}-${c.season}-${i}`,clubId:c.clubId,name,age,primary,secondary,overall,potential,positions,risk:1+Math.floor(rng()*4),fitness:95,contract:3,wage:(100+overall*6),number:25+i,traits:[pick(TRAITS,rng)],personality:pick(PERSONAL,rng),academy:true,form:6.3+rng()*1.5,progress:0,intake:c.season,report:'New intake: assessment will improve as they play youth matches.'});
  }
  c.prospects=candidates.sort((a,b)=>(b.potential*.55+b.overall*.45)-(a.potential*.55+a.overall*.45)).slice(0,5);c.intakeSeason=c.season;
  c.news.push({date:c.date,kind:'youth',text:'Youth intake: your five leading prospects are ready for assessment in Squad → Youth.'});

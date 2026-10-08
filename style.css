@@ -424,62 +424,14 @@ svg[data-scene-phase="prematch"] .pitch-action{display:none}
 .live-modal .live-decisions{background:#15262f}.live-subs>small{letter-spacing:normal;text-transform:none;font-size:.65rem}
 .live-modal .live-stage.stadium-view~.live-possession{margin-top:auto}
 @media(orientation:landscape){.live-modal .live-stage.stadium-view~.live-toolbar{margin-top:auto}}
-.touchline-observation{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:4px 6px;background:#162e39;flex:none;font-size:.64rem;line-height:1.25}.touchline-observation>span{min-width:0}.touchline-observation .btn{flex:none;font-size:.6rem;min-height:28px;padding:3px 5px}.match-review{background:#1d333d;padding:9px;border-left:3px solid #e8c762;margin:8px 0}.match-review h3{margin:0 0 5px;font-size:1.1rem}.match-review p,.match-review summary{font-size:.75rem;line-height:1.4;margin:5px 0;letter-spacing:normal}.review-standouts{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:5px}.review-standouts>span{padding:4px 6px;background:#10252d;font-size:.68rem}.match-review details{margin-top:6px}.match-review summary{cursor:pointer}
-@media(orientation:landscape){.touchline-observation{font-size:.57rem;padding:2px 5px}.touchline-observation .btn{min-height:24px}.live-modal .live-commentary{height:34px}}
-@media(max-width:360px){.touchline-observation{font-size:.57rem;line-height:1.15}.touchline-observation .btn{font-size:.55rem;min-height:24px}}
 
-/* v1.50: readable names, bounded scouting workspace and complete ticker runs. */
-.ticker-window{position:relative;height:100%;display:flex;align-items:center;min-width:0}
-.ticker-window [data-ticker-text]{animation:none!important;padding:0;min-width:max-content;will-change:transform}
-.management-summary,.league-paper{border:1px solid #ffffff35;background:#ffffff08;padding:10px;margin:0 0 10px}
-.management-summary summary,.league-paper summary{cursor:pointer;font-weight:700;font-size:.8rem}
-.confidence-detail summary{display:grid;grid-template-columns:1fr;gap:5px;align-items:start}
-.confidence-detail .status-chip{width:fit-content;white-space:nowrap;font-size:.7rem}
-.shirt-slot .slot-name{flex-direction:column;gap:0;line-height:1.15}
-.shirt-slot .slot-surname{width:100%;overflow:visible;text-overflow:clip;white-space:normal;overflow-wrap:anywhere;font-size:clamp(.57rem,2.5vw,.75rem)}
-.shirt-slot .slot-overall{font-size:.62rem}
-.pitch-line .shirt-slot{min-width:0;flex:1;max-width:120px;padding-inline:2px}
-.paper-edition h4{font-size:.82rem;margin:10px 0 4px;color:#f3c94c}
-.paper-edition p{font-size:.8rem;line-height:1.5}
-.club-browser-overlay{padding:6px}
-.club-browser-modal{display:flex;flex-direction:column;overflow:hidden;max-height:calc(100dvh - 12px);padding:10px;width:min(720px,100%);min-height:0}
-.scout-browser-body{overflow:auto;min-height:0;padding:0 4px;overscroll-behavior:contain}
-.scout-footer{flex:none;border-top:1px solid #ffffff35;padding-top:6px;margin-top:6px;background:#17242e;display:flex;justify-content:flex-end}
-.scout-footer .btn{min-height:34px;padding:5px 18px}
-.scout-formation{position:relative;min-height:300px;background:repeating-linear-gradient(0deg,#24523d 0 50px,#285a42 50px 100px);isolation:isolate}
-.scout-formation .formation-markings{z-index:-1}
-.scout-line{position:relative;align-items:center;flex:1;min-height:54px}
-.scout-position{border:0;background:transparent;color:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;padding:2px;min-width:0}
-.scout-position .shirt{width:25px;height:27px;flex:none;margin:0 auto}
-.scout-position .shirt b{font-size:.72rem;margin-top:5px;overflow:visible}
-.scout-position>b{font-size:.66rem;line-height:1.1;width:100%;overflow-wrap:anywhere}
-.scout-position small{font-size:.55rem;line-height:1.2}
-.scout-left h4{font-size:.8rem;margin:5px 0}
-@media(orientation:landscape){
- .club-browser-modal{width:min(1100px,100%);height:calc(100dvh - 12px)}
- .scout-browser-body{flex:1;overflow:hidden;display:flex;flex-direction:column}
- .scout-browser-body>.scout-team-report{display:flex;flex-direction:column;min-height:0;flex:1}
- .scout-browser-body .scout-team-report>.eyebrow{font-size:.57rem}
- .scout-browser-body .scout-team-report>h3{font-size:1rem;margin:2px 24px 3px 0}
- .scout-browser-body .scout-team-report>p{font-size:.65rem;margin:0 0 4px}
- .scout-browser-body .scout-columns{flex:1;min-height:0;max-height:none;grid-template-columns:minmax(0,1fr) minmax(0,1fr);display:grid;gap:10px}
- .scout-browser-body .scout-left{display:flex;flex-direction:column;min-height:0;overflow:auto}
- .scout-browser-body .scout-left .scout-assessment{font-size:.63rem;margin:0 0 2px}
- .scout-browser-body .scout-formation{flex:1;min-height:205px;display:flex;flex-direction:column;gap:2px;padding:3px;margin:2px 0}
- .scout-browser-body .scout-right{min-height:0;overflow:auto;overscroll-behavior:contain}
- .scout-browser-body .scout-line{min-height:43px}
- .scout-browser-body .scout-position .shirt{width:21px;height:22px}
- .scout-browser-body .scout-position .shirt b{font-size:.61rem;margin-top:4px}
- .scout-browser-body .scout-position>b{font-size:.61rem}
- .scout-browser-body .scout-position small{font-size:.5rem}
- .workspace-body .lineup-main .shirt-slot .slot-name{font-size:.61rem}
- .workspace-body .lineup-main .shirt-slot .slot-surname{font-size:inherit}
-}
-@media(orientation:landscape){
- .scout-browser-body .scout-position{gap:0;padding:0 1px}
- .scout-browser-body .scout-position .shirt{width:18px;height:19px}
- .scout-browser-body .scout-position .shirt b{font-size:.55rem;margin-top:3px}
- .scout-browser-body .scout-position>b{font-size:.6rem;line-height:1.05}
- .scout-browser-body .scout-position small{font-size:.5rem;line-height:1.1}
- .scout-browser-body .scout-line{min-height:36px}
-}
+/* Period kit SVGs preserve the approved designs without crowding the lineup. */
+.shirt.period-shirt{background:none!important;clip-path:none!important;position:relative;overflow:visible;}
+.period-shirt::before,.period-shirt::after{display:none!important}.period-shirt img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;clip-path:inset(0 0 38% 0);transform:scale(1.28) translateY(10%);pointer-events:none}.period-shirt b{position:relative;z-index:1;text-shadow:0 1px 3px #000,1px 0 #000,-1px 0 #000}
+.period-overview-kit{background:none!important;clip-path:none!important;position:relative}.period-overview-kit img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;clip-path:inset(0 0 38% 0);transform:scale(1.28) translateY(10%)}.period-overview-kit b{position:relative;text-shadow:0 1px 3px #000}
+.selection-kit{width:24px;height:30px;object-fit:cover;object-position:top;float:left;margin-right:5px}.period-kit-selection{display:flex;gap:12px;justify-content:center}.period-kit-selection figure{margin:0;text-align:center}.period-kit-selection img{width:65px;height:92px}.period-kit-selection figcaption{font-size:11px}
+.friendly-invitations{padding:10px;border:1px solid #59747e;margin-bottom:12px}.friendly-invitation{padding:9px 0;border-top:1px solid #37525f}.friendly-invitation p{margin:3px 0}.friendly-actions{display:flex;gap:8px;margin-top:7px}
+
+.period-shirt img,.period-overview-kit img{object-fit:contain;clip-path:none;transform:none}.period-overview-kit img{pointer-events:none}.period-overview-kit b{display:inline-block;margin-top:8px}
+
+.shirt-slot .slot-name{flex-wrap:wrap;white-space:normal;gap:0 3px}.shirt-slot .slot-surname{overflow:visible;text-overflow:clip;white-space:normal;overflow-wrap:anywhere}.shirt-slot .slot-overall{white-space:nowrap}

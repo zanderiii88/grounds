@@ -1,5 +1,5 @@
 // League-wide search uses current ownership and saved career availability.
-export const playerValue=p=>Math.round((p.overall-55)**2*4500+Math.max(0,p.potential-p.overall)*22000);
+export const playerValue=p=>Math.round(Math.max(50000,Math.min(15000000,(p.overall-55)**3*320*(p.age>=32?.55:p.age>=29?.78:1)+Math.max(0,p.potential-p.overall)*75000))/10000)*10000;
 export const blankTransferFilters=()=>({name:'',listed:'all',position:'all',valueMin:'',valueMax:'',ageMin:'',ageMax:'',ratingMin:'',ratingMax:'',hotOnly:false,sort:'rating'});
 export function searchLeaguePlayers(players,career,filters){
  const f={...blankTransferFilters(),...filters},listed=new Set(career.transferList||[]),hot=new Set(career.hotList||[]),text=f.name.trim().toLocaleLowerCase('en-GB');

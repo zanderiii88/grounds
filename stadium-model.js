@@ -1,6 +1,7 @@
 // Clubline's editable section plan uses the 32-section GROUNDS pitch datum and
 // its stand families. Each section keeps its own structural and roof choices.
 export const STANDS={
+ h1:{label:"Historic balcony double",tiers:[[10,1.3,1.05],[8,10.6,1.35]],depth:7.7,deck:"overhang"},
  empty:{label:'Open corner / gap',tiers:[],depth:0},
  grass:{label:'Grass standing bank',tiers:[[1,.1,.1]],depth:1.7},
  terrace3:{label:'Three-step terrace',tiers:[[3,.4,.4]],depth:2.1},
@@ -20,7 +21,7 @@ export const STANDS={
  t1:{label:'Triple setback',tiers:[[5,1.05,.82],[5,5.85,1.05],[7,11.35,1.52]],depth:6.85,deck:'triple'},
  t2:{label:'Triple overhang',tiers:[[6,1.05,.88],[6,7.05,1.18],[8,13.25,1.85]],depth:6.75,deck:'triple'}
 };
-export const ROOFS={none:'Uncovered',full:'Traditional canopy',truss:'Steel truss',cantilever:'Rear cantilever',continuous:'Continuous roof'};
+export const ROOFS={none:'Uncovered',full:'Traditional canopy',truss:'Steel truss',cantilever:'Rear cantilever',continuous:'Continuous roof',pitched:'Pitched historic roof',columns:'Column-supported canopy',boxtruss:'Deep box-truss cantilever'};
 export const REARS={compact:'Compact shell',concourse:'Concourse',amenities:'Amenities block',hospitality:'Hospitality frontage'};
 export const FINISHES={brick:'Red brick',metal:'Grey metal',dark:'Dark cladding'};
 export const SECTIONS=[...Array.from({length:8},(_,i)=>[{id:`N${i+1}`,side:'N',i,bays:4},{id:`S${i+1}`,side:'S',i,bays:4}]).flat(),...Array.from({length:4},(_,i)=>[{id:`W${i+1}`,side:'W',i,bays:5},{id:`E${i+1}`,side:'E',i,bays:5}]).flat(),...['NW','NE','SW','SE'].map(id=>({id,side:id,bays:4,corner:true}))];
@@ -40,6 +41,7 @@ const patterns=[
 ];
 const sideIndex={N:0,E:1,S:2,W:3};
 export function defaultLayout(club){
+ if(club?.stadium?.sections)return structuredClone(club.stadium);
  const idx=Math.max(0,Math.min(11,(Number(String(club?.id||'C01').slice(1))||1)-1)),p=patterns[idx];
  return {name:['Grand Main Stand','High City Side','Wall of Sound','Foundry Four','Three High Sides','Celyn Canopy','Heritage End','Harbour Four','Close Quarters','Valley Bowl','Rath Mix','Four Open Stands'][idx],baseCapacity:club.capacity,sections:Object.fromEntries(SECTIONS.map(s=>{
   const stand=s.corner?p.corners:p.open.includes(s.id)?'empty':p.sides[sideIndex[s.side]];
@@ -51,9 +53,9 @@ export function normaliseLayout(layout,club){
  const baseline=defaultLayout(club),input=layout?.sections||{};
  return {name:baseline.name,baseCapacity:club.capacity,sections:Object.fromEntries(SECTIONS.map(s=>{
   const x=input[s.id],initial=baseline.sections[s.id];
-  return [s.id,{stand:STANDS[x?.stand]?x.stand:initial.stand,roof:Object.hasOwn(ROOFS,x?.roof)?x.roof:initial.roof,rear:Object.hasOwn(REARS,x?.rear)?x.rear:initial.rear,finish:Object.hasOwn(FINISHES,x?.finish)?x.finish:initial.finish}];
+  return [s.id,{stand:STANDS[x?.stand]?x.stand:initial.stand,roof:Object.hasOwn(ROOFS,x?.roof)?x.roof:initial.roof,rear:Object.hasOwn(REARS,x?.rear)?x.rear:initial.rear,finish:Object.hasOwn(FINISHES,x?.finish)?x.finish:initial.finish,frontage:["plain","brickwindows","artdeco","towers"].includes(x?.frontage)?x.frontage:initial.frontage||"plain",frontage:['plain','brickwindows','artdeco','towers'].includes(x?.frontage)?x.frontage:'plain'}];
  }))};
 }
 const units=(section,config)=>STANDS[config.stand].tiers.reduce((n,t)=>n+t[0]*section.bays*(section.corner?.55:1),0);
 export function capacity(layout,club){const base=defaultLayout(club),origin=SECTIONS.reduce((n,s)=>n+units(s,base.sections[s.id]),0);const now=SECTIONS.reduce((n,s)=>n+units(s,layout.sections[s.id]),0);return Math.round(club.capacity*now/origin/50)*50;}
-export function changeCost(oldConfig,newConfig){if(JSON.stringify(oldConfig)===JSON.stringify(newConfig))return 0;const a=STANDS[oldConfig.stand].tiers.reduce((n,t)=>n+t[0],0),b=STANDS[newConfig.stand].tiers.reduce((n,t)=>n+t[0],0);return Math.max(15000,Math.round((Math.max(0,b-a)*68000+(oldConfig.stand===newConfig.stand?24000:65000)+(oldConfig.roof!==newConfig.roof?95000:0)+(oldConfig.rear!==newConfig.rear?45000:0))/1000)*1000);}
+export function changeCost(oldConfig,newConfig){if(['stand','roof','rear','finish','frontage'].every(key=>(oldConfig[key]??(key==='frontage'?'plain':null))===(newConfig[key]??(key==='frontage'?'plain':null))))return 0;const a=STANDS[oldConfig.stand].tiers.reduce((n,t)=>n+t[0],0),b=STANDS[newConfig.stand].tiers.reduce((n,t)=>n+t[0],0);return Math.max(10000,Math.round((Math.max(0,b-a)*44000+(oldConfig.stand===newConfig.stand?16000:45000)+(oldConfig.roof!==newConfig.roof?65000:0)+(oldConfig.rear!==newConfig.rear?30000:0))/1000)*1000);}

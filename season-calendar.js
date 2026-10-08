@@ -3,25 +3,21 @@ export const POSITION_ORDER=['GK','LB','CB','RB','LWB','RWB','DM','CM','LM','RM'
 export const positionRank=pos=>{const i=POSITION_ORDER.indexOf(pos);return i<0?99:i};
 export const comparePositions=(a,b)=>positionRank(a.primary)-positionRank(b.primary)||b.overall-a.overall||a.name.localeCompare(b.name);
 const after=(s,n)=>new Date(Date.parse(s+'T12:00:00Z')+n*86400000).toISOString().slice(0,10);
-export function seasonSchedule(ids,year=2026,season=1){
- if(ids.length!==12||new Set(ids).size!==12)throw new Error('Premier Division requires 12 clubs');
- const rotation=[...ids],legs=[];
- for(let r=0;r<11;r++){
-  legs.push(Array.from({length:6},(_,i)=>[rotation[i],rotation[11-i]]));
+export function seasonSchedule(ids,year=1998,season=1){
+ if(ids.length<4||ids.length%2||new Set(ids).size!==ids.length)throw new Error('League requires an even number of unique clubs');
+ const n=ids.length,rotation=[...ids],legs=[];
+ for(let r=0;r<n-1;r++){
+  legs.push(Array.from({length:n/2},(_,i)=>r%2?[rotation[n-1-i],rotation[i]]:[rotation[i],rotation[n-1-i]]));
   rotation.splice(1,0,rotation.pop());
  }
  let start=`${year}-08-15`;start=after(start,(6-new Date(start+'T12:00:00Z').getUTCDay()+7)%7);
- // Thirty-three Saturdays across August–May, including a winter break.
- const breaks=new Set([6,12,18,19,25,30,35]);let week=0;
- return Array.from({length:33},(_,round)=>{
-  while(breaks.has(week))week++;
-  const cycle=Math.floor(round/11),r=round%11,date=after(start,week++*7);
-  return {date,fixtures:legs[r].map(([a,b],i)=>{
-   let reverse=(r%2===0)!==(cycle===0);
-   if(cycle===2){const ia=ids.indexOf(a),ib=ids.indexOf(b),d=(ib-ia+12)%12;const aHome=d<6||(d===6&&ia<ib);reverse=!aHome;if(season%2===0)reverse=!reverse;}
-   return {home:reverse?b:a,away:reverse?a:b,kickoff:['15:00','17:30','19:45'][(r+i+cycle)%3],homeGoals:null,awayGoals:null};
-  })};
- });
+ // Two meetings per opponent, with midweek rounds and international/holiday gaps.
+ const offsets=[];for(let week=0;offsets.length<2*(n-1);week++){
+  if([6,12,18,25,30,35].includes(week))continue;
+  offsets.push(week*7);
+  if([2,15,21,33].includes(week)&&offsets.length<2*(n-1))offsets.push(week*7+4);
+ }
+ return offsets.map((offset,round)=>({date:after(start,offset),fixtures:legs[round%(n-1)].map(([a,b])=>({home:round<n-1?a:b,away:round<n-1?b:a,kickoff:offset%7===0?'15:00':'19:45',homeGoals:null,awayGoals:null}))}));
 }
 export function extendSeason(career,ids){
  if(career.schedule?.length!==22)return false;

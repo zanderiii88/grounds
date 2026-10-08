@@ -8,16 +8,7 @@ const at=(x,y,z=0)=>({x,y,z});
 const safe=s=>String(s??'').replace(/[&<>"']/g,'');
 export const stadiumProfile=club=>({name:defaultLayout(club).name});
 export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=false,layout=null,selection=null,motion=null,works=[],preview=false){
- const originalMap=siteById(site),model=normaliseLayout(layout,club),map={...originalMap},colour=/^#[0-9a-f]{6}$/i.test(club?.colour||'')?club.colour:'#a03948';
- // Increase the whole stadium, including people, around its fixed centre spot.
- // Ground corners must remain inside the original painted plot on both axes.
- const rearSize=cfg=>({compact:0,concourse:1.2,amenities:2,hospitality:2.6}[cfg?.rear]||0);
- const sideDepth=side=>Math.max(0,...SECTIONS.filter(s=>s.side===side||(s.corner&&s.id.includes(side))).map(s=>{const cfg=model.sections[s.id],future=works.find(j=>j.sections[s.id])?.sections[s.id];return Math.max((groundsStand(cfg.stand)?.depth||0)+rearSize(cfg),(groundsStand(future?.stand)?.depth||0)+rearSize(future))}));
- const xs=[20-sideDepth('W'),52+sideDepth('E')],ys=[20-sideDepth('N'),40+sideDepth('S')];
- const plot=map.plot,sign=Math.sign(plot.reduce((n,a,i)=>n+a[0]*plot[(i+1)%plot.length][1]-a[1]*plot[(i+1)%plot.length][0],0));
- const footprintFits=k=>xs.every(x=>ys.every(y=>{const q=[map.origin[0]+((x-36)*originalMap.east[0]+(y-30)*originalMap.south[0])*k,map.origin[1]+((x-36)*originalMap.east[1]+(y-30)*originalMap.south[1])*k];return plot.every((a,i)=>{const b=plot[(i+1)%plot.length];return sign*((b[0]-a[0])*(q[1]-a[1])-(b[1]-a[1])*(q[0]-a[0]))/Math.hypot(b[0]-a[0],b[1]-a[1])>=1})}));
- let stadiumScale=preview?1:1.5;while(!preview&&stadiumScale>.7&&!footprintFits(stadiumScale))stadiumScale=Math.max(.7,Math.round((stadiumScale-.01)*100)/100);
- map.east=originalMap.east.map(v=>v*stadiumScale);map.south=originalMap.south.map(v=>v*stadiumScale);map.scale=originalMap.scale*stadiumScale;
+ const map=siteById(site),model=normaliseLayout(layout,club),colour=/^#[0-9a-f]{6}$/i.test(club?.colour||'')?club.colour:'#a03948';
  const ART_WIDTH=map.artWidth||830,ART_HEIGHT=map.artHeight||1895,SCENE_HEIGHT=ART_HEIGHT*SCENE_WIDTH/ART_WIDTH;
  const figureScale=((map.scale||1)*830/ART_WIDTH)/0.6137143383204945;
  const px=SCENE_WIDTH/ART_WIDTH,py=SCENE_HEIGHT/ART_HEIGHT,zStep=2.55*px*(map.scale||1);
@@ -32,17 +23,17 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
  const field=[];
  field.push(rect(21.4,20.4,50.6,39.6,.015,'#4e8149'));
  for(let i=0;i<28;i+=3)field.push(rect(22+i,21,Math.min(50,22+i+3),39,.04,(i/3)%2?'#368c53':'#40965b'));
- const white='#edf4e6',lw=1.12;
+ const white='#edf4e6',lw=.18;
  field.push(path([at(22,21,.09),at(50,21,.09),at(50,39,.09),at(22,39,.09),at(22,21,.09)],white,lw));
  field.push(path([at(36,21,.09),at(36,39,.09)],white,lw));
  for(const end of [22,50]){
   const dir=end===22?1:-1;
   for(const [depth,inset] of [[4.6,3.25],[1.8,6.15]])field.push(path([at(end,21+inset,.09),at(end+dir*depth,21+inset,.09),at(end+dir*depth,39-inset,.09),at(end,39-inset,.09)],white,lw));
-  field.push(poly([at(end,28.5,.08),at(end-dir*.8,28.5,.08),at(end-dir*.8,31.5,.08),at(end,31.5,.08)],'none',`stroke="${white}" stroke-width="1"`));
-  const spot=project(at(end+dir*3.55,30,.1));field.push(`<circle cx="${spot.x.toFixed(2)}" cy="${spot.y.toFixed(2)}" r=".7" fill="${white}"/>`);
+  field.push(poly([at(end,28.5,.08),at(end-dir*.8,28.5,.08),at(end-dir*.8,31.5,.08),at(end,31.5,.08)],'none',`stroke="${white}" stroke-width=".18"`));
+  const spot=project(at(end+dir*3.55,30,.1));field.push(`<circle cx="${spot.x.toFixed(2)}" cy="${spot.y.toFixed(2)}" r=".12" fill="${white}"/>`);
  }
  const circle=Array.from({length:65},(_,i)=>at(36+Math.cos(i/64*Math.PI*2)*2.45,30+Math.sin(i/64*Math.PI*2)*2.45,.1));field.push(path(circle,white,lw));
- const centre=project(at(36,30,.1));field.push(`<circle cx="${centre.x.toFixed(2)}" cy="${centre.y.toFixed(2)}" r=".8" fill="${white}"/>`);
+ const centre=project(at(36,30,.1));field.push(`<circle cx="${centre.x.toFixed(2)}" cy="${centre.y.toFixed(2)}" r=".12" fill="${white}"/>`);
  function world(s,u,v,z){
   if(s.corner){const a=u/4*Math.PI/2,orig={NW:[20,20,-1,-1],NE:[52,20,1,-1],SW:[20,40,-1,1],SE:[52,40,1,1]}[s.id];return at(orig[0]+orig[2]*v*Math.cos(a),orig[1]+orig[3]*v*Math.sin(a),z)}
   const U=s.i*s.bays+u;
@@ -53,7 +44,7 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
  }
  const face=(s,points,fill,extra='')=>poly(points.map(v=>world(s,...v)),fill,extra);
  const edge=(s,points,stroke,width=1,extra='')=>path(points.map(v=>world(s,...v)),stroke,width,extra);
- const nearLayers={farEnds:[],support:[],bowl:[],back:[],facade:[],ends:[],roof:[]};
+ const nearLayers={farEnds:[],support:[],bowl:[],back:[],ends:[],facade:[],roof:[]};
  function sectionSvg(s){
   const cfg=model.sections[s.id],base=STANDS[cfg.stand];let spec=groundsStand(cfg.stand);
   const work=works.find(job=>job.sections[s.id]);
@@ -81,12 +72,26 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
   const D=spec.depth;
   const point=(u,v,z)=>world(s,u,v,z);
   const localFace=(verts,fill,extra='')=>poly(verts.map(([u,v,z])=>point(u,v,z)),fill,extra);
-  const localEdge=(verts,stroke,width=1,extra='')=>path(verts.map(([u,v,z])=>point(u,v,z)),stroke,width,extra);
+  const localEdge=(verts,stroke,width=1,extra='')=>{
+   const curved=[];
+   for(let i=0;i<verts.length-1;i++){
+    const a=verts[i],b=verts[i+1],steps=corner?Math.max(1,Math.ceil(Math.abs(b[0]-a[0])*4)):1;
+    for(let k=0;k<steps;k++){const f=k/steps;curved.push(point(...a.map((n,j)=>n+(b[j]-n)*f)));}
+   }
+   curved.push(point(...verts.at(-1)));return path(curved,stroke,width,extra);
+  };
   const rear=cfg.stand.startsWith('terrace')||cfg.stand.startsWith('bleacher')?0:({compact:0,concourse:1.2,amenities:2,hospitality:2.6}[cfg.rear]||0);
-  const mat=cfg.finish==='brick'?['#51443e','#78685a','#ac9983']:cfg.finish==='dark'?['#263740','#40525c','#8aa0aa']:['#344951','#62767e','#a4bcc2'];
+  const mat=cfg.frontage==='artdeco'?['#b7ad95','#d8cfb8','#eee5d0']:cfg.finish==='brick'?['#51443e','#78685a','#ac9983']:cfg.finish==='dark'?['#263740','#40525c','#8aa0aa']:['#344951','#62767e','#a4bcc2'];
   const seat=cfg.stand.startsWith('terrace')?'#b9c1b7':cfg.stand.startsWith('bleacher')?'#afb7ba':colour;
   const near=(()=>{const a=world(s,L/2,1,0),b=world(s,L/2,2,0);return b.x+b.y>a.x+a.y})();
   const back=[],support=[],bowl=[],facade=[],roof=[],ends=[],farEnds=[];
+  const outerFace=(verts,fill,extra='')=>{
+   if(corner&&['SW','NE'].includes(s.id)){
+    const u=verts.reduce((n,p)=>n+p[0],0)/verts.length,a=point(u,1,0),b=point(u,2,0);
+    if(b.x+b.y<=a.x+a.y)return '';
+   }
+   return localFace(verts,fill,extra);
+  };
   const panel=(out,verts,fill,extra='')=>{for(let k=0;k<segments;k++){
    const a=k*L/segments,b=(k+1)*L/segments;
    out.push(localFace(verts.map(([u,v,z])=>[u===0?a:u===L?b:a+(b-a)*u/L,v,z]),fill,extra));
@@ -97,9 +102,13 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
   if(rear){
    panel(back,[[0,D,.04],[L,D,.04],[L,D+rear,.04],[0,D+rear,.04]],'#536773');
    panel(back,[[0,D+rear,0],[L,D+rear,0],[L,D+rear,spec.wallH],[0,D+rear,spec.wallH]],mat[0]);
-   panel(back,[[0,D,spec.wallH],[L,D,spec.wallH],[L,D+rear,spec.wallH+.15],[0,D+rear,spec.wallH+.15]],mat[1]);
+   const topTier=spec.tiers.at(-1),deckZ=topTier.startZ+(topTier.rows-1)*topTier.rise+.05;
+   panel(back,[[0,D,deckZ],[L,D,deckZ],[L,D+rear,deckZ],[0,D+rear,deckZ]],'#a5aca5','data-structure="sealed-rear-deck"');
+   panel(back,[[0,D+rear,deckZ],[L,D+rear,deckZ],[L,D+rear,spec.wallH+.35],[0,D+rear,spec.wallH+.35]],mat[1],'data-structure="rear-parapet"');
+   panel(back,[[0,D+rear-.12,spec.wallH+.35],[L,D+rear-.12,spec.wallH+.35],[L,D+rear+.03,spec.wallH+.35],[0,D+rear+.03,spec.wallH+.35]],'#bac1ba');
   }
   {
+   panel(facade,[[0,D+rear+.015,0],[L,D+rear+.015,0],[L,D+rear+.015,spec.wallH],[0,D+rear+.015,spec.wallH]],mat[0],'data-structure="opaque-plain-frontage"');
    // Cladding ribs and glazed entry canopies stay on the outward facade.
    // They never span the seating or change the stand's ground footprint.
    for(let u=.1;u<L;u+=.8){
@@ -107,17 +116,50 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
    }
    for(let u=.45;u+.6<L;u+=1.05){
     for(let z=2.4;z+1.1<spec.wallH-.5;z+=3.4)
-     facade.push(localFace([[u,D+rear+.02,z],[u+.53,D+rear+.02,z],[u+.53,D+rear+.02,z+1.1],[u,D+rear+.02,z+1.1]],evening?'#d6ae73':mat[2],'opacity=".75"'));
+     facade.push(outerFace([[u,D+rear+.02,z],[u+.53,D+rear+.02,z],[u+.53,D+rear+.02,z+1.1],[u,D+rear+.02,z+1.1]],evening?'#d6ae73':mat[2],'opacity=".75"'));
    }
    // Repeating glazed turnstile bays and a continuous fascia give the outer
    // concourse a readable scale without putting a wall across the seats.
    if(spec.wallH>4)for(const u of [L*.22,L*.5,L*.78]){
-    facade.push(localFace([[u-.36,D+rear+.035,.02],[u+.36,D+rear+.035,.02],[u+.36,D+rear+.035,2.55],[u-.36,D+rear+.035,2.55]],'#172e38'));
+    facade.push(outerFace([[u-.36,D+rear+.035,.02],[u+.36,D+rear+.035,.02],[u+.36,D+rear+.035,2.55],[u-.36,D+rear+.035,2.55]],'#172e38'));
     facade.push(localEdge([[u,D+rear+.04,.2],[u,D+rear+.04,2.4]],'#7c969b',.5));
-    facade.push(localFace([[u-.48,D+rear+.04,2.7],[u+.48,D+rear+.04,2.7],[u+.48,D+rear+.38,2.58],[u-.48,D+rear+.38,2.58]],mat[2]));
+    facade.push(outerFace([[u-.48,D+rear+.04,2.7],[u+.48,D+rear+.04,2.7],[u+.48,D+rear+.38,2.58],[u-.48,D+rear+.38,2.58]],mat[2]));
     if(evening)facade.push(localEdge([[u-.42,D+rear+.39,2.56],[u+.42,D+rear+.39,2.56]],'#ffe0a0',.85));
    }
    facade.push(localEdge([[.06,D+rear+.05,3],[L-.06,D+rear+.05,3]],mat[2],.75));
+  }
+  if(cfg.frontage!=='plain'){
+   const y=D+rear+.09,H=spec.wallH;
+   // Replace generic ribs/windows, keeping the opaque wall behind the new skin.
+   facade.length=0;
+   panel(facade,[[0,y,0],[L,y,0],[L,y,H],[0,y,H]],cfg.frontage==='artdeco'?'#ddd3ba':'#8e6650','data-structure="opaque-frontage"');
+   if(cfg.frontage==='brickwindows'){
+    for(let z=.5;z<H;z+=1.05)facade.push(localEdge([[0,y+.02,z],[L,y+.02,z]],'#a67e63',.3));
+    for(let z=2.5;z<H-1.4;z+=3.1)for(let u=corner?.08:.4;u<L-(corner?.12:.35);u+=corner?.22:.85){
+     const ww=corner?.12:.48;
+     facade.push(outerFace([[u,y+.035,z],[u+ww,y+.035,z],[u+ww,y+.035,z+1.35],[u,y+.035,z+1.35]],'#344e58'));
+     facade.push(localEdge([[u+ww/2,y+.045,z],[u+ww/2,y+.045,z+1.35]],'#d6c7ab',.45));
+    }
+   }else if(cfg.frontage==='artdeco'){
+    for(let u=corner?.06:.25;u<L-(corner?.12:0);u+=corner?.22:.82){
+     const ww=corner?.12:.42;
+     facade.push(outerFace([[u,y+.035,2],[u+ww,y+.035,2],[u+ww,y+.035,H-1],[u,y+.035,H-1]],'#324a53'));
+     facade.push(localEdge([[u+ww/2,y+.045,2],[u+ww/2,y+.045,H-1]],'#c8cfbd',.55));
+     for(let z=4;z<H-1;z+=2.5)facade.push(localEdge([[u,y+.045,z],[u+ww,y+.045,z]],'#c8cfbd',.5));
+    }
+    panel(facade,[[0,y+.06,H-1],[L,y+.06,H-1],[L,y+.06,H],[0,y+.06,H]],'#e5dfc9');
+   }else{
+    for(let z=3;z<H-1;z+=3.3)for(let u=.3;u<L-.4;u+=.85)facade.push(outerFace([[u,y+.025,z],[u+.52,y+.025,z],[u+.52,y+.025,z+1.3],[u,y+.025,z+1.3]],'#415863'));
+    for(const u of (s.i%2===0?[L*.5]:[])){
+     const a=u-1.0,b=u+1.0,v=y+1.15;
+     facade.push(outerFace([[a,y,0],[a,v,0],[a,v,H+.7],[a,y,H+.7]],'#aa9475'));
+     facade.push(outerFace([[a,v,0],[b,v,0],[b,v,H+.7],[a,v,H+.7]],'#c4af88'));
+     facade.push(outerFace([[b,v,0],[b,y,0],[b,y,H+.7],[b,v,H+.7]],'#89785e'));
+     facade.push(outerFace([[a,y,H+.7],[a,v,H+.7],[b,v,H+.7],[b,y,H+.7]],'#d2c2a3'));
+     for(let z=3;z<H;z+=3)facade.push(outerFace([[u-.1,v+.02,z],[u+.1,v+.02,z],[u+.1,v+.02,z+1],[u-.1,v+.02,z+1]],'#364954'));
+    }
+   }
+   for(const u of [L*.28,L*.72])facade.push(outerFace([[u-(corner?.08:.3),y+.055,.1],[u+(corner?.08:.3),y+.055,.1],[u+(corner?.08:.3),y+.055,2.3],[u-(corner?.08:.3),y+.055,2.3]],'#152a34'));
   }
   // Treads and risers use GROUNDS' actual start, pitch, rise and depth.
   // Each deck follows its specified setback or raked overhang profile.
@@ -126,14 +168,15 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
    const t=spec.tiers[ti],rows=Array.from({length:t.rows},(_,i)=>near?i:t.rows-1-i);
    for(const i of rows){
     const v=t.startV+i*t.rowPitch,v1=v+t.rowPitch,z=t.startZ+i*t.rise;
+    const rowSeat=club?.seatAccent&&s.i%3===0?club.seatAccent:seat;
     const low=i===0?Math.max(0,z-.5):z-t.rise;
     panel(bowl,[[0,v,low],[L,v,low],[L,v,z],[0,v,z]],'#504b4b');
-    panel(bowl,[[0,v,z],[L,v,z],[L,v1,z],[0,v1,z]],seat,`stroke="#8fa6a3" stroke-width=".2"`);
+    panel(bowl,[[0,v,z],[L,v,z],[L,v1,z],[0,v1,z]],rowSeat,`stroke="#8fa6a3" stroke-width=".2"`);
     // Discrete seat backs make seating read as a crowd bowl, not flat stripes.
     if(!cfg.stand.startsWith('terrace')&&!cfg.stand.startsWith('bleacher')&&cfg.stand!=='grass'){
      for(let u=.25;u<L-.12;u+=.34){
       if(!corner&&[L/3,2*L/3].some(aisle=>Math.abs(u-aisle)<.25))continue;
-      bowl.push(localFace([[u-.1,v1-.07,z+.06],[u+.1,v1-.07,z+.06],[u+.1,v1-.07,z+.38],[u-.1,v1-.07,z+.38]],seat,`stroke="#542c38" stroke-width=".18"`));
+      bowl.push(localFace([[u-.1,v1-.07,z+.06],[u+.1,v1-.07,z+.06],[u+.1,v1-.07,z+.38],[u-.1,v1-.07,z+.38]],rowSeat,`stroke="#542c38" stroke-width=".18"`));
      }
     }
     if(cfg.stand.startsWith('bleacher')){
@@ -188,6 +231,15 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
     }
    }
   }
+  if(cfg.stand==='h1'){
+   const upper=spec.tiers[1],v=upper.startV-.06,z=upper.startZ;
+   panel(bowl,[[0,v,z-1.3],[L,v,z-1.3],[L,v,z-.08],[0,v,z-.08]],'#ded7be','data-structure="historic-balcony-face"');
+   bowl.push(localEdge([[0,v-.015,z-.2],[L,v-.015,z-.2]],'#f3e7cc',1.2));
+   for(const u of [.18,L/2,L-.18]){
+    bowl.push(localFace([[u-.055,v,0],[u+.055,v,0],[u+.055,v,z-1.3],[u-.055,v,z-1.3]],'#9ca9a4','data-structure="balcony-support-column"'));
+    bowl.push(localEdge([[u-.16,v,z-1.8],[u,v,z-1.3],[u+.16,v,z-1.8]],'#bdc7bd',.55));
+   }
+  }
   const lastTier=spec.tiers.at(-1),seatEnd=lastTier.startV+lastTier.rows*lastTier.rowPitch,seatHeight=lastTier.startZ+(lastTier.rows-1)*lastTier.rise;
   if(D>seatEnd)panel(bowl,[[0,seatEnd,seatHeight],[L,seatEnd,seatHeight],[L,D,spec.wallH],[0,D,spec.wallH]],mat[1]);
   const adjacent=(u)=>{
@@ -200,20 +252,45 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
   // Identical adjoining modules share an open interior with no cheek panels.
   for(const u of [0,L]){
    const next=adjacent(u),sideEnd=!corner&&(u===0&&s.i===0||u===L&&s.i===(['N','S'].includes(s.side)?7:3));
-   if(next?.stand===cfg.stand&&next?.rear===cfg.rear)continue;
+   if(next?.stand===cfg.stand&&next?.rear===cfg.rear&&next?.finish===cfg.finish)continue;
    const nextSpec=groundsStand(next?.stand);
-   const out=corner||sideEnd&&nextSpec?farEnds:u===0?farEnds:ends;
+   const a=point(u,1,0),b=point(u===0?.05:L-.05,1,0);
+   // Camera-facing end depends on ground depth, not horizontal screen direction.
+   const out=a.x+a.y < b.x+b.y ? farEnds : ends;
    for(let ti=0;ti<spec.tiers.length;ti++){
     const t=spec.tiers[ti],thickness=ti===0?Math.min(.85,t.startZ-.04):1.15,front=t.startV,rearV=t.startV+t.rows*t.rowPitch,rearZ=t.startZ+(t.rows-1)*t.rise;
-    const rearBottom=ti===0?rearZ-thickness:t.startZ+2.1;
+    // A closed stepped deck shell: the underside follows the rake, not a
+    // diagonal chord through the upper rows. This is a solid side face.
     const shape=[[u,front,t.startZ-thickness],[u,front,t.startZ]];
     for(let i=0;i<t.rows;i++){const v=front+i*t.rowPitch,z=t.startZ+i*t.rise;shape.push([u,v,z],[u,v+t.rowPitch,z]);if(i<t.rows-1)shape.push([u,v+t.rowPitch,z+t.rise]);}
-    shape.push([u,D,rearZ],[u,D,rearBottom]);
-    out.push(localFace(shape,'#526874',`stroke="#425963" stroke-width=".55"`));
-    if(ti===0)out.push(localFace([[u,front,0],[u,rearV,0],[u,rearV,rearZ-thickness],[u,front,t.startZ-thickness]],'#526874'));
-    // The underside is enclosed; the space below it remains open at the end.
-    panel(support,[[0,front,t.startZ-thickness],[L,front,t.startZ-thickness],[L,D,rearBottom],[0,D,rearBottom]],'#253b49');
+    shape.push([u,rearV,rearZ-thickness]);
+    for(let i=t.rows-1;i>=0;i--){const v=front+i*t.rowPitch,z=t.startZ+i*t.rise-thickness;shape.push([u,v+t.rowPitch,z],[u,v,z]);}
+    out.push(localFace(shape,'#a0a8a3',`data-structure="stepped-deck-end" stroke="#5a686a" stroke-width=".45"`));
+    if(ti===0){
+     const base=[[u,front,0],[u,rearV,0],[u,rearV,rearZ-thickness]];
+     for(let i=t.rows-1;i>=0;i--)base.push([u,front+(i+1)*t.rowPitch,t.startZ+i*t.rise-thickness],[u,front+i*t.rowPitch,t.startZ+i*t.rise-thickness]);
+     out.push(localFace(base,mat[1],'data-structure="lower-tier-foundation"'));
+    }
+    if(ti>0&&spec.decks[ti-1]?.style==='setback'){
+     const lo=spec.tiers[ti-1],lv=lo.startV+lo.rows*lo.rowPitch,lz=lo.startZ+(lo.rows-1)*lo.rise;
+     out.push(localFace([[u,lv,0],[u,D,0],[u,D,lz],[u,lv,lz]],mat[1],'data-structure="concourse-end-foundation"'));
+     out.push(localFace([[u,lv,lz],[u,front,t.startZ-thickness],[u,D,t.startZ-thickness],[u,D,lz]],mat[1],'data-structure="concourse-end-closure"'));
+    }
+    // Upper tiers retain a visible overhang. Their solid service spine
+    // closes the back half of the end without covering the seating rake.
+    const isSetback=ti>0&&spec.decks[ti-1]?.style==='setback';
+    const spineV=ti===0?rearV:isSetback?front:front+t.rows*t.rowPitch*.4;
+    if(spineV<D){
+     const lower=ti>0?spec.tiers[ti-1]:null;
+     const floor=ti===0?0:lower.startZ+Math.max(0,Math.min(lower.rows-1,Math.floor((spineV-lower.startV)/lower.rowPitch)))*lower.rise-.7;
+     const profile=[[u,spineV,floor],[u,D,floor],[u,D,rearZ-thickness]];
+     for(let i=t.rows-1;i>=0;i--){const v=front+i*t.rowPitch,z=t.startZ+i*t.rise-thickness;if(v+t.rowPitch>spineV)profile.push([u,v+t.rowPitch,z],[u,Math.max(spineV,v),z]);}
+     out.push(localFace(profile,mat[1],'data-structure="closed-service-spine"'));
+    }
+    panel(support,[[0,front,t.startZ-thickness],[L,front,t.startZ-thickness],[L,rearV,rearZ-thickness],[0,rearV,rearZ-thickness]],'#46545b');
    }
+   // Close the narrow strip between the final tread and the rear wall.
+   out.push(localFace([[u,seatEnd,0],[u,D,0],[u,D,spec.wallH],[u,seatEnd,seatHeight]],mat[1],'data-structure="back-of-bowl-return"'));
    // Close the rear concourse block to its full height, separately from
    // the stepped seating supports in front. No hollow visible end bays.
    if(rear)out.push(localFace([[u,D,0],[u,D+rear,0],[u,D+rear,spec.wallH],[u,D,spec.wallH]],mat[1],`data-structure="rear-return" stroke="${mat[0]}" stroke-width=".4"`));
@@ -223,24 +300,50 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
   if(cfg.roof!=='none'){
    // Full canopies cover the bowl; truss and cantilever roofs expose the
    // lower rake. The former hard-coded front at .42 hid almost every row.
-   const roofFront=(c,sp)=>sp.partialFrontV*({full:.60,cantilever:.69,truss:1,continuous:.84}[c.roof]??1);
-   const roofStyle={full:{depth:.95,front:-.25,slope:.42,top:'#dddeda',edge:'#b3bcbe',underside:'#64777f'},cantilever:{depth:1.55,front:.05,slope:1.2,top:'#bac6ca',edge:'#7c929c',underside:'#3b5363'},truss:{depth:.45,front:.50,slope:.70,top:'#738d99',edge:'#b2c0c5',underside:'#415867'},continuous:{depth:.35,front:1.05,slope:.40,top:'#a2b6ba',edge:'#6f898f',underside:'#4a626b'}}[cfg.roof];
+   const roofFront=(c,sp)=>sp.partialFrontV*({full:.60,cantilever:.69,truss:1,continuous:.84,pitched:.38,columns:.35,boxtruss:.48}[c.roof]??1);
+   const roofStyle={full:{depth:.95,front:-.25,slope:.42,top:'#dddeda',edge:'#b3bcbe',underside:'#64777f'},cantilever:{depth:1.55,front:.05,slope:1.2,top:'#bac6ca',edge:'#7c929c',underside:'#3b5363'},truss:{depth:.45,front:.50,slope:.70,top:'#738d99',edge:'#b2c0c5',underside:'#415867'},continuous:{depth:.35,front:1.05,slope:.40,top:'#a2b6ba',edge:'#6f898f',underside:'#4a626b'},pitched:{depth:.50,slope:.3,top:'#c7c5b6',edge:'#9b9d94',underside:'#4b5c61'},columns:{depth:.48,slope:1.5,top:'#c7d0ce',edge:'#8d9d9d',underside:'#4f6369'},boxtruss:{depth:1.25,slope:1,top:'#b8c8cb',edge:'#728f9b',underside:'#374f5c'}}[cfg.roof];
    const v0=roofFront(cfg,spec),v1=spec.roofRearV+rear;
    const fz=spec.wallH+1.1,rz=fz+roofStyle.slope;
    const tint=roofStyle.top,thickness=roofStyle.depth;
    {
     // Closed canopy: underside, skin, fascia and end thickness share one profile.
-    panel(roof,[[0,v0,fz-thickness],[L,v0,fz-thickness],[L,v1,rz-thickness],[0,v1,rz-thickness]],roofStyle.underside);
-    panel(roof,[[0,v0,fz],[L,v0,fz],[L,v1,rz],[0,v1,rz]],tint,`stroke="#7c969d" stroke-width=".3"`);
+    const ridgeV=(v0+v1)*.5,ridgeZ=Math.max(fz,rz)+3.0;
+    const profile=cfg.roof==='pitched'?[[v0,fz],[ridgeV,ridgeZ],[v1,rz]]:[[v0,fz],[v1,rz]];
+    const planes=Array.from({length:profile.length-1},(_,i)=>i);
+    // Undersides must never repaint an already drawn adjacent roof skin.
+    for(const i of planes){const [a,az]=profile[i],[b,bz]=profile[i+1];
+     panel(roof,[[0,a,az-thickness],[L,a,az-thickness],[L,b,bz-thickness],[0,b,bz-thickness]],roofStyle.underside);
+    }
+    for(const i of (near?planes:[...planes].reverse())){const [a,az]=profile[i],[b,bz]=profile[i+1];
+     panel(roof,[[0,a,az],[L,a,az],[L,b,bz],[0,b,bz]],i===0?roofStyle.top:'#a6aea5');
+    }
     panel(roof,[[0,v0,fz-thickness],[L,v0,fz-thickness],[L,v0,fz],[0,v0,fz]],roofStyle.edge);
+    panel(roof,[[0,v1,rz-thickness],[L,v1,rz-thickness],[L,v1,rz],[0,v1,rz]],roofStyle.edge);
     for(const u of [0,L]){
      const neighbour=adjacent(u);
-     if(neighbour?.stand!==cfg.stand||neighbour?.roof!==cfg.roof||neighbour?.rear!==cfg.rear)roof.push(localFace([[u,v0,fz-thickness],[u,v1,rz-thickness],[u,v1,rz],[u,v0,fz]],roofStyle.edge,`data-structure="roof-end-cap" stroke="#627a85" stroke-width=".25"`));
-     // The roof visibly meets the rear structural spine.
+     if(neighbour?.stand!==cfg.stand||neighbour?.roof!==cfg.roof||neighbour?.rear!==cfg.rear){
+      const cap=profile.map(([v,z])=>[u,v,z]).concat([...profile].reverse().map(([v,z])=>[u,v,z-thickness]));
+      roof.push(localFace(cap,roofStyle.edge,'data-structure="roof-end-cap"'));
+      // Close the gable/back opening between wall and roof.
+      if(cfg.roof==='pitched'){
+       const gable=[[u,v0,fz-thickness],[u,v1,rz-thickness],[u,ridgeV,ridgeZ-thickness]];
+       roof.push(localFace(gable,roofStyle.edge,'data-structure="closed-pitched-gable"'));
+      }
+     }
      roof.push(localEdge([[u,v1,spec.wallH],[u,v1,rz-thickness]],'#536a76',1.1));
     }
+    if(['columns','pitched'].includes(cfg.roof))for(const u of [.08,L-.08]){
+     // Columns rise vertically from the front concourse, keeping the same projection.
+     const footing=Math.max(0,spec.tiers[0].startZ-.4);
+     roof.push(localFace([[u-.055,v0-.055,footing],[u+.055,v0-.055,footing],[u+.055,v0-.055,fz-thickness],[u-.055,v0-.055,fz-thickness]],'#708084','data-structure="front-roof-column"'));
+     roof.push(localEdge([[u,v0,fz-1.2],[u,v0+.8,fz]],'#b5bfbb',.85));
+    }
+    if(cfg.roof==='boxtruss')for(const u of [.06,L-.06]){
+     roof.push(localEdge([[u,v0,fz-.9],[u,v1,rz-2.4],[u,v1,rz+.2],[u,v0,fz+.2]],'#d2d9d5',1.1));
+     for(let j=0;j<6;j++){const a=v0+(v1-v0)*j/6,b=v0+(v1-v0)*(j+1)/6,z=fz+(rz-fz)*j/6;roof.push(localEdge([[u,a,z-.9],[u,b,z+.25]],'#b5c5c8',.7));}
+    }
     for(let u=.25;u<L;u+=.42){
-     roof.push(localEdge([[u,v0,fz+.015],[u,v1,rz+.015]],cfg.roof==='full'?'#b8c4c7':'#819ca8',.35));
+     roof.push(localEdge(profile.map(([v,z])=>[u,v,z+.025]),'#8ba1a7',.35));
      if(cfg.roof==='full')roof.push(localEdge([[u,v0,fz-thickness],[u,v0,fz]],'#8499a2',.45));
     }
     if(cfg.roof==='cantilever')for(const u of [0,L]){
@@ -255,8 +358,16 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
     if(evening)roof.push(localEdge([[.08,v0,fz-thickness],[L-.08,v0,fz-thickness]],'#fff0b1',1.35));
    }
   }
-  if(near){for(const [key,parts] of Object.entries({farEnds,support,bowl,back,facade,ends,roof}))nearLayers[key].push(`<g ${key==='bowl'?`data-section="${s.id}"`:''} data-fan-occluder="${['back','facade','ends','roof'].includes(key)}" data-stand-layer="${key}" data-stand-type="${cfg.stand}">${parts.join('')}</g>`);return '';}
-  const surfaces=[...back,...support,...facade,...farEnds,...bowl,`<g data-fan-occluder="true">${ends.join('')}${roof.join('')}</g>`];
+  if(near){for(const [key,parts] of Object.entries({farEnds,support,bowl,back,ends,facade,roof}))nearLayers[key].push(`<g ${key==='bowl'?`data-section="${s.id}"`:''} data-fan-occluder="${['back','facade','ends','roof'].includes(key)}" data-stand-layer="${key}" data-stand-type="${cfg.stand}">${parts.join('')}</g>`);return '';}
+  let visibleFrontage='';
+  if(corner&&['SW','NE'].includes(s.id)){
+   const from=s.id==='SW'?L/2:0,to=s.id==='SW'?L:L/2,points=[];
+   for(let i=0;i<=16;i++)points.push(point(from+(to-from)*i/16,D+rear+.08,0));
+   for(let i=16;i>=0;i--)points.push(point(from+(to-from)*i/16,D+rear+.08,spec.wallH+1));
+   const clip='outer-corner-'+s.id;
+   visibleFrontage=`<defs><clipPath id="${clip}">${poly(points,'white')}</clipPath></defs><g clip-path="url(#${clip})">${facade.join('')}</g>`;
+  }
+  const surfaces=[...back,...support,...farEnds,...bowl,`<g data-fan-occluder="true">${ends.join('')}${visibleFrontage}${roof.join('')}</g>`];
   return `<g data-section="${s.id}" data-stand-type="${cfg.stand}" aria-label="${s.id}: ${safe(base.label)}">${surfaces.join('')}</g>`;
  }
  const ordered=SECTIONS.map(s=>({s,depth:(()=>{const q=world(s,s.bays/2,3,0);return q.x+q.y})()})).sort((a,b)=>a.depth-b.depth);
@@ -272,7 +383,7 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
  const depth=side=>Math.max(3,...specs.filter(x=>x.s.side===side).map(x=>{const next=works.find(j=>j.sections[x.s.id])?.sections[x.s.id],sp=next?groundsStand(next.stand):null,rear=c=>({compact:0,concourse:1.2,amenities:2,hospitality:2.6}[c?.rear]||0);return Math.max((x.sp?.depth||0)+rear(x.cfg),(sp?.depth||0)+rear(next));}))+1.1;
  const pedestrians=motion?.ambient?exteriorPeople(project,motion.phase||'idle',{left:20-depth('W'),right:52+depth('E'),top:20-depth('N'),bottom:40+depth('S')},figureScale):{far:'',near:''};
  const crowdMotion='';
- const art=`assets/sites/${map.art}-${evening&&map.night?'evening':'day'}.webp?v=1.45.0`,cy=map.origin[1]*py;
+ const art=`assets/sites/${map.art}-${evening&&map.night?'evening':'day'}.webp?v=1.49.0`,cy=map.origin[1]*py;
  // Frame the actual layout, not the entire maximum plot. Zoom moves map,
  // stadium and people together, preserving their relative proportions.
  const fw=stadiumFrame.right-stadiumFrame.left,fh=stadiumFrame.bottom-stadiumFrame.top,cx=(stadiumFrame.left+stadiumFrame.right)/2,fy=(stadiumFrame.top+stadiumFrame.bottom)/2;
@@ -287,7 +398,7 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
  const designerWidth=Math.max(fw*1.15,fw+18,(fh+20)*1.28),designerHeight=designerWidth/1.28;
  const designerFrame=`${(cx-designerWidth/2).toFixed(1)} ${(fy-designerHeight/2).toFixed(1)} ${designerWidth.toFixed(1)} ${designerHeight.toFixed(1)}`;
  const viewBox=close==='designer'?designerFrame:close==='menu-mobile'?`${mobileLeft.toFixed(1)} ${mobileTop.toFixed(1)} ${mobileWidth.toFixed(1)} ${mobileHeight.toFixed(1)}`:close==='menu'?`${(cx-menuWidth/2).toFixed(1)} ${(fy-menuWidth*.40).toFixed(1)} ${menuWidth.toFixed(1)} ${(menuWidth*1069/1400).toFixed(1)}`:close?fitted:`${(cx-450).toFixed(1)} ${(fy-400).toFixed(1)} 900 900`;
- let backgroundTransform=map.background?`transform="matrix(${map.background.map((v,i)=>i>=4?v*px:v).join(' ')})"`:'';
+ const backgroundTransform=map.background?`transform="matrix(${map.background.map((v,i)=>i>=4?v*px:v).join(' ')})"`:'';
 
  // Ground exists only beneath the current modules and the narrow pitch surround.
  // No maximum-plot polygon is painted over the city image.
@@ -304,9 +415,11 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
   }
  }
  const stadiumGround=`<g data-stadium-ground="current-layout">${ground.join('')}</g>`;
- const titleMapScale=1;
-
  const careerFrame=close==='career'?`data-career-frame="${cx} ${fy} ${fw} ${fh} ${backgroundTop} ${backgroundBottom}"`:'';
 
- return `<svg data-stadium-scale="${stadiumScale}" data-footprint-fits="${footprintFits(stadiumScale)}" data-title-map-scale="${titleMapScale}" data-title-frame="${cx} ${fy} ${stadiumFrame.left} ${stadiumFrame.top} ${fw} ${fh}" data-scene-phase="${motion?.phase||'idle'}" xmlns="http://www.w3.org/2000/svg" ${careerFrame} class="${close==='menu'?'desktop-scene':close==='menu-mobile'?'mobile-scene':''} ${motion?.scoringTeam===0?'goal-scene':''} ${motion?'crowd-motion':''}" viewBox="${viewBox}" preserveAspectRatio="${close&&close!=='menu'&&close!=='menu-mobile'?'xMidYMid meet':'xMidYMid slice'}" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}">${preview?'':`<image ${backgroundTransform} href="${art}" x="0" y="0" width="${SCENE_WIDTH}" height="${SCENE_HEIGHT.toFixed(1)}" preserveAspectRatio="none" ${evening&&!map.night?'style="filter:brightness(.60) saturate(.9)"':''}/>`}${preview?'':stadiumGround}${pedestrians.far}<g data-stadium-layer="far">${far}</g>${preview?'':field.join('')}${athletes}<g data-stadium-layer="near">${near}</g>${preview?'':lights}${pedestrians.near}${crowdMotion}${targets}</svg>`;
+ let clockBadge='';
+ if(club?.clockSide){const sec=SECTIONS.find(s=>s.side===club.clockSide&&s.i===1),sp=groundsStand(model.sections[sec.id].stand),q=project(world(sec,sec.bays,sp.partialFrontV*.6-.05,sp.wallH+1.15)),r=zStep*1.2;
+  clockBadge=`<g aria-label="Clock End clock"><circle cx="${q.x}" cy="${q.y}" r="${r}" fill="#eee9db" stroke="#303a3e" stroke-width="${r*.13}"/><path d="M${q.x},${q.y-r*.66}L${q.x},${q.y}L${q.x+r*.48},${q.y+r*.08}" stroke="#303a3e" stroke-width="${r*.1}" fill="none"/></g>`;
+ }
+ return `<svg data-title-frame="${cx} ${fy} ${stadiumFrame.left} ${stadiumFrame.top} ${fw} ${fh}" data-scene-phase="${motion?.phase||'idle'}" xmlns="http://www.w3.org/2000/svg" ${careerFrame} class="${close==='menu'?'desktop-scene':close==='menu-mobile'?'mobile-scene':''} ${motion?.scoringTeam===0?'goal-scene':''} ${motion?'crowd-motion':''}" viewBox="${viewBox}" preserveAspectRatio="${close&&close!=='menu'&&close!=='menu-mobile'?'xMidYMid meet':'xMidYMid slice'}" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}">${preview?'':`<image ${backgroundTransform} href="${art}" x="0" y="0" width="${SCENE_WIDTH}" height="${SCENE_HEIGHT.toFixed(1)}" preserveAspectRatio="none" ${evening&&!map.night?'style="filter:brightness(.60) saturate(.9)"':''}/>`}${preview?'':stadiumGround}${pedestrians.far}<g data-stadium-layer="far">${far}</g>${preview&&preview!=='bowl'?'':field.join('')}${athletes}<g data-stadium-layer="near">${near}</g>${clockBadge}${preview?'':lights}${pedestrians.near}${crowdMotion}${targets}</svg>`;
 }
