@@ -1,0 +1,15 @@
+{
+  "checks": [
+    "1.53 save continues without money, wage allowance, stadium or XI changes; event state initializes quietly.",
+    "Notification opens native event decisions; story choice changes cash/player mood once, accepting a booking charges no money and adds protected calendar days.",
+    "Story decisions and accepted bookings survive actual reload and the existing portable backup parser.",
+    "Concert day shows projected stage, lights, animated visitors and service truck; report uses actual income/costs, reload adds no duplicate income and scenery clears the following day.",
+    "All 20 actual club stadiums retain their modular far/near stands and fixed world with event artwork fully inside the phone scene frame.",
+    "60 normal time advances including simulated league matches generate occasional stories/proposals without interrupting the match loop.",
+    "Starting a new season processes already-accepted off-season bookings once before the normal off-season accounts; reports remain available.",
+    "Watched match retains the same live stadium SVG across a tick; event art never appears in the football match.",
+    "Offline reload displays the completed concert and its report using cached event modules."
+  ],
+  "errors": [],
+  "missing": []
+}

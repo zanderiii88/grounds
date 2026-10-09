@@ -1,3 +1,4 @@
+import {bookingWindow} from './club-events.js';
 import {fixedSiteError} from './fixed-surroundings.js';
 import {SECTIONS,STANDS,capacity,changeCost} from './stadium-model.js';
 const daysAfter=(date,n)=>new Date(Date.parse(date+'T12:00:00Z')+n*86400000).toISOString().slice(0,10);
@@ -12,12 +13,14 @@ export function constructionQuote(career,club,draft){
  const days=changed.length?Math.min(120,(structural?28+tiers*7:roof?21:rear?18:7)+Math.floor((changed.length-1)/4)*3):0;
  const opens=daysAfter(career.date,days),affected=(career.schedule||[]).flatMap(r=>r.fixtures.map(f=>({...f,date:r.date}))).filter(f=>f.home===career.clubId&&f.homeGoals==null&&f.date>=career.date&&f.date<opens);
  const during=usableCapacity(career,club,changed.map(s=>s.id));
- return {cost,days,opens,during,closed:usableCapacity(career,club)-during,affected,sections:Object.fromEntries(changed.map(s=>[s.id,{...draft.sections[s.id]}]))};
+ const affectedBookings=(career.clubLife?.bookings||[]).filter(b=>['accepted','completed'].includes(b.status)&&bookingWindow(b).start<opens&&bookingWindow(b).end>=career.date);
+ return {affectedBookings,cost,days,opens,during,closed:usableCapacity(career,club)-during,affected,sections:Object.fromEntries(changed.map(s=>[s.id,{...draft.sections[s.id]}]))};
 }
 export function startConstruction(career,club,draft){
  const siteError=fixedSiteError(club,draft);if(siteError)return siteError;
  if(career.construction?.length)return 'Finish the current stadium project first.';
  const quote=constructionQuote(career,club,draft);if(!quote.cost)return 'No changes to build.';if(quote.cost>career.balance)return 'Insufficient club funds.';
+ if(quote.affectedBookings.length)return 'A stadium booking reserves part of this construction period. Cancel it before setup or wait until recovery ends.';
  career.balance-=quote.cost;career.construction=[{...quote,started:career.date}];
  career.news.push({date:career.date,kind:'stadium',text:`Stadium works started: ${Object.keys(quote.sections).length} sections closed. Expected opening ${quote.opens}; ${quote.during.toLocaleString('en-GB')} seats remain available.`});return null;
 }

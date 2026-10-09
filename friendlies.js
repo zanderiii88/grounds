@@ -1,3 +1,4 @@
+import {stadiumDateConflict} from './club-events.js?v=1.55.0';
 // Invitations are career-owned. Only accepted invitations become fixtures.
 const after=(date,n)=>new Date(Date.parse(date+'T12:00:00Z')+n*86400000).toISOString().slice(0,10);
 export function offerFriendlies(career,league){
@@ -9,6 +10,7 @@ export function respondToFriendly(career,id,accept){
  const invitation=career.friendlyInvitations?.find(x=>x.id===id);
  if(!invitation||invitation.status!=='offered')return 'This invitation has already been handled.';
  if(invitation.date<career.date){invitation.status='expired';return 'The proposed date has passed.';}
+ if(accept&&invitation.home&&stadiumDateConflict(career,invitation.date))return 'A stadium booking reserves this date for setup, the event or recovery.';
  if(accept&&career.schedule.some(r=>Math.abs((Date.parse(r.date)-Date.parse(invitation.date))/86400000)<3&&r.fixtures.some(f=>f.home===career.clubId||f.away===career.clubId)))return 'Leave at least three days between your fixtures.';
  invitation.status=accept?'accepted':'declined';
  if(accept){career.schedule.push({date:invitation.date,friendly:true,fixtures:[{id:invitation.id,friendly:true,home:invitation.home?career.clubId:invitation.opponent,away:invitation.home?invitation.opponent:career.clubId,kickoff:'15:00',homeGoals:null,awayGoals:null}]});career.schedule.sort((a,b)=>a.date.localeCompare(b.date));}

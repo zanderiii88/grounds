@@ -1,3 +1,4 @@
+import {bookingWindow} from './club-events.js?v=1.55.0';
 // Football order is deliberately independent of alphabetical position names.
 export const POSITION_ORDER=['GK','LB','CB','RB','LWB','RWB','DM','CM','LM','RM','AM','LW','RW','CF','ST'];
 export const positionRank=pos=>{const i=POSITION_ORDER.indexOf(pos);return i<0?99:i};
@@ -44,5 +45,6 @@ export function calendarEvents(career){
  for(const job of career.construction||[])add(job.opens,{kind:'stadium',opening:true});
  const first=career.schedule[0]?.date,last=career.schedule.at(-1)?.date;
  if(first&&last)for(let date=first;date<=last;date=after(date,1))if(date>=career.date&&new Date(date+'T12:00:00Z').getUTCDay()===1&&!events.get(date)?.some(e=>e.kind==='wages'))add(date,{kind:'wages',planned:true});
+ for(const booking of career.clubLife?.bookings||[])if(['accepted','completed'].includes(booking.status)){const window=bookingWindow(booking);for(let date=window.start;date<=window.end;date=after(date,1))add(date,{kind:'booking',booking,reserved:date!==booking.date})}
  return events;
 }

@@ -1,0 +1,16 @@
+{
+  "checks": [
+    "Actual 1.54 saved career migrates quietly; finances, stadium, XI, wage allowance and club events unchanged.",
+    "Welcome recommendations open destinations; visible Back and browser/Android history Back return to the welcome dialog.",
+    "Visits through ordinary navigation are recorded; stadium welcome remains until dismissed and can still reopen from Home.",
+    "Checklist starts unticked; visits turn orange, explicit eligible XI confirmation turns green, new lineup injury resets review.",
+    "Opening Transfers leaves an orange unconfirmed offer; manual tick/untick works, actual resolution auto-ticks, revised/new offer resets.",
+    "Actual friendly responses resolve their checklist item automatically.",
+    "Checklist state, visits and dismissals survive real reload and portable backup parsing.",
+    "Options hides/re-enables the checklist and device preference survives a new career; portrait, small phone and landscape have no horizontal overflow.",
+    "Left/right gestures cycle live renamed alphabetical order with wraparound; vertical gestures and input editing do not change club, details scroll retained.",
+    "Offline reload successfully loads new checklist module and persistent welcome."
+  ],
+  "errors": [],
+  "missing": []
+}

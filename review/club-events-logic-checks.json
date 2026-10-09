@@ -1,0 +1,12 @@
+{
+  "checks": [
+    "Every choice in all 20 stories applies its exact financial changes once and records the actual clamped morale/player effects.",
+    "Insufficient cash blocks paid story choices; missed deadlines defer without costs or bonuses.",
+    "A departed player cannot receive a targeted story effect.",
+    "All three booking types protect setup/event/recovery calendar days, settle actual net income once and remain settled after save round-trip.",
+    "Full booking windows reject home fixtures, overlapping bookings, construction and out-of-season outdoor concerts.",
+    "Later home friendlies and construction are blocked by accepted bookings; a subsequently conflicting imported fixture cancels safely without money movement.",
+    "365-day time run: 14 stories and 8 proposals; cooldowns and eight-story repeat exclusion enforced. Generation is repeatable, not rerolled on rendering/reload.",
+    "Event save-state validation accepts genuine state and rejects invalid morale, counters and malformed booking data."
+  ]
+}
