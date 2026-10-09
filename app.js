@@ -1,38 +1,38 @@
-import {fixedSurroundings,fixedSiteError} from './fixed-surroundings.js?v=1.52.0';
-import {offerFriendlies,respondToFriendly,expireFriendlies,friendlyEstimate} from './friendlies.js?v=1.52.0';
-import {playerMatchInsight,MATCH_PACES,paceLevel,stepPace} from './match-insight.js?v=1.52.0';
-import {investmentStatus,investInClub,facilityLevel} from './club-investment.js?v=1.52.0';
+import {fixedSurroundings,fixedSiteError} from './fixed-surroundings.js?v=1.52.1';
+import {offerFriendlies,respondToFriendly,expireFriendlies,friendlyEstimate} from './friendlies.js?v=1.52.1';
+import {playerMatchInsight,MATCH_PACES,paceLevel,stepPace} from './match-insight.js?v=1.52.1';
+import {investmentStatus,investInClub,facilityLevel} from './club-investment.js?v=1.52.1';
 let fundingReview=null,selectionPreview=null;
-import {seasonSchedule,extendSeason,positionRank,comparePositions,monthDays,shiftMonth,calendarEvents} from './season-calendar.js?v=1.52.0';
+import {seasonSchedule,extendSeason,positionRank,comparePositions,monthDays,shiftMonth,calendarEvents} from './season-calendar.js?v=1.52.1';
 let calendarMonth=null,calendarDay=null;
-import {TRAINING_MODES,TRAINING_POSITIONS,initialiseTraining,trainingMode,beginTrainingDay,trainingDay,setPositionTraining} from './training.js?v=1.52.0';
-import {estimatedBid,saleAssessment,signingAssessment,recruitmentRecommendations,suitsRole} from './recruitment.js?v=1.52.0';
+import {TRAINING_MODES,TRAINING_POSITIONS,initialiseTraining,trainingMode,beginTrainingDay,trainingDay,setPositionTraining} from './training.js?v=1.52.1';
+import {estimatedBid,saleAssessment,signingAssessment,recruitmentRecommendations,suitsRole} from './recruitment.js?v=1.52.1';
 let recruitmentPosition='priority',preMatchBriefOpen=false;
-import {initialiseContracts,contractStatus,contractEnd,renewalDemand,renewContract,contractReminders,squadCover} from './contracts.js?v=1.52.0';
+import {initialiseContracts,contractStatus,contractEnd,renewalDemand,renewContract,contractReminders,squadCover} from './contracts.js?v=1.52.1';
 let renewalPlayer=null;
-import {parseBackup,createBackup} from './career-backup.js?v=1.52.0';
-import {initialiseExpectations,assessSeason,updateExpectations} from './season-board.js?v=1.52.0';
+import {parseBackup,createBackup} from './career-backup.js?v=1.52.1';
+import {initialiseExpectations,assessSeason,updateExpectations} from './season-board.js?v=1.52.1';
 let simulationBatch=false;
-import {notifyEnabled,setNotification,notificationOptions,gettingStarted} from './preferences.js?v=1.52.0';
+import {notifyEnabled,setNotification,notificationOptions,gettingStarted} from './preferences.js?v=1.52.1';
 let pendingRestore=null;
 let navOpen=false,focusMode=false,headerOpen=false,noticesOpen=false,workspaceTabs='';
 let tacticsExpanded=false,fullStatisticsExpanded=false;
 let titleOptionsOpen=false,transferReview=null,squadFilter='all',squadSort='overall',squadDescending=true;
-import {SCOUT_LEVELS,matchPlan,scoutingPrice,scoutEstimate,scoutAdvice,reportDue,scoutUnits} from './scouting.js?v=1.52.0';
-import {SUBSTITUTION_LIMIT,availableForMatch,completeDisciplineFixture,resetSeasonCards,simulatedCards} from './discipline.js?v=1.52.0';
-import {audioControls,syncAudioControls,handleAudioAction,handleAudioChange,playGoal,playAdvance} from './audio.js?v=1.52.0';
-import {prepareStadiumSurface} from './stadium-surface.js?v=1.52.0';
-import {playerValue,blankTransferFilters,searchLeaguePlayers} from './transfer-search.js?v=1.52.0';
-import {pitchPlayers} from './stadium-life.js?v=1.52.0';
-import {syncStadiumLife,disposeStadiumLife} from './match-life.js?v=1.52.0';
-import {ensureMatchStats,recordPossession,recordShot,possessionPercent} from './match-stats.js?v=1.52.0';
-import {constructionQuote,startConstruction,advanceConstruction,usableCapacity} from './construction.js?v=1.52.0';
-import {SITES as SITE_CATALOGUE,SHOWCASE_SITES} from './sites.js?v=1.52.0';
-import {initialiseDevelopment,promoteProspect,developmentDay,rolloverDevelopment,squadSpace,canRegister,youthLevel,estimatedStars} from './development.js?v=1.52.0';
-import {sceneSvg,stadiumProfile} from './scene.js?v=1.52.0';
-import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.52.0';
+import {SCOUT_LEVELS,matchPlan,scoutingPrice,scoutEstimate,scoutAdvice,reportDue,scoutUnits} from './scouting.js?v=1.52.1';
+import {SUBSTITUTION_LIMIT,availableForMatch,completeDisciplineFixture,resetSeasonCards,simulatedCards} from './discipline.js?v=1.52.1';
+import {audioControls,syncAudioControls,handleAudioAction,handleAudioChange,playGoal,playAdvance} from './audio.js?v=1.52.1';
+import {prepareStadiumSurface} from './stadium-surface.js?v=1.52.1';
+import {playerValue,blankTransferFilters,searchLeaguePlayers} from './transfer-search.js?v=1.52.1';
+import {pitchPlayers} from './stadium-life.js?v=1.52.1';
+import {syncStadiumLife,disposeStadiumLife} from './match-life.js?v=1.52.1';
+import {ensureMatchStats,recordPossession,recordShot,possessionPercent} from './match-stats.js?v=1.52.1';
+import {constructionQuote,startConstruction,advanceConstruction,usableCapacity} from './construction.js?v=1.52.1';
+import {SITES as SITE_CATALOGUE,SHOWCASE_SITES} from './sites.js?v=1.52.1';
+import {initialiseDevelopment,promoteProspect,developmentDay,rolloverDevelopment,squadSpace,canRegister,youthLevel,estimatedStars} from './development.js?v=1.52.1';
+import {sceneSvg,stadiumProfile} from './scene.js?v=1.52.1';
+import {SECTIONS,STANDS,ROOFS,REARS,FINISHES,defaultLayout,normaliseLayout,capacity,changeCost} from './stadium-model.js?v=1.52.1';
 
-const APP_VERSION='1.52.0';
+const APP_VERSION='1.52.1';
 const SAVE_KEY='clubline-career-98-r1';
 const SITES=SITE_CATALOGUE.map(s=>[s.id,s.name,s.limit]);
 const availableSites=c=>fixedSurroundings(c.id)?[[fixedSurroundings(c.id).id,fixedSurroundings(c.id).name,75000]]:SITES.filter(([, ,limit])=>c.capacity<=limit);
@@ -71,13 +71,13 @@ const careerPanelStates=new Map(),careerPanelNodes=new Map();
 let saveWarning='',source,career=null,view='title',section='hub',sub='lineup',setup={clubId:'C01',site:'aberdeen',names:{},colour:null},selectedPlayer=null,selectedSlot=null,instructionPlayer=null,statsScope='club',statsSort='goals',statsDescending=true,match=null,timer=null,notice='',updateMessage='',availableVersion=null,checkingUpdate=false;
 const root=document.getElementById('app');
 
-try {source=await (await fetch('./data/league.json?v=1.52.0',{cache:'no-store'})).json();}
+try {source=await (await fetch('./data/league.json?v=1.52.1',{cache:'no-store'})).json();}
 catch(error){root.innerHTML='<main class="app-shell"><div class="shell-content"><h1>Clubline</h1><p>Could not load the league data. Open the game through a web server or GitHub Pages.</p></div></main>';throw error;}
 const originalLeague=structuredClone(source);
 const ambitiousIds=new Set(source.clubs.map(c=>source.players.filter(p=>p.clubId===c.id).sort((a,b)=>a.overall-b.overall).slice(0,6).sort((a,b)=>b.potential-a.potential)[0]?.id));
 const legacyMenuScenes=[false,true].flatMap(evening=>SHOWCASE_SITES.map((site,i)=>({club:source.clubs[(i+(evening?5:0))%source.clubs.length],site,evening}))); 
 const menuScenes=[false,true].flatMap(evening=>source.clubs.map(c=>({club:{...c,colour:fixedSurroundings(c.id)?.seatColour||c.colour,seatAccent:fixedSurroundings(c.id)?.seatAccent},site:fixedSurroundings(c.id).id,evening}))); 
-let menuFraming=[];try{menuFraming=await(await fetch('./assets/menu/framing.json?v=1.52.0')).json()}catch{}
+let menuFraming=[];try{menuFraming=await(await fetch('./assets/menu/framing.json?v=1.52.1')).json()}catch{}
 const menuFrame=i=>fixedSurroundings(menuScenes[i].club.id)?`<div class="scene menu-scene" data-menu-index="${i}">${sceneSvg(menuScenes[i].club,menuScenes[i].site,false,menuScenes[i].evening,'menu')}</div>`:legacyMenuFrame(legacyMenuScenes.indexOf(menuScenes[i]),i);
 const legacyMenuFrame=(assetIndex,i)=>`<div class="scene menu-scene" data-menu-index="${i}"><picture><source media="(orientation:portrait)" srcset="assets/menu/scene-${assetIndex}-framed-mobile.webp?v=${APP_VERSION}"><img src="assets/menu/scene-${assetIndex}-framed-desktop.webp?v=${APP_VERSION}" alt="${html(menuScenes[i].club.ground)} stadium" decoding="async"></picture></div>`;
 const club=id=>source.clubs.find(c=>c.id===id);
@@ -224,7 +224,7 @@ function exportCareer(previous=false){try{if(!previous&&career&&!save())return t
 async function readCareerFile(input){const file=input.files?.[0];input.value='';if(!file)return;try{if(file.size>5*1024*1024)throw Error('This backup is too large.');pendingRestore=parseBackup(await file.text(),originalLeague,Object.keys(FORMATIONS),STYLES);render()}catch(error){pendingRestore=null;toast(error.message||'This is not a compatible Clubline backup.')}}
 function restorePreview(){if(!pendingRestore)return '';const c=pendingRestore.career;return `<div class="overlay restore-preview" role="dialog" aria-modal="true" aria-label="Restore career"><div class="modal"><h2>Restore this career?</h2><p><b>${html(c.names?.[c.clubId]||club(c.clubId)?.name)}</b> · Season ${c.season||1}</p><p>${fmtDate(c.date)} · Balance ${fmtMoney(c.balance)}</p><p>This replaces the current career on this device. A copy of your previous career will remain available to download in Options. Music, FX and notification settings are retained.</p>${pendingRestore.match?.phase==='live'?'<p>Your live match will be restored paused.</p>':''}<div class="modal-actions"><button class="btn primary" data-action="backup-confirm">Restore career</button><button class="btn" data-action="backup-cancel">Cancel</button></div></div></div>`}
 function restoreCareer(){if(!pendingRestore)return;const incoming=structuredClone(pendingRestore),priorCareer=career,priorSource=source,priorMatch=match;let old,previous;if(incoming.match?.phase==='live'){incoming.match.paused=true;incoming.match.pauseReason='manual'}try{old=localStorage.getItem(SAVE_KEY);previous=localStorage.getItem('clubline-before-restore');if(old)localStorage.setItem('clubline-before-restore',old);localStorage.setItem(SAVE_KEY,JSON.stringify(incoming));if(!load())throw Error('Could not load this career.');pendingRestore=null;navOpen=false;focusMode=false;noticesOpen=false;titleOptionsOpen=false;transferReview=null;instructionPlayer=null;selectedPlayer=null;selectedSlot=null;clearInterval(timer);clearTimeout(autoResumeTimer);rotationScroll.clear();view='career';save();render();toast('Career restored.')}catch{career=priorCareer;source=priorSource;match=priorMatch;try{if(old!==undefined){if(old)localStorage.setItem(SAVE_KEY,old);else localStorage.removeItem(SAVE_KEY);if(previous)localStorage.setItem('clubline-before-restore',previous);else localStorage.removeItem('clubline-before-restore');if(old)load()}}catch{}pendingRestore=null;render();toast('Restore failed. Your previous save has been retained.')}}
-function titleView(){return `<div class="app-shell title-screen artwork-title"><div class="cover-haze" aria-hidden="true"></div><div class="cover-frame"><img class="cover-art" src="assets/clubline-99-cover.webp?v=${APP_VERSION}" alt="Clubline 99: retro football club management artwork"><nav class="cover-menu" aria-label="Main menu"><span class="cover-menu-heading">Your club. Your call.</span><button class="btn primary" data-action="new-game">New Career</button><button class="btn" data-action="continue" ${hasSave()?'':'disabled'}>Continue</button><button class="btn" data-action="title-options">Options</button><button class="btn" data-action="check-update" ${checkingUpdate?'disabled':''}>${checkingUpdate?'Checking…':'Check for Updates'}</button>${availableVersion?'<button class="btn primary" data-action="load-update">Load update</button>':''}<span class="cover-build">v${APP_VERSION}</span>${updateMessage?`<p class="cover-update-status" role="status">${html(updateMessage)}</p>`:''}</nav></div>${titleOptionsOpen?`<div class="overlay title-options-overlay" role="dialog" aria-modal="true" aria-label="Options"><div class="modal"><div class="modal-head"><h2>Options</h2><button class="btn slim" data-action="close-title-options">Close ×</button></div>${audioControls()}${notificationOptions()}${backupControls()}${gettingStarted()}${leagueRules()}</div></div>`:''}${restorePreview()}</div>`}
+function titleView(){return `<div class="app-shell title-screen artwork-title"><div class="cover-haze" aria-hidden="true"></div><div class="cover-frame"><picture class="cover-picture"><source media="(orientation:portrait)" srcset="assets/clubline-99-cover-mobile.webp?v=${APP_VERSION}"><img class="cover-art" src="assets/clubline-99-cover.webp?v=${APP_VERSION}" alt="Clubline 99: retro football club management artwork"></picture><nav class="cover-menu" aria-label="Main menu"><span class="cover-menu-heading">Your club. Your call.</span><button class="btn primary" data-action="new-game">New Career</button><button class="btn" data-action="continue" ${hasSave()?'':'disabled'}>Continue</button><button class="btn" data-action="title-options">Options</button><button class="btn" data-action="check-update" ${checkingUpdate?'disabled':''}>${checkingUpdate?'Checking…':'Check for Updates'}</button>${availableVersion?'<button class="btn primary" data-action="load-update">Load update</button>':''}<span class="cover-build">v${APP_VERSION}</span>${updateMessage?`<p class="cover-update-status" role="status">${html(updateMessage)}</p>`:''}</nav></div>${titleOptionsOpen?`<div class="overlay title-options-overlay" role="dialog" aria-modal="true" aria-label="Options"><div class="modal"><div class="modal-head"><h2>Options</h2><button class="btn slim" data-action="close-title-options">Close ×</button></div>${audioControls()}${notificationOptions()}${backupControls()}${gettingStarted()}${leagueRules()}</div></div>`:''}${restorePreview()}</div>`}
 async function checkForUpdates(){
  if(checkingUpdate)return;
  checkingUpdate=true;updateMessage='';availableVersion=null;render();

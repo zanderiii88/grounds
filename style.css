@@ -500,3 +500,16 @@ input,select{color:var(--text);background-color:#071f44;border-color:#859dbb}
 @media(orientation:landscape) and (max-width:700px){.cover-frame{left:4vw}.cover-menu{left:calc(100% + 4vw);width:43vw;gap:6px}.cover-menu .btn{min-height:40px;font-size:1.05rem}}
 @media(orientation:portrait) and (max-height:650px){.cover-menu{gap:5px;bottom:5%}.cover-menu .btn{min-height:36px;font-size:.95rem}.cover-menu [data-action="check-update"]{font-size:.78rem}}
 .artwork-setup .setup-cover-art{position:fixed;background-size:100% 100%,contain;background-repeat:no-repeat;background-color:#061b3a}
+
+/* 1.52.1: full-height native mobile composition, without stretching. */
+.cover-picture{display:block;width:100%;height:100%}
+@media(orientation:portrait){
+ .artwork-title .cover-frame{width:100%;height:100%;inset:0;margin:0}
+ .artwork-title .cover-art{width:100%;height:100%;object-fit:cover;object-position:50% 0}
+ .artwork-title .cover-haze{display:none}
+ .artwork-title .cover-menu{left:51%;right:max(4%,env(safe-area-inset-right));bottom:max(5%,calc(env(safe-area-inset-bottom) + 12px));gap:clamp(6px,1dvh,10px)}
+ .artwork-title .cover-menu .btn{min-height:clamp(44px,5.5dvh,54px);font-size:clamp(.96rem,4vw,1.15rem)}
+ .artwork-title .cover-menu [data-action="check-update"]{font-size:clamp(.8rem,3.5vw,1rem)}
+ .artwork-setup .setup-cover-art{background-image:linear-gradient(#041b4066,#041b4088),url('assets/clubline-99-cover-mobile.webp');background-size:100% 100%,cover;background-position:center,center top}
+}
+@media(orientation:portrait) and (max-height:600px){.artwork-title .cover-menu{gap:5px;bottom:max(3%,calc(env(safe-area-inset-bottom) + 8px))}.artwork-title .cover-menu .btn{min-height:44px}}

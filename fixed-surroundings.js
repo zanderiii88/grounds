@@ -11,4 +11,4 @@ export function fixedSiteError(club,layout){
  for(const side of sides)if((side==='W'&&20-d<r.x)||(side==='E'&&52+d>r.x+r.w)||(side==='N'&&20-d<r.y)||(side==='S'&&40+d>r.y+r.d))return 'This stand or roof extends beyond this ground’s fixed buildable site. Choose a smaller option.';
  }return null;
 }
-export function surroundingsLayer(site,layer,evening=false){const [x,y,w,h]=site.box;return `<image data-surroundings-layer="${layer}" href="assets/surroundings/${Object.keys(FIXED_SURROUNDINGS).find(id=>FIXED_SURROUNDINGS[id]===site)}-${layer}.webp?v=1.52.0" x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="none" ${evening?'style="filter:brightness(.60) saturate(.9)"':''}/>`;}
+export function surroundingsLayer(site,layer,evening=false){const [x,y,w,h]=site.box;return `<image data-surroundings-layer="${layer}" href="assets/surroundings/${Object.keys(FIXED_SURROUNDINGS).find(id=>FIXED_SURROUNDINGS[id]===site)}-${layer}.webp?v=1.52.1" x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="none" ${evening?'style="filter:brightness(.60) saturate(.9)"':''}/>`;}

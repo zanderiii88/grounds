@@ -1,10 +1,14 @@
 {
   "checks": [
-    "1.51.0 career continues unchanged in 1.52.0.",
+    "1.52.0 career continues unchanged in 1.52.1.",
     "390×844: artwork and all four controls fit; no clipped text or horizontal overflow.",
     "844×390: artwork and all four controls fit; no clipped text or horizontal overflow.",
     "360×640: artwork and all four controls fit; no clipped text or horizontal overflow.",
     "640×360: artwork and all four controls fit; no clipped text or horizontal overflow.",
+    "360×780: artwork and all four controls fit; no clipped text or horizontal overflow.",
+    "412×915: artwork and all four controls fit; no clipped text or horizontal overflow.",
+    "430×932: artwork and all four controls fit; no clipped text or horizontal overflow.",
+    "320×568: artwork and all four controls fit; no clipped text or horizontal overflow.",
     "Options retains music/FX; update check returns current version.",
     "All 20 fictional names sort A–Z. Rename re-sorts live without losing input or club selection; renamed club persists into new career. Setup has artwork without start buttons, seat colour controls or Home location.",
     "Artwork start screen and saved renamed career load offline.",
