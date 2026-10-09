@@ -1,0 +1,15 @@
+{
+  "checks": [
+    "Payroll forecast excludes today, counts actual future Mondays and handles year/leap-year boundaries; allowance stays fixed after wage changes and resets with the season.",
+    "Actual 1.52.1 save continues with balance, wages, stadium, date and XI preserved; existing careers get no forced welcome popup.",
+    "All 20 club-selection lists match their actual three highest-rated players; Ground Character removed.",
+    "All six owner links open their intended screens, including friendly invitations alongside calendar and expanded expectations; visits saved as Viewed.",
+    "Renewal preview reflects offered payroll/forecast; agreed wage persists after reload, allowance remains fixed, and no immediate cash charge is added.",
+    "All nine own formations render 11 positions against 11 projected opponents, with two keepers, players in opposing halves and every marker inside the pitch.",
+    "Opponent names, shirt numbers and roles are available; ability uses the existing deterministic scout ranges at every funding level and is explicitly labelled projected/estimated.",
+    "Beginning the next season resets the allowance from the actual new-season payroll.",
+    "Full current release loads offline; saved career, guidance and new wage module remain usable."
+  ],
+  "errors": [],
+  "missing": []
+}
