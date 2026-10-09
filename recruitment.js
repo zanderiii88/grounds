@@ -1,6 +1,6 @@
-import {playerValue} from './transfer-search.js?v=1.52.1';
-import {scoutEstimate} from './scouting.js?v=1.52.1';
-import {contractStatus,squadCover} from './contracts.js?v=1.52.1';
+import {playerValue} from './transfer-search.js?v=1.53.0';
+import {scoutEstimate} from './scouting.js?v=1.53.0';
+import {contractStatus,squadCover} from './contracts.js?v=1.53.0';
 export const estimatedBid=p=>Math.round(playerValue(p)*1.1/10000)*10000;
 const owner=(c,p)=>c.owners?.[p.id]||p.clubId;
 const active=(c,p)=>!c.players?.[p.id]?.retired&&!c.players?.[p.id]?.unregistered;
