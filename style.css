@@ -479,3 +479,24 @@ input,select{color:var(--text);background-color:#071f44;border-color:#859dbb}
 .title-screen .hero-copy .audio-controls.compact{padding-top:5px;margin-top:5px}
 @media(max-width:380px) and (orientation:portrait){.title-screen .hero-copy{width:calc(100vw - 28px)}.title-screen .hero-actions .btn{font-size:.96rem}}
 @media(max-width:700px) and (orientation:landscape){.title-screen .hero-actions .btn{font-size:.86rem;padding-inline:4px}}
+
+/* 1.52 artwork start screen and shared new-career backdrop. */
+.artwork-title{height:100dvh;min-height:100dvh;isolation:isolate;background:#061b3a}
+.cover-haze{position:absolute;inset:-20px;background:linear-gradient(#03152b66,#03152b99),url('assets/clubline-99-cover.webp') center/cover;filter:blur(18px);opacity:.65;pointer-events:none}
+.cover-frame{position:absolute;inset:0;margin:auto;width:min(100vw,66.6667dvh);height:min(100dvh,150vw);}
+.cover-art{display:block;width:100%;height:100%;object-fit:contain}
+.cover-menu{position:absolute;left:51%;right:4%;bottom:6%;display:grid;gap:6px;z-index:2}
+.cover-menu .btn{width:100%;min-width:0;min-height:40px;padding:5px 4px;font-size:1rem;text-transform:uppercase;background:linear-gradient(#144582ee,#072d66ee);border:1px solid #d7e0ed;box-shadow:inset 1px 1px #ffffff40,0 2px 6px #0009;white-space:nowrap}
+.cover-menu .btn.primary{background:linear-gradient(#e33145f5,#a91128f5);border-color:#ff9aa8}
+.cover-menu .btn:disabled{opacity:.6;filter:saturate(.35)}
+.cover-menu [data-action="check-update"]{font-size:.86rem}
+.cover-build{font-size:.61rem;color:#e5edfa;text-shadow:0 1px 3px black;text-align:right;padding-right:3px}
+.cover-menu-heading{display:none}
+.cover-update-status{margin:0;padding:6px;background:#052858ee;border:1px solid #b4c4dc;font-size:.72rem;line-height:1.3;color:white}
+.artwork-title .title-options-overlay{z-index:20}
+.setup-cover-art{position:absolute;inset:0;background:linear-gradient(#041b4066,#041b4088),url('assets/clubline-99-cover.webp') center/cover;pointer-events:none}
+.artwork-setup .setup-card,.artwork-setup .setup-detail{background:linear-gradient(145deg,#123e77df,#092654ed)}
+@media(orientation:landscape){.cover-frame{left:8vw;right:auto;width:66.6667dvh;height:100dvh;margin-block:auto;margin-inline:0}.cover-menu{left:calc(100% + 7vw);right:auto;bottom:auto;top:50%;transform:translateY(-50%);width:min(43vw,360px);gap:9px}.cover-menu .btn{min-height:44px;font-size:1.2rem}.cover-menu [data-action="check-update"]{font-size:1.05rem}.cover-menu-heading{display:block;font-family:'Clubline Condensed',Arial,sans-serif;font-size:1.3rem;font-weight:700;color:#e8eff8;text-transform:uppercase;letter-spacing:.08em}.cover-build{text-align:center}}
+@media(orientation:landscape) and (max-width:700px){.cover-frame{left:4vw}.cover-menu{left:calc(100% + 4vw);width:43vw;gap:6px}.cover-menu .btn{min-height:40px;font-size:1.05rem}}
+@media(orientation:portrait) and (max-height:650px){.cover-menu{gap:5px;bottom:5%}.cover-menu .btn{min-height:36px;font-size:.95rem}.cover-menu [data-action="check-update"]{font-size:.78rem}}
+.artwork-setup .setup-cover-art{position:fixed;background-size:100% 100%,contain;background-repeat:no-repeat;background-color:#061b3a}
