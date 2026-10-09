@@ -1,0 +1,182 @@
+[
+  {
+    "clubId": "C01",
+    "club": "Armoury FC",
+    "ground": "Highfield",
+    "source": "highfield-refined-study",
+    "svg": "highfield-overview.svg",
+    "seatColour": "#c82738",
+    "prototypePath": "prototype-source/Highfield"
+  },
+  {
+    "clubId": "C02",
+    "club": "Aston Vale",
+    "ground": "Vale Park",
+    "source": "vale-refined-study",
+    "svg": "vale-overview.svg",
+    "seatColour": "#763249",
+    "prototypePath": "prototype-source/Vale-Park"
+  },
+  {
+    "clubId": "C03",
+    "club": "Roseburn Rovers",
+    "ground": "Rosewood Park",
+    "source": "rosewood-river-study",
+    "svg": "rosewood-overview.svg",
+    "seatColour": "#f2f2e8",
+    "prototypePath": "prototype-source/Rosewood-Park"
+  },
+  {
+    "clubId": "C04",
+    "club": "Charldon Athletic",
+    "ground": "The Hollow",
+    "source": "hollow-rail-study",
+    "svg": "hollow-overview.svg",
+    "seatColour": "#c82738",
+    "prototypePath": "prototype-source/The-Hollow"
+  },
+  {
+    "clubId": "C05",
+    "club": "Chelsey FC",
+    "ground": "Stamford Gardens",
+    "source": "stamford-gardens-study",
+    "svg": "stamford-overview.svg",
+    "seatColour": "#2458aa",
+    "prototypePath": "prototype-source/Stamford-Gardens"
+  },
+  {
+    "clubId": "C06",
+    "club": "Coventon City",
+    "ground": "Skyfield Road",
+    "source": "skyfield-city-study",
+    "svg": "skyfield-overview.svg",
+    "seatColour": "#74b8dc",
+    "prototypePath": "prototype-source/Skyfield-Road"
+  },
+  {
+    "clubId": "C07",
+    "club": "Darby County",
+    "ground": "Pride Meadows",
+    "source": "darby-riverside-study",
+    "svg": "darby-overview.svg",
+    "seatColour": "#f2f2e8",
+    "prototypePath": "prototype-source/Pride-Meadows"
+  },
+  {
+    "clubId": "C08",
+    "club": "Everdon FC",
+    "ground": "Goodwyn Park",
+    "source": "goodwyn-park-study",
+    "svg": "goodwyn-overview.svg",
+    "seatColour": "#2458aa",
+    "prototypePath": "prototype-source/Goodwyn-Park"
+  },
+  {
+    "clubId": "C09",
+    "club": "Leedham United",
+    "ground": "Ellbank Road",
+    "source": "ellbank-works-study",
+    "svg": "ellbank-overview.svg",
+    "seatColour": "#f2f2e8",
+    "prototypePath": "prototype-source/Ellbank-Road"
+  },
+  {
+    "clubId": "C10",
+    "club": "Lester City",
+    "ground": "Filbert Gardens",
+    "source": "filbert-canal-study",
+    "svg": "filbert-overview.svg",
+    "seatColour": "#2458aa",
+    "prototypePath": "prototype-source/Filbert-Gardens"
+  },
+  {
+    "clubId": "C11",
+    "club": "Riverpool FC",
+    "ground": "Anfield Lane",
+    "source": "riverpool-refined-study",
+    "svg": "riverpool-overview.svg",
+    "seatColour": "#c82738",
+    "prototypePath": "prototype-source/Anfield-Lane"
+  },
+  {
+    "clubId": "C12",
+    "club": "Mancaster United",
+    "ground": "Old Trafford Road",
+    "source": "mancaster-vehicles-study",
+    "svg": "mancaster-overview.svg",
+    "seatColour": "#c82738",
+    "prototypePath": "prototype-source/Old-Trafford-Road"
+  },
+  {
+    "clubId": "C13",
+    "club": "Middleborough FC",
+    "ground": "Riverbank Stadium",
+    "source": "riverbank-docks-study",
+    "svg": "riverbank-overview.svg",
+    "seatColour": "#c82738",
+    "prototypePath": "prototype-source/Riverbank"
+  },
+  {
+    "clubId": "C14",
+    "club": "Northcastle United",
+    "ground": "St James Fields",
+    "source": "northcastle-city-study",
+    "svg": "northcastle-overview.svg",
+    "seatColour": "#f2f2e8",
+    "prototypePath": "prototype-source/St-James-Fields"
+  },
+  {
+    "clubId": "C15",
+    "club": "Nottingham Grove",
+    "ground": "Grove Ground",
+    "source": "grove-riverside-study",
+    "svg": "grove-overview.svg",
+    "seatColour": "#c82738",
+    "prototypePath": "prototype-source/Grove-Ground"
+  },
+  {
+    "clubId": "C16",
+    "club": "Steel Wednesday",
+    "ground": "Hillside Stadium",
+    "source": "hillside-seat-study",
+    "svg": "steel-overview.svg",
+    "seatColour": "#2458aa",
+    "prototypePath": "prototype-source/Hillside-Stadium"
+  },
+  {
+    "clubId": "C17",
+    "club": "Southport Saints",
+    "ground": "The Dene",
+    "source": "dene-seat-study",
+    "svg": "southport-overview.svg",
+    "seatColour": "#c82738",
+    "prototypePath": "prototype-source/The-Dene"
+  },
+  {
+    "clubId": "C18",
+    "club": "Tottenham Falcons",
+    "ground": "White Hart Park",
+    "source": "whitehart-urban-study",
+    "svg": "whitehart-overview.svg",
+    "seatColour": "#f2f2e8",
+    "prototypePath": "prototype-source/White-Hart-Park"
+  },
+  {
+    "clubId": "C19",
+    "club": "Westbridge United",
+    "ground": "Upton Fields",
+    "source": "westbridge-market-study",
+    "svg": "westbridge-overview.svg",
+    "seatColour": "#763249",
+    "prototypePath": "prototype-source/Upton-Fields"
+  },
+  {
+    "clubId": "C20",
+    "club": "Wimbleton FC",
+    "ground": "Selwood Park",
+    "source": "selwood-suburbs-study",
+    "svg": "selwood-overview.svg",
+    "seatColour": "#182441",
+    "prototypePath": "prototype-source/Selwood-Park"
+  }
+]

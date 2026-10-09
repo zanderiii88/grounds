@@ -1,0 +1,102 @@
+[
+  {
+    "clubId": "C01",
+    "source": "highfield-refined-study",
+    "result": "{\"result\":\"PASS\",\"assets\":1372,\"connectedStreetSegments\":16,\"reserveAreaReduction\":0.3817239099362639,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C02",
+    "source": "vale-refined-study",
+    "result": "{\"result\":\"PASS\",\"assets\":1899,\"connectedStreetSegments\":18,\"reserveAreaReduction\":0.3633860288321831,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C03",
+    "source": "rosewood-river-study",
+    "result": "{\"result\":\"PASS\",\"assets\":2712,\"connectedStreetSegments\":109,\"reserveAreaReduction\":0.3544782371016696,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C04",
+    "source": "hollow-rail-study",
+    "result": "{\"result\":\"PASS\",\"assets\":2769,\"connectedStreetSegments\":103,\"reserveAreaReduction\":0.5113675417123607,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C05",
+    "source": "stamford-gardens-study",
+    "result": "{\"result\":\"PASS\",\"assets\":2386,\"connectedStreetSegments\":110,\"reserveAreaReduction\":0.42660126252269637,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C06",
+    "source": "skyfield-city-study",
+    "result": "{\"result\":\"PASS\",\"assets\":2885,\"connectedStreetSegments\":114,\"reserveAreaReduction\":0.5321150310126692,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C07",
+    "source": "darby-riverside-study",
+    "result": "{\"result\":\"PASS\",\"assets\":1629,\"connectedStreetSegments\":113,\"reserveAreaReduction\":0.4622327324162655,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C08",
+    "source": "goodwyn-park-study",
+    "result": "{\"result\":\"PASS\",\"assets\":2816,\"connectedStreetSegments\":107,\"reserveAreaReduction\":0.3527006022366772,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C09",
+    "source": "ellbank-works-study",
+    "result": "{\"result\":\"PASS\",\"assets\":2260,\"connectedStreetSegments\":99,\"reserveAreaReduction\":0.37964370751897536,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C10",
+    "source": "filbert-canal-study",
+    "result": "{\"result\":\"PASS\",\"assets\":2673,\"connectedStreetSegments\":103,\"reserveAreaReduction\":0.5385986214190156,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C11",
+    "source": "riverpool-refined-study",
+    "result": "{\"result\":\"PASS\",\"assets\":2374,\"connectedStreetSegments\":108,\"reserveAreaReduction\":0.4118899504449691,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C12",
+    "source": "mancaster-vehicles-study",
+    "result": "{\"result\":\"PASS\",\"assets\":328,\"connectedStreetSegments\":12,\"reserveAreaReduction\":0.44843702550242526,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C13",
+    "source": "riverbank-docks-study",
+    "result": "{\"result\":\"PASS\",\"assets\":1665,\"connectedStreetSegments\":100,\"reserveAreaReduction\":0.4622327324162655,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C14",
+    "source": "northcastle-city-study",
+    "result": "{\"result\":\"PASS\",\"assets\":1778,\"connectedStreetSegments\":105,\"reserveAreaReduction\":0.2895170290694099,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C15",
+    "source": "grove-riverside-study",
+    "result": "{\"result\":\"PASS\",\"assets\":2678,\"connectedStreetSegments\":104,\"reserveAreaReduction\":0.43751914401256087,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C16",
+    "source": "hillside-seat-study",
+    "result": "{\"result\":\"PASS\",\"assets\":2285,\"connectedStreetSegments\":134,\"reserveAreaReduction\":0.43335848670172183,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C17",
+    "source": "dene-seat-study",
+    "result": "{\"result\":\"PASS\",\"assets\":2436,\"connectedStreetSegments\":129,\"reserveAreaReduction\":0.4926372367543631,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C18",
+    "source": "whitehart-urban-study",
+    "result": "{\"result\":\"PASS\",\"assets\":2282,\"connectedStreetSegments\":114,\"reserveAreaReduction\":0.3886780655995943,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C19",
+    "source": "westbridge-market-study",
+    "result": "{\"result\":\"PASS\",\"assets\":2197,\"connectedStreetSegments\":120,\"reserveAreaReduction\":0.43751914401256087,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  },
+  {
+    "clubId": "C20",
+    "source": "selwood-suburbs-study",
+    "result": "{\"result\":\"PASS\",\"assets\":2565,\"connectedStreetSegments\":103,\"reserveAreaReduction\":0.48053716041564065,\"frames\":[\"overview\",\"landscape\",\"portrait\",\"detail\"],\"controls\":\"script harness; real browser not tested\"}"
+  }
+]

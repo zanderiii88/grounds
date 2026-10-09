@@ -1,0 +1,15 @@
+{
+  "checks": [
+    "Unchanged 1.50.0 career save is detected by 1.51.0.",
+    "390×844: no horizontal overflow, menu 272px high, scene viewport 390×563.",
+    "844×390: no horizontal overflow, menu 270px high, scene viewport 447×340.",
+    "360×640: no horizontal overflow, menu 272px high, scene viewport 360×310.",
+    "640×360: no horizontal overflow, menu 260px high, scene viewport 339×296.",
+    "Continue loads the original club/date/fixed stadium/38-round schedule; sound preferences persist and Options opens/closes.",
+    "Squad panel and existing formation board open and close under the new theme.",
+    "Club selection retains fixed neighbourhoods and period kits.",
+    "Service worker installs; existing career, fixed scenery and bundled font reload offline."
+  ],
+  "errors": [],
+  "missing": []
+}

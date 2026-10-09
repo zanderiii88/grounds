@@ -1,37 +1,20 @@
-CLUBLINE — SURROUNDINGS INTEGRATION PILOT 1.50.0-pilot.1
+CLUBLINE 99 — RELEASE 1.51.0 / REBRAND
 
-Full runnable application based on Clubline release 1.49.0. This is a three-ground review pilot, not the completed all-club scenery release. Nothing has been deployed.
+Full runnable application based on the actual Clubline-Release-1.50.0-Fixed-Surroundings.zip. Nothing deployed.
 
 IMPLEMENTED
-- Highfield / Armoury FC (C01): accepted refined neighbourhood study 8.
-- Riverbank Stadium / Middleborough FC (C13): accepted docks study 1.
-- Vale Park / Aston Vale (C02): accepted refined neighbourhood study 5.
-- Fixed club surroundings for these three grounds, with no location selector in their setup. Their saved site IDs migrate on load/save.
-- Accepted town worlds rendered as two transparent WebP layers around the actual modular stadium. Buildings, roads and trees retain the accepted projection and layout. The stadium is live, supports seat-colour choices, and keeps the existing match animation systems.
-- The start menu cycles through these three grounds before the retained original menu scenes. Career portrait and landscape frame the same world.
-- Build-site restrictions for these three grounds. A stand/roof/rear-building proposal extending outside its reserve is refused before charging funds; the designer displays the reason and disables construction.
-- Existing oversized saved layouts or pending works safely use the original scenery instead of forcing a smaller stadium or overlapping town objects.
-- The other 17 clubs keep their release 1.49 scenery during this pilot.
+Upright geometric silver CLUBLINE lettering, red 99 and connected red underline/arrow; matching silver C/red 99 mobile icon on blue. Logos are reusable native SVG, with PNG app icons and separate maskable variants. Blue interface panels, silver borders and red actions; readable condensed headers and buttons, regular body text. Bundled Clubline Condensed font (derived from Liberation Sans under OFL) replaces external Google font loading.
 
-VERIFIED IN THIS PILOT
-- Original league JSON is byte-for-byte unchanged: 20 clubs, 21 players each, 420 players, rating range 61–91. Generated league schedule has 38 rounds starting 15 August 1998. New careers start 3 August.
-- Accepted-study clearance checks pass for complete roads/pavements, buildings/eaves, tree bounds, connected streets and access passages.
-- Real Chromium checks at 390×844, 844×390 and 360×640: all three default grounds fit the career framing, no horizontal page overflow, fixed scene survives saved-career reload.
-- Watched home matches use the fixed scenery. Synthetic goal/card/half-time interface updates retain the identical live SVG and scenery-layer elements. This checks interface continuity; it is not a full-season regression test.
-- C03 retains original scenery. Setup location selector is absent for a pilot club.
-- Oversized stand options are blocked without changing funds/state; default layouts fit all three reserves.
-- All 224 service-worker cache paths exist. Service worker installs in Chromium; Highfield career reloads with its fixed scenery offline.
-- No browser script errors or missing HTTP assets in the checks above. All root JavaScript files pass syntax checks. ZIP integrity checked.
+Start menu keeps the live stadium visible with side-by-side New career and Continue actions and compact sound/options controls. Page title, accessible logo labels, installation name, theme colour, icons, manifest and cache version now consistently identify Clubline 99. The league-position label uses the actual 20-club count.
 
-LIMITS
-Physical-phone speed, memory usage and touch behaviour still need device review. Scenery images total about 3.8 MB; this is not a measured mobile performance guarantee. Evening scenes darken the accepted day layers and retain stadium lights; dedicated lit-town artwork has not been created. The retained broader game UI and branding have not been redesigned by this pilot. The older full-release test record is preserved separately in RELEASE-1.49-NOTES.md; those full-season tests were not repeated here.
+PRESERVED
+All 20 fixed neighbourhoods, modular stadium geometry, construction footprint protections, 1998–99 league/players/fixtures and period kits. Existing save and backup formats remain compatible. Title day/evening rotation and offline support remain available.
 
-OPEN / UPLOAD
-Serve this folder through a web server to review locally. For manual GitHub Pages upload, copy the extracted ZIP contents to the repository root so index.html sits at the root. Do not upload the ZIP itself. No deployment has been performed. Existing compatible 1.49 careers use the same save key; export a backup before replacing a live install.
+VERIFICATION
+Browser screenshots and checks at 390×844, 844×390, 360×640 and 640×360; no horizontal overflow or clipped start menu. A career created in the prior 1.50.0 application is detected and continued with original club, date, fixed site and 38-round schedule. Sound preferences persist; Options, club selection and Squad open/close. Service worker installation and offline saved-career reload passed, including scenery and bundled font. No script errors or missing assets. Root JavaScript syntax checks passed. Scenery, kits and league bytes match 1.50.0; stadium/construction modules match apart from cache version strings. See review/rebrand-browser-checks.json and rebrand-source-checks.json. Older review records are inherited 1.50.0 evidence, not newly rerun tests. No full season was rerun for this visual change. Physical-phone performance, touch behaviour and installed-icon appearance remain untested.
 
-SOURCE AND EVIDENCE
-- assets/surroundings/: six runtime WebP layers, their editable source SVGs, and validated world-layout specifications.
-- prototype-source/: the three accepted procedural scene sources and reusable street kits, with their original engines/data and clearance checks.
-- tools/build-surroundings.mjs: regenerate the runtime WebPs from source SVGs with Node and sharp.
-- tools/source-checks.mjs and tools/browser-checks.mjs: reproducible verification scripts. Browser checks need Playwright and installed Chromium; set CLUBLINE_CHROME_EXECUTABLE to an executable path if necessary.
-- review/: actual browser screenshots and test-result records.
+NEXT WORK
+Three best players on club selection and proper opposing eleven-player tactics boards are still pending. The rebrand does not implement those changes.
+
+MANUAL UPLOAD
+Extract Clubline-Release-1.51.0-Clubline-99-Rebrand.zip and upload its CONTENTS to your GitHub Pages repository yourself: index.html at the root, with assets/ and data/ beside it. Do not upload only the ZIP. Nothing has been deployed.

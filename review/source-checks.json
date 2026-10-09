@@ -21,6 +21,76 @@
     "money": "unchanged on refused construction"
   },
   {
+    "club": "C03",
+    "default": "fits reserve",
+    "blockedStandTypes": 5,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "club": "C04",
+    "default": "fits reserve",
+    "blockedStandTypes": 11,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "club": "C05",
+    "default": "fits reserve",
+    "blockedStandTypes": 5,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "club": "C06",
+    "default": "fits reserve",
+    "blockedStandTypes": 11,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "club": "C07",
+    "default": "fits reserve",
+    "blockedStandTypes": 5,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "club": "C08",
+    "default": "fits reserve",
+    "blockedStandTypes": 5,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "club": "C09",
+    "default": "fits reserve",
+    "blockedStandTypes": 5,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "club": "C10",
+    "default": "fits reserve",
+    "blockedStandTypes": 11,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "club": "C11",
+    "default": "fits reserve",
+    "blockedStandTypes": 5,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "club": "C12",
+    "default": "fits reserve",
+    "blockedStandTypes": 5,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
     "club": "C13",
     "default": "fits reserve",
     "blockedStandTypes": 5,
@@ -28,6 +98,58 @@
     "money": "unchanged on refused construction"
   },
   {
-    "cacheAssetsChecked": 224
+    "club": "C14",
+    "default": "fits reserve",
+    "blockedStandTypes": 5,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "club": "C15",
+    "default": "fits reserve",
+    "blockedStandTypes": 5,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "club": "C16",
+    "default": "fits reserve",
+    "blockedStandTypes": 5,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "club": "C17",
+    "default": "fits reserve",
+    "blockedStandTypes": 11,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "club": "C18",
+    "default": "fits reserve",
+    "blockedStandTypes": 2,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "club": "C19",
+    "default": "fits reserve",
+    "blockedStandTypes": 5,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "club": "C20",
+    "default": "fits reserve",
+    "blockedStandTypes": 11,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "wholeFootprintClearance": "all 20 reserves clear full building/eave/tree and road/pavement bounds"
+  },
+  {
+    "cacheAssetsChecked": 258
   }
 ]
