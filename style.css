@@ -435,3 +435,7 @@ svg[data-scene-phase="prematch"] .pitch-action{display:none}
 .period-shirt img,.period-overview-kit img{object-fit:contain;clip-path:none;transform:none}.period-overview-kit img{pointer-events:none}.period-overview-kit b{display:inline-block;margin-top:8px}
 
 .shirt-slot .slot-name{flex-wrap:wrap;white-space:normal;gap:0 3px}.shirt-slot .slot-surname{overflow:visible;text-overflow:clip;white-space:normal;overflow-wrap:anywhere}.shirt-slot .slot-overall{white-space:nowrap}
+
+/* Fixed pilot worlds move with the stadium in every viewport. */
+svg[data-fixed-surroundings] image{pointer-events:none}
+.title-screen .menu-scene svg[data-fixed-surroundings]{width:100%;height:100%;animation:none;transform:none}

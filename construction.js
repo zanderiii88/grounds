@@ -1,3 +1,4 @@
+import {fixedSiteError} from './fixed-surroundings.js';
 import {SECTIONS,STANDS,capacity,changeCost} from './stadium-model.js';
 const daysAfter=(date,n)=>new Date(Date.parse(date+'T12:00:00Z')+n*86400000).toISOString().slice(0,10);
 const units=(s,c)=>STANDS[c.stand].tiers.reduce((n,t)=>n+t[0]*s.bays*(s.corner?.55:1),0);
@@ -14,6 +15,7 @@ export function constructionQuote(career,club,draft){
  return {cost,days,opens,during,closed:usableCapacity(career,club)-during,affected,sections:Object.fromEntries(changed.map(s=>[s.id,{...draft.sections[s.id]}]))};
 }
 export function startConstruction(career,club,draft){
+ const siteError=fixedSiteError(club,draft);if(siteError)return siteError;
  if(career.construction?.length)return 'Finish the current stadium project first.';
  const quote=constructionQuote(career,club,draft);if(!quote.cost)return 'No changes to build.';if(quote.cost>career.balance)return 'Insufficient club funds.';
  career.balance-=quote.cost;career.construction=[{...quote,started:career.date}];

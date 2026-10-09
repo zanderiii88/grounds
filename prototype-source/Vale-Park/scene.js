@@ -1,4 +1,3 @@
-import {fixedSurroundings,fixedSiteError,surroundingsLayer} from './fixed-surroundings.js';
 import {exteriorPeople,pitchPlayers} from './stadium-life.js';
 import {SECTIONS,STANDS,normaliseLayout,defaultLayout} from './stadium-model.js';
 import {groundsStand} from './grounds-geometry.js';
@@ -9,8 +8,7 @@ const at=(x,y,z=0)=>({x,y,z});
 const safe=s=>String(s??'').replace(/[&<>"']/g,'');
 export const stadiumProfile=club=>({name:defaultLayout(club).name});
 export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=false,layout=null,selection=null,motion=null,works=[],preview=false){
- const fixed=fixedSurroundings(club?.id),pilot=fixed&&!fixedSiteError(club,layout)&&!works.some(job=>fixedSiteError(club,{...normaliseLayout(layout,club),sections:{...normaliseLayout(layout,club).sections,...job.sections}}))?fixed:null;
- const map=pilot||siteById(site),model=normaliseLayout(layout,club),colour=/^#[0-9a-f]{6}$/i.test(club?.colour||'')?club.colour:'#a03948';
+ const map=siteById(site),model=normaliseLayout(layout,club),colour=/^#[0-9a-f]{6}$/i.test(club?.colour||'')?club.colour:'#a03948';
  const ART_WIDTH=map.artWidth||830,ART_HEIGHT=map.artHeight||1895,SCENE_HEIGHT=ART_HEIGHT*SCENE_WIDTH/ART_WIDTH;
  const figureScale=((map.scale||1)*830/ART_WIDTH)/0.6137143383204945;
  const px=SCENE_WIDTH/ART_WIDTH,py=SCENE_HEIGHT/ART_HEIGHT,zStep=2.55*px*(map.scale||1);
@@ -385,14 +383,14 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
  const depth=side=>Math.max(3,...specs.filter(x=>x.s.side===side).map(x=>{const next=works.find(j=>j.sections[x.s.id])?.sections[x.s.id],sp=next?groundsStand(next.stand):null,rear=c=>({compact:0,concourse:1.2,amenities:2,hospitality:2.6}[c?.rear]||0);return Math.max((x.sp?.depth||0)+rear(x.cfg),(sp?.depth||0)+rear(next));}))+1.1;
  const pedestrians=motion?.ambient?exteriorPeople(project,motion.phase||'idle',{left:20-depth('W'),right:52+depth('E'),top:20-depth('N'),bottom:40+depth('S')},figureScale):{far:'',near:''};
  const crowdMotion='';
- const art=`assets/sites/${map.art}-${evening&&map.night?'evening':'day'}.webp?v=1.50.0-pilot.1`,cy=map.origin[1]*py;
+ const art=`assets/sites/${map.art}-${evening&&map.night?'evening':'day'}.webp?v=1.49.0`,cy=map.origin[1]*py;
  // Frame the actual layout, not the entire maximum plot. Zoom moves map,
  // stadium and people together, preserving their relative proportions.
  const fw=stadiumFrame.right-stadiumFrame.left,fh=stadiumFrame.bottom-stadiumFrame.top,cx=(stadiumFrame.left+stadiumFrame.right)/2,fy=(stadiumFrame.top+stadiumFrame.bottom)/2;
  const fitted=`${(stadiumFrame.left-9).toFixed(1)} ${(stadiumFrame.top-9).toFixed(1)} ${(fw+18).toFixed(1)} ${(fh+18).toFixed(1)}`;
  const menuWidth=Math.max(fw*1.12,fw+18);
- const backgroundTop=pilot?pilot.box[1]:map.background?Math.max(map.background[5],map.background[5]+map.background[1]*ART_WIDTH)*px:0;
- const backgroundBottom=pilot?pilot.box[1]+pilot.box[3]:map.background?(map.background[5]+map.background[3]*ART_HEIGHT+Math.min(0,map.background[1]*ART_WIDTH))*px:SCENE_HEIGHT;
+ const backgroundTop=map.background?Math.max(map.background[5],map.background[5]+map.background[1]*ART_WIDTH)*px:0;
+ const backgroundBottom=map.background?(map.background[5]+map.background[3]*ART_HEIGHT+Math.min(0,map.background[1]*ART_WIDTH))*px:SCENE_HEIGHT;
  // Portrait title crops stay inside the painted city, even for large grounds.
  const mobileWidth=Math.min(menuWidth,(backgroundBottom-backgroundTop)*830/1895),mobileHeight=mobileWidth*1895/830;
  const mobileTop=Math.min(backgroundBottom-mobileHeight,Math.max(backgroundTop,fy-mobileHeight*.70));
@@ -423,5 +421,5 @@ export function sceneSvg(club,site='aberdeen',crowd=false,evening=false,close=fa
  if(club?.clockSide){const sec=SECTIONS.find(s=>s.side===club.clockSide&&s.i===1),sp=groundsStand(model.sections[sec.id].stand),q=project(world(sec,sec.bays,sp.partialFrontV*.6-.05,sp.wallH+1.15)),r=zStep*1.2;
   clockBadge=`<g aria-label="Clock End clock"><circle cx="${q.x}" cy="${q.y}" r="${r}" fill="#eee9db" stroke="#303a3e" stroke-width="${r*.13}"/><path d="M${q.x},${q.y-r*.66}L${q.x},${q.y}L${q.x+r*.48},${q.y+r*.08}" stroke="#303a3e" stroke-width="${r*.1}" fill="none"/></g>`;
  }
- return `<svg ${pilot?`data-fixed-surroundings="${club.id}"`:""} data-title-frame="${cx} ${fy} ${stadiumFrame.left} ${stadiumFrame.top} ${fw} ${fh}" data-scene-phase="${motion?.phase||'idle'}" xmlns="http://www.w3.org/2000/svg" ${careerFrame} class="${close==='menu'?'desktop-scene':close==='menu-mobile'?'mobile-scene':''} ${motion?.scoringTeam===0?'goal-scene':''} ${motion?'crowd-motion':''}" viewBox="${viewBox}" preserveAspectRatio="${close&&close!=='menu'&&close!=='menu-mobile'?'xMidYMid meet':'xMidYMid slice'}" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}">${preview?'':pilot?surroundingsLayer(pilot,'back',evening):`<image ${backgroundTransform} href="${art}" x="0" y="0" width="${SCENE_WIDTH}" height="${SCENE_HEIGHT.toFixed(1)}" preserveAspectRatio="none" ${evening&&!map.night?'style="filter:brightness(.60) saturate(.9)"':''}/>`}${preview?'':stadiumGround}${pedestrians.far}<g data-stadium-layer="far">${far}</g>${preview&&preview!=='bowl'?'':field.join('')}${athletes}<g data-stadium-layer="near">${near}</g>${clockBadge}${preview?'':lights}${pedestrians.near}${crowdMotion}${preview||!pilot?'':surroundingsLayer(pilot,'front',evening)}${targets}</svg>`;
+ return `<svg data-title-frame="${cx} ${fy} ${stadiumFrame.left} ${stadiumFrame.top} ${fw} ${fh}" data-scene-phase="${motion?.phase||'idle'}" xmlns="http://www.w3.org/2000/svg" ${careerFrame} class="${close==='menu'?'desktop-scene':close==='menu-mobile'?'mobile-scene':''} ${motion?.scoringTeam===0?'goal-scene':''} ${motion?'crowd-motion':''}" viewBox="${viewBox}" preserveAspectRatio="${close&&close!=='menu'&&close!=='menu-mobile'?'xMidYMid meet':'xMidYMid slice'}" role="img" aria-label="${safe(club?.ground||'Clubline ground')}, ${safe(model.name)}, ${evening?'evening':'day'}">${preview?'':`<image ${backgroundTransform} href="${art}" x="0" y="0" width="${SCENE_WIDTH}" height="${SCENE_HEIGHT.toFixed(1)}" preserveAspectRatio="none" ${evening&&!map.night?'style="filter:brightness(.60) saturate(.9)"':''}/>`}${preview?'':stadiumGround}${pedestrians.far}<g data-stadium-layer="far">${far}</g>${preview&&preview!=='bowl'?'':field.join('')}${athletes}<g data-stadium-layer="near">${near}</g>${clockBadge}${preview?'':lights}${pedestrians.near}${crowdMotion}${targets}</svg>`;
 }

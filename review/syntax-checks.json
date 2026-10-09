@@ -1,0 +1,32 @@
+{
+  "result": "PASS",
+  "files": [
+    "preferences.js",
+    "sw.js",
+    "friendlies.js",
+    "sites.js",
+    "match-life.js",
+    "fixed-surroundings.js",
+    "career-backup.js",
+    "club-investment.js",
+    "training.js",
+    "audio.js",
+    "recruitment.js",
+    "discipline.js",
+    "stadium-model.js",
+    "construction.js",
+    "season-calendar.js",
+    "stadium-surface.js",
+    "season-board.js",
+    "match-insight.js",
+    "scouting.js",
+    "contracts.js",
+    "match-stats.js",
+    "stadium-life.js",
+    "scene.js",
+    "app.js",
+    "transfer-search.js",
+    "development.js",
+    "grounds-geometry.js"
+  ]
+}

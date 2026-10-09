@@ -1,33 +1,37 @@
-CLUBLINE 98 — Release 1.49.0
+CLUBLINE — SURROUNDINGS INTEGRATION PILOT 1.50.0-pilot.1
 
-FULL APPLICATION PACKAGE
-Extract this ZIP, then copy its contents into the existing GitHub Pages repository root. Keep index.html, app.js, style.css, sw.js and version.json at the root, alongside assets/ and data/. Commit and push using your normal upload process. Upload the extracted contents, not the ZIP itself. Nothing has been deployed by this release task.
+Full runnable application based on Clubline release 1.49.0. This is a three-ground review pilot, not the completed all-club scenery release. Nothing has been deployed.
 
-Start a NEW career for the 1998–99 league. This edition uses a separate career save key and does not import the previous 12-club career. Audio and notification preferences retain their existing keys.
+IMPLEMENTED
+- Highfield / Armoury FC (C01): accepted refined neighbourhood study 8.
+- Riverbank Stadium / Middleborough FC (C13): accepted docks study 1.
+- Vale Park / Aston Vale (C02): accepted refined neighbourhood study 5.
+- Fixed club surroundings for these three grounds, with no location selector in their setup. Their saved site IDs migrate on load/save.
+- Accepted town worlds rendered as two transparent WebP layers around the actual modular stadium. Buildings, roads and trees retain the accepted projection and layout. The stadium is live, supports seat-colour choices, and keeps the existing match animation systems.
+- The start menu cycles through these three grounds before the retained original menu scenes. Career portrait and landscape frame the same world.
+- Build-site restrictions for these three grounds. A stand/roof/rear-building proposal extending outside its reserve is refused before charging funds; the designer displays the reason and disables construction.
+- Existing oversized saved layouts or pending works safely use the original scenery instead of forcing a smaller stadium or overlapping town objects.
+- The other 17 clubs keep their release 1.49 scenery during this pilot.
 
-WHAT IS INCLUDED
-- Twenty fictionalised 1998–99 clubs, with 21 selected players per club (420 unique players), proposed ratings on the agreed 60–91 scale and positional cover.
-- Player starting ages derived from period squad dates of birth, with squad numbers where available and distinct numbers within each club. Position labels are adapted to the game. Ratings, potential, fitness, wages and contract lengths are game-balance proposals, not official FIFA overall ratings or exact historical contracts.
-- All approved home, away and goalkeeper kit designs. Full kits appear in selection; shirt-only versions are used in squad and match views.
-- The six approved Highfield, Ellbank Road, White Hart Park, Stamford Gardens, Anfield Lane and Old Trafford Road layouts are integrated. The remaining fourteen grounds use individual period-inspired presets. Historical dimensions, capacities and architectural details are approximations.
-- Revised tier supports, historic upper balconies, roof profiles, facade/end visibility and corners inheriting one adjacent stand's profile. These remain the existing modular engine.
-- Career begins 3 August 1998, with the first league round on 15 August 1998. Twenty clubs play 38 games each, once home and once away against every opponent. Fixture pairings and later dates are generated rather than historical fixture reproductions.
-- Three optional pre-season friendly invitations: proposed 5, 9 and 12 August. Accept or decline in Home. Accepted games appear in the calendar and use the normal match experience. Form, fitness, injuries and income apply; league points, player league statistics, yellow totals and suspension service do not. League-banned players may play friendlies. Fresh invitations arrive for subsequent pre-seasons.
-- Finances use a late-1990s game scale: weekly wages, age-sensitive transfer values, tickets, commercial income, investments, stadium costs and league prize money. They are not reconstructed club accounts. Weekly commercial income and payroll are recorded on Mondays; summer payroll and commercial income are settled when moving to the next season.
-- Empty substitute places are allowed when eleven eligible starters are available. Three substitutions remain the match limit.
-- Unchanged stadium sections no longer generate construction charges because object property order differs. Surnames can wrap in shirt view instead of truncating. Evening match completion time follows the kickoff.
+VERIFIED IN THIS PILOT
+- Original league JSON is byte-for-byte unchanged: 20 clubs, 21 players each, 420 players, rating range 61–91. Generated league schedule has 38 rounds starting 15 August 1998. New careers start 3 August.
+- Accepted-study clearance checks pass for complete roads/pavements, buildings/eaves, tree bounds, connected streets and access passages.
+- Real Chromium checks at 390×844, 844×390 and 360×640: all three default grounds fit the career framing, no horizontal page overflow, fixed scene survives saved-career reload.
+- Watched home matches use the fixed scenery. Synthetic goal/card/half-time interface updates retain the identical live SVG and scenery-layer elements. This checks interface continuity; it is not a full-season regression test.
+- C03 retains original scenery. Setup location selector is absent for a pilot club.
+- Oversized stand options are blocked without changing funds/state; default layouts fit all three reserves.
+- All 224 service-worker cache paths exist. Service worker installs in Chromium; Highfield career reloads with its fixed scenery offline.
+- No browser script errors or missing HTTP assets in the checks above. All root JavaScript files pass syntax checks. ZIP integrity checked.
 
-VERIFICATION
-Automated checks passed for all squads, ratings, dates, kit files, stadium layouts, 38 balanced fixtures, friendly accept/decline/expiry, construction, contracts, development, discipline and match statistics. Chromium browser checks passed for all club career starts; friendly and league match simulation; save/load; suspension service; weekly accounts; a full 38-game season and rollover including prize/summer accounts; portrait/landscape layouts; live-match speed, tactics, substitutions and goals retaining mounted stadium nodes; and offline installation, reload and new career. All twenty grounds and refreshed start-screen images were rendered and visually reviewed.
-Physical-phone performance and touch behaviour were not independently tested. Individual map fit and exact historic architectural fidelity need further review.
+LIMITS
+Physical-phone speed, memory usage and touch behaviour still need device review. Scenery images total about 3.8 MB; this is not a measured mobile performance guarantee. Evening scenes darken the accepted day layers and retain stadium lights; dedicated lit-town artwork has not been created. The retained broader game UI and branding have not been redesigned by this pilot. The older full-release test record is preserved separately in RELEASE-1.49-NOTES.md; those full-season tests were not repeated here.
 
-REFERENCE BASIS
-Roster: approved CLUBLINE-98-1998-99-Roster-Proposals.xlsx, 21-player squads tab. Birth dates and period squad numbers: FootballSquads 1998/99 records. Broad kits and the six reviewed layouts follow the approved prototype assets. General financial scale is gameplay balanced; the period British-record transfer of Alan Shearer was £15m, which informed the transfer scale rather than modern prices.
-https://www.footballsquads.co.uk/eng/1998-1999/faprem.htm
-https://historicengland.org.uk/listing/the-list/list-entry/1119692
-https://www.chelseafc.com/en/stadium-history
-https://www.liverpoolfc.com/news/short-history-anfield-road-stands-evolution
-https://www.liverpoolfc.com/news/announcements/262242-a-short-history-of-the-new-kenny-dalglish-stand
-https://www.newcastleunited.com/en/hall-of-fame/alan-shearer
+OPEN / UPLOAD
+Serve this folder through a web server to review locally. For manual GitHub Pages upload, copy the extracted ZIP contents to the repository root so index.html sits at the root. Do not upload the ZIP itself. No deployment has been performed. Existing compatible 1.49 careers use the same save key; export a backup before replacing a live install.
 
-Working title only: CLUBLINE 98. Approved logo and icon artwork retained.
+SOURCE AND EVIDENCE
+- assets/surroundings/: six runtime WebP layers, their editable source SVGs, and validated world-layout specifications.
+- prototype-source/: the three accepted procedural scene sources and reusable street kits, with their original engines/data and clearance checks.
+- tools/build-surroundings.mjs: regenerate the runtime WebPs from source SVGs with Node and sharp.
+- tools/source-checks.mjs and tools/browser-checks.mjs: reproducible verification scripts. Browser checks need Playwright and installed Chromium; set CLUBLINE_CHROME_EXECUTABLE to an executable path if necessary.
+- review/: actual browser screenshots and test-result records.

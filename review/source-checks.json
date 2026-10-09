@@ -1,0 +1,33 @@
+[
+  {
+    "league": "20 clubs × 21 players; 38 rounds start 15 August 1998",
+    "ratings": [
+      61,
+      91
+    ]
+  },
+  {
+    "club": "C01",
+    "default": "fits reserve",
+    "blockedStandTypes": 5,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "club": "C02",
+    "default": "fits reserve",
+    "blockedStandTypes": 5,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "club": "C13",
+    "default": "fits reserve",
+    "blockedStandTypes": 5,
+    "legacyOversizedSave": "safe old-scene fallback",
+    "money": "unchanged on refused construction"
+  },
+  {
+    "cacheAssetsChecked": 224
+  }
+]

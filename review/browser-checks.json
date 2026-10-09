@@ -1,0 +1,16 @@
+{
+  "results": [
+    "Title starts with live Highfield stadium and two scenery layers.",
+    "Pilot club setup has no location selector.",
+    "Highfield: career framing fits at 390×844, 844×390 and 360×640; save reload keeps fixed scene.",
+    "Highfield: watched home match retains the identical live SVG and scenery image elements through goal, card and info refreshes.",
+    "Riverbank: career framing fits at 390×844, 844×390 and 360×640; save reload keeps fixed scene.",
+    "Riverbank: watched home match retains the identical live SVG and scenery image elements through goal, card and info refreshes.",
+    "Vale-Park: career framing fits at 390×844, 844×390 and 360×640; save reload keeps fixed scene.",
+    "Vale-Park: watched home match retains the identical live SVG and scenery image elements through goal, card and info refreshes.",
+    "Non-pilot C03 retains the original scene.",
+    "Service worker installed; Highfield career reloads with fixed surroundings while offline."
+  ],
+  "errors": [],
+  "missing": []
+}
